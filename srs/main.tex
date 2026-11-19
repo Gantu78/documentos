@@ -2378,7 +2378,7 @@ Cada fila del \cref{tab:comparativa} cita el escenario, el requisito o la restri
 la diferencia, como exige CON-7. La columna Tipo indica si la propuesta es un patrón, con su estilo,
 o una táctica, con su atributo y su rama en Bass, Clements y Kazman \cite{bass}.
 
-\begin{longtable}{L{2.3cm} L{2.9cm} L{4.2cm} L{2.9cm} L{3.0cm}}
+\begin{longtable}{>{\RaggedRight\arraybackslash\hspace{0pt}}p{2.4cm} L{2.9cm} L{4.1cm} L{2.9cm} L{3.0cm}}
 \cabecera{5}{tab:comparativa}{Comparación entre Sahana Eden y la propuesta, con la justificación de
 cada diferencia}{\textbf{Aspecto} & \textbf{Sahana Eden} & \textbf{Propuesta} & \textbf{Justificación} & \textbf{Tipo}}
 Unidad de despliegue & Aplicación web servida como una unidad \cite{eden-basics} & Microservicios
@@ -2402,15 +2402,15 @@ contrato del adaptador no restringe el formato externo. La traducción es respon
 adaptador & QA-09: los sistemas futuros no se conocen & Táctica de integrabilidad, rama adaptar: ajustar la interfaz \\
 Tipos de evento & Configurables por plantillas \cite{eden-wiki} & Catálogo administrado en
 ejecución, con ciclo de vida y criterios de nivel configurables por tipo (RN-1, RN-2, RN-3) & QA-10:
-incorporar un tipo nuevo con 0 redespliegues & Táctica de modificabilidad, rama diferir el enlace \\
+incorporar un tipo nuevo con 0 componentes modificados o redesplegados & Táctica de modificabilidad, rama diferir el enlace \\
 Delimitación geográfica & Visualización de datos con ubicación \cite{sahana-eden-legacy} &
 Delimitación versionada. Cada cambio se conserva y el área de cualquier instante pasado puede
 reconstruirse (RN-4) & RF-GD-09 y FP-03: conservar la evolución espacial del evento. QA-13: rastro
 de los cambios & Táctica de seguridad, rama recuperarse de ataques: auditoría \\
 Trabajo de campo & Evaluaciones por formulario web o archivo de hoja de cálculo
 \cite{sahana-eden-legacy} & Réplica local en el cliente, sincronización diferida y regla
-determinista de conflictos que conserva todas las versiones & QA-14: 0 pérdidas, 0 sobrescrituras
-silenciosas y 0 duplicados & Táctica de disponibilidad, rama recuperarse de fallos: resincronización de estado \\
+determinista de conflictos que conserva todas las versiones & QA-14: 0 evaluaciones perdidas o
+sobrescritas en silencio & Táctica de disponibilidad, rama recuperarse de fallos: resincronización de estado \\
 Auditoría & La API S3 cubre \emph{accounting} y \emph{logging} \cite{desosa2018} & Bitácora
 inmutable, alimentada por los eventos que los microservicios publican, con retención $\ge$ 5 años &
 QA-13 y QA-15: rastro de las cinco clases de operación crítica & Táctica de seguridad, rama recuperarse de ataques: auditoría \\

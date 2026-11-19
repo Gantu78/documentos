@@ -447,7 +447,7 @@ La versión 1.1 agrega EA-19, que corresponde a la decisión AD-45, y amplía EA
 AD-43 y AD-44. La versión 1.2 amplía EA-19 a todo productor de eventos (E-19), agrega AD-46 y AD-47 a
 EA-08 y agrega los enfoques EA-20 a EA-26, que resultan de la implementación.
 
-\begin{longtable}{L{1.0cm} L{2.8cm} L{1.4cm} L{2.0cm} L{2.9cm} L{5.0cm}}
+\begin{longtable}{L{1.0cm} >{\RaggedRight\arraybackslash\hspace{0pt}}p{2.7cm} L{1.3cm} >{\RaggedRight\arraybackslash\hspace{0pt}}p{2.4cm} >{\RaggedRight\arraybackslash\hspace{0pt}}p{2.8cm} L{4.9cm}}
 \cabecera{6}{tab:enfoques}{Enfoques arquitectónicos, categoría y elementos del diseño en los que se
 ven}{\textbf{ID} & \textbf{Enfoque} & \textbf{Decisiones} & \textbf{Atributos} & \textbf{Categoría} &
 \textbf{Dónde se ve}}
@@ -556,7 +556,7 @@ con \texttt{rutas.json}. \cref{fig:vista-despliegue-impl}: \texttt{gateway} [2] 
 EA-24 & Inicio de sesión OIDC con PKCE y token validado en el gateway y en cada servicio & AD-49, E-43
 & Seguridad & Táctica de seguridad, rama resistir ataques: identificar y autenticar actores &
 \cref{fig:vista-logica}: Proveedor de identidad. \cref{fig:vista-despliegue-impl}: \texttt{keycloak}.
-SAD, Figura 5: \texttt{Plataforma.Comun.Seguridad} \\
+SAD, Figura 5: \texttt{Plataforma.\br Comun.\br Seguridad} \\
 EA-25 & Estado de integración publicado como EV-23 & AD-05, E-15 & Disponibilidad, interoperabilidad
 & Táctica de disponibilidad, rama detectar fallos: monitor & SAD, Figura 12: \texttt{MonitorCircuito}
 y \texttt{EstadoIntegracion}. \cref{fig:vista-procesos}: colas \texttt{q.consulta},
@@ -587,7 +587,7 @@ hoja.}
 \label{fig:arbol}
 \end{figure}
 
-\begin{longtable}{L{1.2cm} L{2.2cm} L{5.0cm} L{2.9cm} C{1.1cm} C{0.5cm} L{1.5cm}}
+\begin{longtable}{L{1.1cm} >{\RaggedRight\arraybackslash\hspace{0pt}}p{2.1cm} L{4.9cm} >{\RaggedRight\arraybackslash\hspace{0pt}}p{2.8cm} C{1.1cm} C{0.5cm} L{1.8cm}}
 \cabecera{7}{tab:arbol}{Hojas del árbol de utilidad, ordenadas por prioridad}{\textbf{ID} &
 \textbf{Atributo} & \textbf{Escenario y medida única} & \textbf{Característica ISO/IEC 25010} &
 \textbf{(I, D)} & \textbf{P} & \textbf{Análisis}}
@@ -1270,8 +1270,8 @@ replica sin replicar la escritura (QA-05) & Consistencia inmediata: retraso obje
 T-02 & AD-26. Replicación asíncrona entre regiones & Latencia de escritura (QA-07) y continuidad
 regional (QA-02) & RPO de hasta \qty{60}{\second}: pérdida acotada de datos ante un siniestro
 (QA-03) & PS-02 \\
-T-03 & AD-32. Detección de conflictos sin resolución automática & Integridad: 0 pérdidas y 0
-sobrescrituras silenciosas (QA-14) & Tiempo de cierre de la evaluación y carga de revisión humana &
+T-03 & AD-32. Detección de conflictos sin resolución automática & Integridad: 0 evaluaciones perdidas o
+sobrescritas en silencio (QA-14) & Tiempo de cierre de la evaluación y carga de revisión humana &
 PS-04 \\
 T-04 & AD-39. Reserva optimista con plazo de expiración & Disponibilidad: la asignación no espera
 al sistema externo (QA-01) & Exactitud transitoria: una solicitud puede tardar hasta el plazo en
