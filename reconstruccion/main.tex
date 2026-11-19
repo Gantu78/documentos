@@ -305,7 +305,7 @@ excepciones con esos códigos.
   CU-07 Adjuntar documentos y evidencias & Responsable
     & {\footnotesize\texttt{POST /v1/proyectos/\{id\}/ documentos}} (multipart, $\le$ 25\,MB, 201)
     & EV-20
-    & Sube el archivo. El sistema lo guarda en el bucket \texttt{reconstruccion-documentos} con su huella (hash),
+    & Sube el archivo. El sistema lo guarda en el bucket \texttt{reconstruccion-}\allowbreak\texttt{documentos} con su huella (hash),
       autor y fecha (AD-56).
     & Proyecto que no está en estado final y usuario responsable asignado. 403 si no es el responsable. 409 en estado final. \\ \hline
   CU-08 Finalizar proyecto & Responsable
