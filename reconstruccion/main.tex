@@ -70,7 +70,10 @@
     sin el \texttt{HistorialController} ni las tres consolas, que no existen. Decisiones DM-01 a DM-11 ligadas al
     SAD. La justificación de tecnología remite a AD-50 a AD-65 del SAD 1.2. Despliegue, implementación y alcance
     reescritos según \texttt{despliegue/compose/docker-compose.yml}. Enmiendas aplicadas: E-01, E-04, E-07,
-    E-09, E-10, E-19, E-20, E-28, E-36 y E-39. \\ \hline
+    E-09, E-10, E-19, E-20, E-28, E-36 y E-39. Cada atributo se presenta con su nombre y su medida única; las
+    tecnologías, con los atributos que favorecen y la alternativa descartada; los casos de uso, con su precondición y
+    sus excepciones; y las tácticas y los patrones, con su tipo. Se agregan series de identificadores, límites,
+    enmiendas y referencias. \\ \hline
 \end{longtable}
 }
 
@@ -87,7 +90,9 @@ Hace seguimiento al avance y a los costos. Deja cada cambio en un historial de s
 
 El documento parte de las reglas de negocio (sección~\ref{sec:reglas}). Con ellas se construyen los casos de uso
 (sección~\ref{sec:cu}), las entidades (sección~\ref{sec:entidades}) y el diagrama de estados del proyecto
-(sección~\ref{sec:estados}). La arquitectura se presenta con el modelo 4+1 restringido al módulo:
+(sección~\ref{sec:estados}). La arquitectura se presenta con el modelo 4+1 \cite{kruchten} restringido
+al módulo, y cada vista sigue las recomendaciones de ISO/IEC/IEEE 42010 \cite{iso42010} y de Clements et
+al. \cite{clements}:
 
 \begin{itemize}
   \item \textbf{Escenarios}: diagrama y especificación de casos de uso (sección~\ref{sec:cu}).
@@ -98,31 +103,37 @@ El documento parte de las reglas de negocio (sección~\ref{sec:reglas}). Con ell
   \item \textbf{Vista física}: despliegue en contenedores (sección~\ref{sec:despliegue}).
 \end{itemize}
 
-Las decisiones de este documento son el detalle, para un microservicio, de las decisiones del SAD 1.2. Los
-requisitos y atributos de calidad son los del SRS 1.2. Los riesgos son los del ATAM 1.2. Las vistas usan los mismos
-nombres que el código: servicios del \emph{compose}, proyectos .NET, clases y colas.
+El módulo responde al enunciado del proyecto \cite{enunciado}. Las decisiones de este documento son el detalle,
+para un microservicio, de las decisiones del SAD 1.2 \cite{sad}. Los requisitos y atributos de calidad son los del
+SRS 1.2 \cite{srs}, con el modelo de Bass, Clements y Kazman \cite{bass} y la correspondencia con ISO/IEC 25010
+\cite{iso25010}. Los riesgos son los del ATAM 1.2 \cite{atam}. Las vistas usan los mismos nombres que el código:
+servicios del \emph{compose}, proyectos .NET, clases y colas.
+
+La arquitectura de la plataforma es heterogénea: combina el estilo basado en servicios (patrón microservicios), el
+estilo basado en eventos (publicación y suscripción), las capas (arquitectura limpia \cite{martin}) y la separación de
+lectura y escritura. Este módulo aplica las cuatro: es un microservicio con almacén propio, publica y consume eventos,
+organiza su código con arquitectura limpia y separa la escritura de \texttt{reconstruccion} de la lectura de
+\texttt{consulta-programa}.
 
 \subsection{Trazabilidad}
 
 \begin{center}\small
-\begin{longtable}{|P{1.9cm}|P{4.1cm}|P{2.4cm}|P{3.0cm}|P{2.2cm}|}
+\begin{longtable}{|P{1.7cm}|P{2.9cm}|P{1.7cm}|P{1.9cm}|P{6.0cm}|}
   \hline
-  \rowcolor{cabecera}\textbf{Requisito} & \textbf{Nombre} & \textbf{Casos de uso} & \textbf{Decisiones} &
-  \textbf{Atributos} \\ \hline
+  \rowcolor{cabecera}\textbf{Requisito} & \textbf{Nombre} & \textbf{Casos de uso} & \textbf{Decisiones} & \textbf{Atributo y medida única} \\ \hline
   \endfirsthead
   \hline
-  \rowcolor{cabecera}\textbf{Requisito} & \textbf{Nombre} & \textbf{Casos de uso} & \textbf{Decisiones} &
-  \textbf{Atributos} \\ \hline
+  \rowcolor{cabecera}\textbf{Requisito} & \textbf{Nombre} & \textbf{Casos de uso} & \textbf{Decisiones} & \textbf{Atributo y medida única} \\ \hline
   \endhead
-  RF-RC-01 & Crear proyecto desde una evaluación & CU-01, CU-02 & AD-40, AD-46, DA-14 & QA-13 \\ \hline
-  RF-RC-02 & Información del proyecto & CU-02 a CU-09, CU-12 & AD-08, AD-41 & QA-13, QA-15 \\ \hline
-  RF-RC-03 & Asignar presupuesto y responsable & CU-03 & AD-41, AD-45, AD-37 & QA-15, QA-13 \\ \hline
-  RF-RC-04 & Registrar avance & CU-05, CU-06, CU-12 & AD-45, AD-36 & QA-15, QA-13 \\ \hline
-  RF-RC-05 & Registrar costos & CU-06 & AD-41, AD-45 & QA-15 \\ \hline
-  RF-RC-06 & Documentación y evidencias & CU-07 & AD-56 & QA-13 \\ \hline
-  RF-RC-07 & Auditoría de presupuesto y estado & CU-10 & AD-41 & QA-15, QA-13 \\ \hline
-  RF-RC-08 & Creación de proyectos por lote & CU-02 & AD-40 & QA-13 \\ \hline
-  RF-RC-09 & Consulta consolidada del programa & CU-11 & AD-42, AD-18 & QA-06, QA-05 \\ \hline
+  RF-RC-01 & Crear proyecto desde una evaluación & CU-01, CU-02 & AD-40, AD-46, DA-14 & QA-13, trazabilidad: 100\,\% de las operaciones críticas con entrada de auditoría \\ \hline
+  RF-RC-02 & Información del proyecto & CU-02 a CU-09, CU-12 & AD-08, AD-41 & QA-13, trazabilidad: 100\,\% de las operaciones críticas con entrada de auditoría. QA-15, trazabilidad de proyectos: 100\,\% de los cambios de presupuesto y de estado con valor anterior y nuevo \\ \hline
+  RF-RC-03 & Asignar presupuesto y responsable & CU-03 & AD-41, AD-45, AD-37 & QA-15, trazabilidad de proyectos: 100\,\% de los cambios de presupuesto y de estado con valor anterior y nuevo. QA-13, trazabilidad: 100\,\% de las operaciones críticas con entrada de auditoría \\ \hline
+  RF-RC-04 & Registrar avance & CU-05, CU-06, CU-12 & AD-45, AD-36 & QA-15, trazabilidad de proyectos: 100\,\% de los cambios de presupuesto y de estado con valor anterior y nuevo. QA-13, trazabilidad: 100\,\% de las operaciones críticas con entrada de auditoría \\ \hline
+  RF-RC-05 & Registrar costos & CU-06 & AD-41, AD-45 & QA-15, trazabilidad de proyectos: 100\,\% de los cambios de presupuesto y de estado con valor anterior y nuevo \\ \hline
+  RF-RC-06 & Documentación y evidencias & CU-07 & AD-56 & QA-13, trazabilidad: 100\,\% de las operaciones críticas con entrada de auditoría \\ \hline
+  RF-RC-07 & Auditoría de presupuesto y estado & CU-10 & AD-41 & QA-15, trazabilidad de proyectos: 100\,\% de los cambios de presupuesto y de estado con valor anterior y nuevo. QA-13, trazabilidad: 100\,\% de las operaciones críticas con entrada de auditoría \\ \hline
+  RF-RC-08 & Creación de proyectos por lote & CU-02 & AD-40 & QA-13, trazabilidad: 100\,\% de las operaciones críticas con entrada de auditoría \\ \hline
+  RF-RC-09 & Consulta consolidada del programa & CU-11 & AD-42, AD-18 & QA-06, rendimiento: consulta frecuente con p95 $<$ 2\,s. QA-05, escalabilidad: p95 $<$ 2\,s con 10\,000 usuarios concurrentes \\ \hline
 \end{longtable}
 \end{center}
 
@@ -236,83 +247,97 @@ Todas las rutas pasan por el \texttt{gateway} con un token JWT (AD-49). Las ruta
 \texttt{rc-*} y \texttt{cp-consolidado}, E-09). Los casos que cambian un proyecto guardan el proyecto, su entrada
 de historial y su evento en una sola transacción (RN-RC-18, RN-RC-20). Las respuestas de error son 403 (rol o
 aprobador), 404 (no existe o fuera de jurisdicción, E-39), 409 (transición no permitida, estado final o conflicto
-de versión) y 422 (dato que incumple una regla).
+de versión) y 422 (dato que incumple una regla). La última columna indica la precondición de cada caso y sus
+excepciones con esos códigos.
 
 {\small
-\begin{longtable}{|P{2.2cm}|P{1.9cm}|P{3.3cm}|P{1.4cm}|P{5.4cm}|}
+\begin{longtable}{|P{1.8cm}|P{1.9cm}|P{3.1cm}|P{1.2cm}|P{3.3cm}|P{2.9cm}|}
   \hline
   \rowcolor{cabecera}\textbf{Caso de uso} & \textbf{Actor} & \textbf{Ruta} & \textbf{Evento} &
-  \textbf{Flujo principal} \\ \hline
+  \textbf{Flujo principal} & \textbf{Precondición y excepciones} \\ \hline
   \endfirsthead
   \hline
   \rowcolor{cabecera}\textbf{Caso de uso} & \textbf{Actor} & \textbf{Ruta} & \textbf{Evento} &
-  \textbf{Flujo principal} \\ \hline
+  \textbf{Flujo principal} & \textbf{Precondición y excepciones} \\ \hline
   \endhead
   CU-01 Consultar evaluaciones candidatas & Autoridad
     & {\footnotesize\texttt{GET /v1/reconstruccion/ desastres}}; {\footnotesize\texttt{GET /v1/reconstruccion/ candidatas?desastre=}}
     & Ninguno
     & Elige un desastre en reconstrucción. El sistema lee la copia local alimentada por EV-03, EV-06, EV-08 y
       EV-21 (AD-46) y lista las candidatas de su jurisdicción con activo, tipo, nivel de daño y municipio
-      (RN-RC-02, RN-RC-09). \\ \hline
+      (RN-RC-02, RN-RC-09).
+    & Rol autoridad y desastre en reconstrucción. 403 sin el rol. \\ \hline
   CU-02 Crear proyectos a partir de evaluaciones & Autoridad
     & {\footnotesize\texttt{POST /v1/proyectos:lote}} (201)
     & EV-18
     & Envía el desastre, las evaluaciones y la \texttt{claveIdempotencia}. El sistema valida jurisdicción y lote,
       crea un proyecto por activo en \emph{Formulado} y deja un EV-18 por proyecto en la bandeja (AD-45). El relevo
       lo publica y \texttt{adaptador-se7-salida} da de alta la obra en SE-7 (AD-36, AD-37, AD-25). Un reenvío
-      devuelve los mismos proyectos (RN-RC-05). Ver figura~\ref{fig:seq-lote}. \\ \hline
+      devuelve los mismos proyectos (RN-RC-05). Ver figura~\ref{fig:seq-lote}.
+    & Evaluaciones validadas y desastre en reconstrucción (RN-RC-03). 403 sin el rol o con una evaluación fuera de la jurisdicción. 422 si una evaluación incumple una regla: no se crea ningún proyecto. \\ \hline
   CU-03 Asignar presupuesto, fuente, cronograma y responsable & Autoridad
     & {\footnotesize\texttt{PATCH /v1/proyectos/\{id\}/ presupuesto}}; {\footnotesize\texttt{PATCH /v1/proyectos/\{id\}/ responsable}}
     & EV-19, EV-20
     & Indica los valores nuevos (presupuesto, fuente y cronograma, o responsable) y la justificación. El sistema
       verifica jurisdicción y estado, guarda valor anterior y nuevo, y deja el evento en la bandeja. EV-19 lleva
-      presupuesto y fuente; EV-20, cronograma y responsable. \texttt{adaptador-se6} entrega el presupuesto a SE-6
-      por lotes (AD-36, AD-37). \\ \hline
+      presupuesto y fuente; EV-20 lleva el cronograma y el responsable (E-10). \texttt{adaptador-se6} entrega el
+      presupuesto a SE-6 por lotes (AD-36, AD-37).
+    & Proyecto en Formulado, Aprobado o En ejecución. 403 sin el rol. 404 fuera de la jurisdicción. 409 en estado final o por conflicto de versión. 422 si falta la justificación o un dato es inválido. \\ \hline
   CU-04 Aprobar proyecto & Autoridad
     & {\footnotesize\texttt{POST /v1/proyectos/\{id\}/ transiciones}} (\texttt{APROBAR})
     & EV-20
     & El sistema verifica que lo ve (si no, 404), datos completos (RN-RC-07) y aprobador (RN-RC-08, si no, 403), y
-      pasa el proyecto a \emph{Aprobado}. \\ \hline
+      pasa el proyecto a \emph{Aprobado}.
+    & Proyecto en Formulado, con presupuesto, fuente, responsable y cronograma. 404 si no lo ve. 403 si lo ve y no es quien lo aprueba. 409 en otro estado. 422 si faltan datos. \\ \hline
   CU-05 Iniciar ejecución & Responsable
     & {\footnotesize\texttt{POST /v1/proyectos/\{id\}/ transiciones}} (\texttt{INICIAR})
     & EV-20
     & Registra el contratista o usa el recibido de SE-7 (CU-12) y el proyecto pasa a \emph{En ejecución}
-      (RN-RC-12). \\ \hline
+      (RN-RC-12).
+    & Proyecto en Aprobado y usuario responsable asignado. 403 si no es el responsable. 409 en otro estado. 422 sin contratista. \\ \hline
   CU-06 Registrar avance y costo & Responsable
     & {\footnotesize\texttt{POST /v1/proyectos/\{id\}/ avance}}
     & EV-20
     & Registra un avance, un costo con su concepto, o ambos. El sistema valida rango y estado, actualiza los
-      acumulados y marca sobrecosto si aplica (RN-RC-13, RN-RC-14). Ver figura~\ref{fig:seq-avance}. \\ \hline
+      acumulados y marca sobrecosto si aplica (RN-RC-13, RN-RC-14). EV-20 lleva el avance y el costo, y
+      \texttt{adaptador-se6} entrega el costo a SE-6 (E-10). Ver figura~\ref{fig:seq-avance}.
+    & Proyecto en En ejecución y usuario responsable asignado. 403 si no es el responsable. 409 en otro estado. 422 con avance fuera de 0 a 100\,\%, costo no positivo o costo sin concepto. \\ \hline
   CU-07 Adjuntar documentos y evidencias & Responsable
     & {\footnotesize\texttt{POST /v1/proyectos/\{id\}/ documentos}} (multipart, $\le$ 25\,MB, 201)
     & EV-20
     & Sube el archivo. El sistema lo guarda en el bucket \texttt{reconstruccion-documentos} con su huella (hash),
-      autor y fecha (AD-56). \\ \hline
+      autor y fecha (AD-56).
+    & Proyecto que no está en estado final y usuario responsable asignado. 403 si no es el responsable. 409 en estado final. \\ \hline
   CU-08 Finalizar proyecto & Responsable
     & {\footnotesize\texttt{POST /v1/proyectos/\{id\}/ transiciones}} (\texttt{FINALIZAR})
     & EV-20
-    & El sistema verifica avance de 100\,\% y pasa el proyecto a \emph{Finalizado} (RN-RC-15). \\ \hline
+    & El sistema verifica avance de 100\,\% y pasa el proyecto a \emph{Finalizado} (RN-RC-15).
+    & Proyecto en En ejecución. 403 si no es el responsable. 409 en otro estado. 422 si el avance no es 100\,\%. \\ \hline
   CU-09 Cancelar proyecto & Autoridad
     & {\footnotesize\texttt{POST /v1/proyectos/\{id\}/ transiciones}} (\texttt{CANCELAR})
     & EV-20
     & Solicita cancelar con justificación. El proyecto pasa a \emph{Cancelado} y sus evaluaciones quedan libres
-      (RN-RC-16). \\ \hline
+      (RN-RC-16).
+    & Proyecto que no está en estado final. 404 fuera de la jurisdicción. 409 en estado final. 422 sin justificación. \\ \hline
   CU-10 Consultar historial del proyecto & Auditor, autoridad
     & {\footnotesize\texttt{GET /v1/proyectos/\{id\}/ historial?fecha=}}
     & Ninguno
     & El sistema devuelve las entradas en orden y, si se indica la fecha, el proyecto como estaba en ella
-      (RN-RC-18, AD-41). \\ \hline
+      (RN-RC-18, AD-41).
+    & Rol auditor o autoridad. 404 si el proyecto no existe o está fuera de la jurisdicción. \\ \hline
   CU-11 Consultar consolidado del programa & Autoridad, auditor
     & {\footnotesize\texttt{GET /v1/programa/ consolidado?desastre=}}
     & Consume EV-18, EV-19, EV-20
     & \texttt{consulta-programa} responde desde su proyección: proyectos por estado, presupuesto, costo, avance
-      agregado, proyectos en sobrecosto y la marca de tiempo del dato (RN-RC-22, AD-42). \\ \hline
+      agregado, proyectos en sobrecosto y la marca de tiempo del dato (RN-RC-22, AD-42).
+    & Rol autoridad o auditor. 403 sin el rol. La autoridad solo ve su jurisdicción. \\ \hline
   CU-12 Registrar reporte de SE-7 & SE-7 (vía adaptador)
     & Ninguna (cola \texttt{q.reconstruccion})
     & Consume EV-24; produce EV-20
     & El adaptador consulta los cambios de SE-7 cada 30\,s y publica EV-24. El módulo registra el contratista o el
       avance con procedencia SE-7 (RN-RC-12, RN-RC-13, E-04) y publica EV-20. Si el proyecto está en un estado que
-      no admite el cambio, el reporte se descarta con su motivo. \\ \hline
+      no admite el cambio, el reporte se descarta con su motivo.
+    & Evento EV-24 recibido. Si el proyecto no admite el cambio, el reporte se descarta con su motivo. \\ \hline
 \end{longtable}
 }
 
@@ -400,10 +425,16 @@ La creación no es una \texttt{AccionProyecto}. La hace \texttt{ProyectoReconstr
   \texttt{Iniciar} & Aprobado & EnEjecucion & Contratista (RN-RC-12) & Responsable \\ \hline
   \texttt{RegistrarAvance} & EnEjecucion & EnEjecucion & Avance de 0 a 100\,\% & Responsable o SE-7 \\ \hline
   \texttt{RegistrarCosto} & EnEjecucion & EnEjecucion & Monto mayor que cero & Responsable \\ \hline
+  \texttt{Registrar\allowbreak Contratista\allowbreak Externo} (método, sin acción propia) & Formulado, Aprobado, EnEjecucion & el mismo & Reporte de SE-7
+    (EV-24) & SE-7 \\ \hline
   \texttt{Finalizar} & EnEjecucion & Finalizado & Avance de 100\,\% & Responsable \\ \hline
   \texttt{Cancelar} & Formulado, Aprobado, EnEjecucion & Cancelado & Justificación & Autoridad \\ \hline
 \end{longtable}
 }
+
+El avance que reporta SE-7 (\texttt{RegistrarAvanceExterno}) usa la acción \texttt{RegistrarAvance}. El contratista que
+reporta SE-7 (\texttt{RegistrarContratistaExterno}) no es una \texttt{AccionProyecto}: no cambia el estado y solo se
+rechaza si el proyecto está en \emph{Finalizado} o \emph{Cancelado}.
 
 Una acción que no está en la tabla para el estado actual lanza \texttt{TRANSICION\_NO\_PERMITIDA} (409) y no deja
 historial. Cada transición aceptada guarda su entrada de historial y su evento en la misma transacción (AD-45).
@@ -416,7 +447,7 @@ permite cerrarlo (RN-RC-21, AD-47).
 
 \subsection{Anillos y capas}
 
-El módulo sigue la arquitectura limpia. Sus anillos se corresponden con las cuatro capas del microservicio tipo del
+El módulo sigue la arquitectura limpia \cite{martin}. Sus anillos se corresponden con las cuatro capas del microservicio tipo del
 SAD (AD-08). Cada anillo es un proyecto .NET y la regla de dependencia se verifica con
 \texttt{PruebasArquitectura} (\texttt{Reconstruccion.\allowbreak Pruebas}), que falla si el dominio usa otro proyecto o paquete,
 o si la aplicación usa algo distinto del dominio (QA-10).
@@ -430,7 +461,7 @@ o si la aplicación usa algo distinto del dominio (QA-10).
   \rowcolor{cabecera}\textbf{Anillo} & \textbf{Capa (AD-08)} & \textbf{Proyecto} & \textbf{Elementos} \\ \hline
   \endhead
   Entidades & Dominio & \texttt{Reconstruccion.\allowbreak Dominio} & Clases de la figura~\ref{fig:clases}. \\ \hline
-  Casos de uso & Dominio & \texttt{Reconstruccion.\allowbreak Aplicacion} & Interactores, \texttt{GuardadoDeProyectos} y
+  Casos de uso & Acceso & \texttt{Reconstruccion.\allowbreak Aplicacion} & Interactores, \texttt{GuardadoDeProyectos} y
     puertos (\texttt{IPuertoEntrada}, \texttt{IPuertoSalida}, \texttt{IRepositorioProyectos}, etc.). \\ \hline
   Adaptadores de interfaz (entrada) & Acceso & \texttt{Reconstruccion.\allowbreak Api} & \texttt{ProyectosController},
     \texttt{ProgramaController}, \texttt{PresentadorHttp<T>}. \\ \hline
@@ -580,7 +611,7 @@ Cada decisión del módulo (DM) concreta una decisión del SAD 1.2.
   DM-06 & Copias locales de desastres, evaluaciones y municipios por eventos. & AD-46, E-01, E-28, E-36, QA-04
     & Llamar a Gestión de Desastres o Consulta de Daños al crear: dependencia síncrona (AD-01).
     & La copia puede ir atrasada mientras llega el evento. \\ \hline
-  DM-07 & Cierre del desastre controlado por Gestión de Desastres con EV-18 y EV-20. & AD-47, E-07, RN-2
+  DM-07 & Cierre del desastre controlado por Gestión de Desastres con EV-18 y EV-20. & AD-47, E-07, RN-RC-21
     & Consultar a Reconstrucción al cerrar.
     & Consistencia eventual en el cierre. \\ \hline
   DM-08 & Jurisdicción territorial en el dominio: 404 si no lo ve, 403 si lo ve y no lo aprueba, 403 en lote ajeno.
@@ -607,65 +638,66 @@ Cada decisión del módulo (DM) concreta una decisión del SAD 1.2.
 
 \subsection{Tecnologías del módulo}
 
-La elección de cada tecnología, sus alternativas, la matriz de decisión ponderada y los atributos que favorece están
-en la sección de decisiones de tecnología del SAD 1.2 (AD-50 a AD-65). Este documento no la repite. La tabla indica
-qué parte del módulo usa cada una.
+La tabla indica qué parte del módulo usa cada tecnología, los atributos de calidad que favorece y la principal
+alternativa descartada. La matriz de decisión ponderada de cada una está en la sección de decisiones de tecnología del
+SAD 1.2 (AD-50 a AD-65).
 
 {\small
-\begin{longtable}{|P{4.4cm}|P{5.6cm}|P{4.6cm}|}
+\begin{longtable}{|P{2.5cm}|P{2.9cm}|P{1.2cm}|P{4.2cm}|P{3.4cm}|}
   \hline
-  \rowcolor{cabecera}\textbf{Parte del módulo} & \textbf{Tecnología} & \textbf{Decisión del SAD 1.2} \\ \hline
+  \rowcolor{cabecera}\textbf{Parte del módulo} & \textbf{Tecnología} & \textbf{Decisión} & \textbf{Atributos de calidad que favorece} & \textbf{Alternativa descartada} \\ \hline
   \endfirsthead
   \hline
-  \rowcolor{cabecera}\textbf{Parte del módulo} & \textbf{Tecnología} & \textbf{Decisión del SAD 1.2} \\ \hline
+  \rowcolor{cabecera}\textbf{Parte del módulo} & \textbf{Tecnología} & \textbf{Decisión} & \textbf{Atributos de calidad que favorece} & \textbf{Alternativa descartada} \\ \hline
   \endhead
-  Entidades y casos de uso & C\# sobre .NET 10, sin paquetes externos & AD-50 \\ \hline
-  Controladores y presentador & ASP.NET Core 10 & AD-51 \\ \hline
-  Bases \texttt{reconstruccion} y \texttt{programa} & PostgreSQL 18 con réplica \texttt{db-replica} & AD-52 \\ \hline
-  Gateways y migraciones & Entity Framework Core 10 con contenedor \texttt{reconstruccion-migrador} & AD-53 \\ \hline
-  Eventos y colas & RabbitMQ 4.4, tres nodos & AD-54 \\ \hline
-  Documentos y evidencias & MinIO, bucket \texttt{reconstruccion-documentos} & AD-56 \\ \hline
-  Entrada de la API & YARP con \texttt{rutas.json} & AD-57 \\ \hline
-  Identidad & Keycloak 26.5.2 y validador JWT de \texttt{Plataforma.Comun.Seguridad} & AD-58 \\ \hline
-  Pantallas & Angular 22.2 en nginx, módulo \texttt{reconstruccion} de \texttt{consola} & AD-59 \\ \hline
-  Resiliencia de los adaptadores & Microsoft.Extensions.Http.Resilience (Polly v8) & AD-64 \\ \hline
-  Empaquetado y escala & Docker Compose; Kubernetes con HPA y KEDA & AD-65 \\ \hline
+  Entidades y casos de uso & C\# sobre .NET 10, sin paquetes externos & AD-50 & QA-06 y QA-07, rendimiento. QA-14, integridad de datos & Java 21: obliga a reescribir el código común y el prototipo de FP-06 \\ \hline
+  Controladores y presentador & ASP.NET Core 10 & AD-51 & QA-06 y QA-07, rendimiento. QA-11, seguridad & Spring Boot 3: introduce una segunda pila \\ \hline
+  Bases \texttt{reconstruccion} y \texttt{programa} & PostgreSQL 18 con réplica \texttt{db-replica} & AD-52 & QA-03, recuperación. QA-04, resiliencia. QA-06, rendimiento. QA-13 y QA-15, trazabilidad & SQL Server: licencia comercial por núcleo \\ \hline
+  Gateways y migraciones & Entity Framework Core 10 con contenedor \texttt{reconstruccion-\allowbreak migrador} & AD-53 & QA-06, rendimiento. QA-10, modificabilidad. QA-13, trazabilidad & Dapper: las migraciones versionadas exigirían otra herramienta \\ \hline
+  Eventos y colas & RabbitMQ 4.4, tres nodos & AD-54 & QA-01, disponibilidad. QA-04, resiliencia. QA-08, rendimiento & Kafka: sin cola acotada por consumidor ni DLQ nativa \\ \hline
+  Documentos y evidencias & MinIO, bucket \texttt{reconstruccion-\allowbreak documentos} & AD-56 & QA-02, disponibilidad. QA-03, recuperación. QA-14, integridad de datos & Disco local: se pierde disponibilidad al caer una réplica \\ \hline
+  Entrada de la API & YARP con \texttt{rutas.json} & AD-57 & QA-05, escalabilidad. QA-06, rendimiento. QA-11, seguridad & Kong: la priorización con degradación exigiría complementos propios \\ \hline
+  Identidad & Keycloak 26.5.2 y validador JWT de \texttt{Plataforma.\allowbreak Comun.\allowbreak Seguridad} & AD-58 & QA-11, seguridad. QA-14, integridad de datos & Auth0: no se despliega dentro de la plataforma y cobra por usuario activo \\ \hline
+  Pantallas & Angular 22.2 en nginx, módulo \texttt{reconstruccion} de \texttt{consola} & AD-59 & QA-06, rendimiento. QA-10, modificabilidad. QA-11, seguridad & React 19: exige elegir y combinar bibliotecas para módulos y guardas \\ \hline
+  Resiliencia de los adaptadores & Microsoft.\allowbreak Extensions.\allowbreak Http.\allowbreak Resilience (Polly v8) & AD-64 & QA-01, disponibilidad. QA-04, resiliencia & Implementación propia: el estado del circuito no es seguro ante concurrencia \\ \hline
+  Empaquetado y escala & Docker Compose; Kubernetes con HPA y KEDA & AD-65 & QA-01 y QA-02, disponibilidad. QA-05, escalabilidad & Docker Swarm: no ofrece escalado automático \\ \hline
 \end{longtable}
 }
 
 \subsection{Tácticas y patrones en el código}
 
+La columna Tipo indica si cada fila es un patrón, con su estilo, o una táctica, con su atributo y su rama en Bass,
+Clements y Kazman \cite{bass}.
+
 {\small
-\begin{longtable}{|P{4.0cm}|P{1.8cm}|P{8.8cm}|}
+\begin{longtable}{|P{3.0cm}|P{3.7cm}|P{1.3cm}|P{6.2cm}|}
   \hline
-  \rowcolor{cabecera}\textbf{Táctica o patrón} & \textbf{Decisión} & \textbf{Dónde está} \\ \hline
+  \rowcolor{cabecera}\textbf{Táctica o patrón} & \textbf{Tipo} & \textbf{Decisión} & \textbf{Dónde está} \\ \hline
   \endfirsthead
   \hline
-  \rowcolor{cabecera}\textbf{Táctica o patrón} & \textbf{Decisión} & \textbf{Dónde está} \\ \hline
+  \rowcolor{cabecera}\textbf{Táctica o patrón} & \textbf{Tipo} & \textbf{Decisión} & \textbf{Dónde está} \\ \hline
   \endhead
-  Arquitectura limpia (puertos y adaptadores) & DM-01 & \texttt{Aplicacion/Puertos/PuertosBase.cs},
+  Arquitectura limpia (puertos y adaptadores) & Patrón arquitectura limpia, del estilo microkernel & DM-01 & \texttt{Aplicacion/Puertos/PuertosBase.cs},
     \texttt{Puertos/Gateways.cs}; \texttt{PruebasArquitectura.cs} \\ \hline
-  Máquina de estados & DM-01 & \texttt{Dominio/MaquinaEstadosProyecto.cs} \\ \hline
-  Operación idempotente por clave & DM-02 & \texttt{CasosDeUso/CrearProyectosPorLote.cs}
+  Máquina de estados & Táctica de modificabilidad, rama aumentar la cohesión & DM-01 & \texttt{Dominio/MaquinaEstadosProyecto.cs} \\ \hline
+  Operación idempotente por clave & Táctica de disponibilidad, rama recuperarse de fallos: reintento & DM-02 & \texttt{CasosDeUso/\allowbreak CrearProyectosPorLote.cs}
     (\texttt{BuscarLoteAsync}) \\ \hline
-  Registro inmutable & DM-03 & Migración \texttt{20261116062634\_Inicial.cs} (\texttt{GRANT SELECT, INSERT ON
+  Registro inmutable & Táctica de seguridad, rama recuperarse de ataques: auditoría y no repudio & DM-03 & Migración \texttt{20261116062634\_Inicial.cs} (\texttt{GRANT SELECT, INSERT ON
     historial}); \texttt{IHistorial} sin modificar ni borrar \\ \hline
-  Separación de lectura y escritura & DM-04 & \texttt{Infraestructura/Registro.cs} (roles \texttt{escritura} y
+  Separación de lectura y escritura & Patrón separación de lectura y escritura, del estilo basado en eventos & DM-04 & \texttt{Infraestructura/Registro.cs} (roles \texttt{escritura} y
     \texttt{consulta}); \texttt{ProyeccionProgramaEf} \\ \hline
-  Bandeja de salida transaccional & DM-05 & \texttt{GuardadoDeProyectos} (\texttt{CasosDeUso/Comun.cs});
+  Bandeja de salida transaccional & Patrón bandeja de salida, del estilo basado en eventos. Táctica de disponibilidad, rama prevenir fallos: transacciones & DM-05 & \texttt{GuardadoDeProyectos} (\texttt{CasosDeUso/Comun.cs});
     \texttt{PublicadorHechosBandeja.cs}; \texttt{RelevoBandeja.cs} de \texttt{comun} \\ \hline
-  Réplica de datos por eventos & DM-06 & \texttt{ManejadorEventosReconstruccion.cs},
+  Réplica de datos por eventos & Táctica de rendimiento, rama gestionar recursos: mantener copias de los datos & DM-06 & \texttt{ManejadorEventos\allowbreak Reconstruccion.cs},
     \texttt{EscrituraCopiasLocalesEf.cs} \\ \hline
-  Autorización por jurisdicción & DM-08 & \texttt{Dominio/Jurisdiccion.cs}; \texttt{Interactor.ProtegerAsync}
+  Autorización por jurisdicción & Táctica de seguridad, rama resistir ataques: autorizar actores & DM-08 & \texttt{Dominio/Jurisdiccion.cs}; \texttt{Interactor.ProtegerAsync}
     (404 por \texttt{FueraDeJurisdiccionException}) \\ \hline
-  Concurrencia optimista & DM-09 & \texttt{Contextos.cs} (\texttt{IsConcurrencyToken}); \texttt{UnidadDeTrabajoEf}
-    \\ \hline
-  Cola de salida, reintento y cortacircuitos & DM-10 & \texttt{adaptadores/adaptador-se6} (\texttt{Lotes.cs},
-    \texttt{ClienteSe6.cs}); \texttt{adaptadores/adaptador-se7} (\texttt{ClienteSe7.cs}, \texttt{Registro.cs}) \\
-    \hline
-  Consumidor idempotente y DLQ & DM-11 & \texttt{ConsumidorIdempotente.cs} de \texttt{comun};
+  Concurrencia optimista & Táctica de disponibilidad, rama prevenir fallos: transacciones & DM-09 & \texttt{Contextos.cs} (\texttt{IsConcurrencyToken}); \texttt{UnidadDeTrabajoEf} \\ \hline
+  Cola de salida, reintento y cortacircuitos & Táctica de disponibilidad. Recuperarse de fallos: reintento. Prevenir fallos: retirar de servicio & DM-10 & \texttt{adaptadores/adaptador-se6} (\texttt{Lotes.cs},
+    \texttt{ClienteSe6.cs}); \texttt{adaptadores/adaptador-se7} (\texttt{ClienteSe7.cs}, \texttt{Registro.cs}) \\ \hline
+  Consumidor idempotente y DLQ & Táctica de disponibilidad, rama recuperarse de fallos: reintento y manejo de excepciones & DM-11 & \texttt{ConsumidorIdempotente.cs} de \texttt{comun};
     \texttt{despliegue/bus/definiciones.json} \\ \hline
-  Réplicas activas & AD-24 & \texttt{deploy.replicas: 2} en \texttt{docker-compose.yml} \\ \hline
+  Réplicas activas & Táctica de disponibilidad, rama recuperarse de fallos: repuesto redundante & AD-24 & \texttt{deploy.replicas: 2} en \texttt{docker-compose.yml} \\ \hline
 \end{longtable}
 }
 
@@ -769,5 +801,130 @@ su ciclo y al final el desastre se puede cerrar (E-07).
   Relevo & Proceso \texttt{RelevoBandeja} que publica en el bus los eventos de la bandeja. \\ \hline
 \end{longtable}
 }
+
+\subsection*{Series de identificadores}
+
+{\small
+\begin{longtable}{|P{2.4cm}|P{11.8cm}|}
+  \hline
+  \rowcolor{cabecera}\textbf{Serie} & \textbf{Qué identifica} \\ \hline
+  \endfirsthead
+  \hline
+  \rowcolor{cabecera}\textbf{Serie} & \textbf{Qué identifica} \\ \hline
+  \endhead
+  \texttt{RF-XX-nn} & Requisito funcional del SRS. \texttt{XX} es el módulo: GD, ED, PA, RE, CO o RC. \\ \hline
+  \texttt{RN-RC-nn} & Regla de negocio del módulo de Reconstrucción (RN-RC-01 a RN-RC-22). \\ \hline
+  \texttt{QA-nn} & Escenario de atributo de calidad del SRS (QA-01 a QA-15). \\ \hline
+  \texttt{FP-nn} & Caso de uso de la funcionalidad primaria del SRS (FP-01 a FP-10). \\ \hline
+  \texttt{SE-n} & Familia de sistemas externos (SE-1 a SE-8). \\ \hline
+  \texttt{CU-nn} & Caso de uso del módulo de Reconstrucción (CU-01 a CU-12). \\ \hline
+  \texttt{AD-nn} & Decisión del SAD: AD-01 a AD-49 son estructurales y AD-50 a AD-65 son de tecnología. \\ \hline
+  \texttt{DA-nn} & Decisión de la revisión de arquitectura previa a la implementación. \\ \hline
+  \texttt{DM-nn} & Decisión de diseño del módulo de Reconstrucción (DM-01 a DM-11). \\ \hline
+  \texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-43). \\ \hline
+  \texttt{EV-nn} & Evento del catálogo del SAD (EV-01 a EV-29). \\ \hline
+  \texttt{L-nn} & Límite declarado de la implementación (L-01 a L-10). \\ \hline
+  \texttt{R-nn} & Riesgo del ATAM (R-01 a R-14). \\ \hline
+\end{longtable}
+}
+
+\subsection*{Límites declarados de la implementación}
+
+Provienen de la revisión de arquitectura del proyecto \cite{revision}.
+
+{\small
+\begin{longtable}{|P{1.4cm}|P{12.8cm}|}
+  \hline
+  \rowcolor{cabecera}\textbf{ID} & \textbf{Límite} \\ \hline
+  \endfirsthead
+  \hline
+  \rowcolor{cabecera}\textbf{ID} & \textbf{Límite} \\ \hline
+  \endhead
+  L-01 & Una sola región: no hay enrutador global ni réplica en otra ubicación (AD-26, AD-27, QA-03). \\ \hline
+  L-02 & Los rechazos del punto de entrada y la alarma de la bandeja de revisión no se registran en Auditoría (QA-11, R-08). \\ \hline
+  L-03 & No hay pruebas de carga en un clúster ni de caos (QA-05, QA-06 y la consulta de 10\,000 entradas de QA-13). \\ \hline
+  L-04 & Las latencias se midieron con 20 clientes en un computador, no con 10\,000 usuarios. \\ \hline
+  L-05 & El despliegue en el clúster local no se verificó de punta a punta, y el inicio de sesión exige reenviar puertos. \\ \hline
+  L-06 & Fuera de la implementación: Consolidación, Notificación (SE-8, QA-08), Gestión de Recursos, Personas Afectadas (QA-12), Coordinación de Organismos, Portal público y adaptadores de SE-1, SE-3, SE-4, SE-5 y SE-8. \\ \hline
+  L-07 & La aplicación móvil entregada es la variante de depuración, que admite conexiones sin cifrar, y el proveedor de identidad corre sin TLS. \\ \hline
+  L-08 & El emisor de los tokens es una dirección local: el emulador necesita reenviar ese puerto y un teléfono físico exige cambiar la dirección en el proveedor y en quienes validan el token. \\ \hline
+  L-09 & Pendientes menores: filtro de Auditoría por jurisdicción, validación condicional en la descarga, aviso de activo fusionado al cliente incremental, base única del adaptador de SE-2, índice del historial por municipio, recarga de las llaves del token y evaluaciones rechazadas en la consola. \\ \hline
+  L-10 & La aplicación móvil adjunta solo fotografías como evidencia, y la evidencia no guarda un autor propio (RF-ED-03 parcial). \\ \hline
+\end{longtable}
+}
+
+\subsection*{Enmiendas citadas en este documento}
+
+{\small
+\begin{longtable}{|P{1.4cm}|P{12.8cm}|}
+  \hline
+  \rowcolor{cabecera}\textbf{ID} & \textbf{Enmienda} \\ \hline
+  \endfirsthead
+  \hline
+  \rowcolor{cabecera}\textbf{ID} & \textbf{Enmienda} \\ \hline
+  \endhead
+  E-01 & Reconstrucción consume EV-08 y obtiene las candidatas de su copia local, sin consultar a Consulta de Daños (AD-46). \\ \hline
+  E-04 & Evento nuevo EV-24: avance o contratista reportado por SE-7. \\ \hline
+  E-07 & Gestión de Desastres consume EV-18 y EV-20: un desastre no se cierra con proyectos no finales (AD-47). \\ \hline
+  E-09 & Rutas que faltaban en el catálogo de APIs. \\ \hline
+  E-10 & Contenido de EV-18, EV-19 y EV-20: EV-19 lleva presupuesto y fuente, y EV-20 lleva cronograma, responsable, avance y costo. \\ \hline
+  E-19 & La bandeja de salida se aplica en todo microservicio productor (AD-45). \\ \hline
+  E-20 & Jurisdicción de la aprobación: autoridad local, regional o nacional según el territorio del proyecto. \\ \hline
+  E-28 & Origen de las candidatas en el diseño de Reconstrucción: copia local alimentada por eventos. \\ \hline
+  E-36 & Reconstrucción consume EV-21 para mostrar el nombre del municipio. \\ \hline
+  E-39 & La autoridad solo ve y usa los proyectos y las evaluaciones de su jurisdicción. \\ \hline
+\end{longtable}
+}
+
+\begin{thebibliography}{99}
+
+\bibitem{enunciado}
+Departamento de Ingeniería de Sistemas, Pontificia Universidad Javeriana. \textit{Arquitectura de
+Software. Proyecto del semestre: Plataforma para la Gestión de Desastres y Reconstrucción}.
+Enunciado, versión 0.9, 2026.
+
+\bibitem{srs}
+S. Gantiva, D. Guiza y J. Rubiano. \textit{Especificación de Requisitos de Software (SRS). Plataforma para la Gestión
+de Desastres y Reconstrucción}. Versión 1.2, 18 de noviembre de 2026.
+
+\bibitem{sad}
+S. Gantiva, D. Guiza y J. Rubiano. \textit{Documento de Arquitectura de Software (SAD). Plataforma para la Gestión de
+Desastres y Reconstrucción}. Versión 1.2, 18 de noviembre de 2026.
+
+\bibitem{atam}
+S. Gantiva, D. Guiza y J. Rubiano. \textit{Evaluación de la arquitectura mediante ATAM. Plataforma para la Gestión de
+Desastres y Reconstrucción}. Versión 1.2, 18 de noviembre de 2026.
+
+\bibitem{revision}
+S. Gantiva, D. Guiza y J. Rubiano. \textit{Revisión de arquitectura y plan de integración} y \textit{Enmiendas
+propuestas a los documentos}. Repositorio \texttt{proyectoparte2}, rama \texttt{cierre-implementacion}, 18 de noviembre
+de 2026.
+
+\bibitem{bass}
+L. Bass, P. Clements y R. Kazman. \textit{Software Architecture in Practice}. 4.ª edición.
+Addison-Wesley, 2021.
+
+\bibitem{iso25010}
+ISO/IEC 25010:2011. \textit{Systems and software engineering. Systems and software Quality
+Requirements and Evaluation (SQuaRE). System and software quality models}. International
+Organization for Standardization, 2011.
+
+\bibitem{iso42010}
+ISO/IEC/IEEE 42010:2011. \textit{Systems and software engineering. Architecture description}.
+International Organization for Standardization, 2011.
+
+\bibitem{clements}
+P. Clements, F. Bachmann, L. Bass, D. Garlan, J. Ivers, R. Little, P. Merson, R. Nord y J. Stafford.
+\textit{Documenting Software Architectures: Views and Beyond}. 2.ª edición. Addison-Wesley, 2011.
+
+\bibitem{kruchten}
+P. Kruchten. \textit{Architectural Blueprints: The ``4+1'' View Model of Software
+Architecture}. IEEE Software, 12(6), 1995.
+
+\bibitem{martin}
+R. C. Martin. \textit{Clean Architecture: A Craftsman's Guide to Software Structure and Design}.
+Prentice Hall, 2017.
+
+\end{thebibliography}
 
 \end{document}
