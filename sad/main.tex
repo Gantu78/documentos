@@ -159,7 +159,11 @@ El catálogo de APIs pasa a las 56 rutas del gateway y el catálogo de eventos a
 topología real del bus.
 Las estrategias transversales incorporan el JWT en dos niveles, la resiliencia con Polly y el
 escalado con HPA y KEDA, y remiten a las medidas obtenidas.
-El Anexo A pasa a describir la implementación de FP-06. \\
+El Anexo A pasa a describir la implementación de FP-06.
+Se declara la arquitectura con la taxonomía de estilo, patrón y táctica, y las medidas citadas pasan a
+ser las medidas únicas del SRS 1.2.
+Se agregan el tablero de daños en la capa de presentación (E-41), los actores de la vista de casos de
+uso, CU-5 y los cuadros de series de identificadores, de límites y de enmiendas. \\
 \bottomrule
 \end{tabular}
 
@@ -173,8 +177,11 @@ El Anexo A pasa a describir la implementación de FP-06. \\
 \subsection{Propósito}
 
 Este documento presenta la arquitectura de la Plataforma para la Gestión de Desastres y
-Reconstrucción. Toma como entrada los requisitos del SRS \cite{srs}. Las vistas siguen el modelo
-4+1 \cite{kruchten} y resultan de once iteraciones de ADD 3.0 \cite{cervantes}. El documento
+Reconstrucción. Toma como entrada el enunciado del proyecto \cite{enunciado} y los requisitos del SRS
+\cite{srs}. La descripción de la arquitectura se apoya en ISO/IEC/IEEE 42010 \cite{iso42010}. Las vistas
+siguen el modelo 4+1 \cite{kruchten} y resultan de once iteraciones de ADD 3.0 \cite{cervantes}. Cada
+vista presenta su diagrama, el catálogo de sus elementos y las decisiones que materializa, como
+recomiendan Clements et al. \cite{clements}. El documento
 describe además el modelo de integración con los sistemas externos, el catálogo de APIs y de
 eventos, las decisiones arquitectónicas, las decisiones de tecnología y las estrategias de
 seguridad, de resiliencia y recuperación, y de escalabilidad. Cada decisión cita el escenario de
@@ -224,15 +231,19 @@ proyecto, que el \cref{tab:minimos} relaciona con los elementos que los realizan
 \begin{longtable}{L{4.6cm} L{6.6cm} L{4.6cm}}
 \cabecera{3}{tab:minimos}{Mínimos de la entrega 2 y elementos que los realizan}{\textbf{Mínimo} &
 \textbf{Elementos del diseño} & \textbf{Caso de uso y decisiones}}
-a) Móvil: recolección y caracterización de un desastre & Cliente móvil, Gestión de Desastres, API
-Gateway, Proveedor de identidad & FP-06, CU-4 (\cref{sec:cu4}). AD-31, AD-44, AD-48, AD-49 \\
+a) Móvil: recolección y caracterización de los daños en campo, sin conexión, incluidas las
+evaluaciones preliminares sin desastre & Cliente móvil, Evaluación de Daños, API Gateway, Proveedor de
+identidad & FP-06, CU-3. AD-31, AD-43, AD-44, AD-49 \\
 b) Reconstrucción física (viviendas, vías) & Reconstrucción, Consulta del Programa, adaptadores de
-SE-6 y SE-7 & FP-08. AD-40, AD-41, AD-42, AD-46 \\
+SE-6 y SE-7 & FP-08, CU-5 (\cref{sec:cu5}). AD-40, AD-41, AD-42, AD-46 \\
 c) Mapa y visualización de desastres & Consulta, Consulta de Daños, adaptador de SE-2, Consola de
-coordinación & FP-02. AD-15, AD-17, AD-34 \\
+coordinación y tablero de daños & FP-02. AD-15, AD-17, AD-34, E-41 \\
 d) Evaluación de daños & Cliente móvil, Evaluación de Daños, Consulta de Daños & FP-06, CU-3.
 AD-28 a AD-33, AD-43 a AD-45 \\
 \end{longtable}
+
+El registro del desastre no forma parte del mínimo a): pertenece a Gestión de Desastres, aunque
+también puede hacerse desde el cliente móvil (CU-4, \cref{sec:cu4}).
 
 El \cref{tab:implementados} indica, para cada elemento implementado, el artefacto que lo realiza.
 Los nombres son los del archivo \texttt{despliegue/\br{}compose/\br{}docker-\br{}compose.\br{}yml} del repositorio
@@ -304,8 +315,10 @@ primario, escenario de atributo de calidad, restricción, regla de negocio y req
 SRS. \\
 \texttt{SE-n}, \texttt{EO-n} & Sistema externo y escenario de operación del SRS. \\
 \texttt{EA-nn} & Enfoque arquitectónico identificado en el ATAM \cite{atam}. \\
-Microservicio & Unidad que se despliega, se escala y falla de forma independiente, y que es dueña
-de su almacén de datos (AD-01). En este documento, \enquote{servicio} seguido de un nombre propio
+Estilo, patrón y táctica & El estilo es una familia de arquitecturas, el patrón es una solución probada
+dentro de un estilo, y la táctica es una decisión que influye en un atributo de calidad \cite{bass}. \\
+Microservicio & Patrón del estilo basado en servicios: unidad que se despliega, se escala y falla de
+forma independiente, y que es dueña de su almacén de datos (AD-01). En este documento, \enquote{servicio} seguido de un nombre propio
 (por ejemplo, Servicio de Consulta) designa siempre un microservicio. \\
 Microservicio de escritura & Microservicio que recibe las operaciones que modifican el estado de un
 módulo. \\
@@ -366,6 +379,86 @@ los eventos de ese módulo. Evita la llamada síncrona entre microservicios (AD-
 tiene implementación en la entrega 2 (\cref{sec:alcance-impl}). \\
 \end{longtable}
 
+El \cref{tab:series} explica las series de identificadores. El \cref{tab:limites} lista los límites de
+la implementación \cite{revision} y el \cref{tab:enmiendas}, las enmiendas que este documento cita
+\cite{enmiendas}.
+
+\begin{longtable}{L{2.4cm} L{13.4cm}}
+\cabecera{2}{tab:series}{Series de identificadores que usa este documento}{\textbf{Serie} & \textbf{Qué identifica}}
+\texttt{RF-XX-nn} & Requisito funcional del SRS. \texttt{XX} es el módulo: GD, ED, PA, RE, CO o RC. \\
+\texttt{RN-n} & Regla de negocio del SRS (RN-1 a RN-6). \\
+\texttt{QA-nn} & Escenario de atributo de calidad del SRS (QA-01 a QA-15). \\
+\texttt{CON-n} & Restricción del SRS (CON-1 a CON-8). \\
+\texttt{FP-nn} & Caso de uso de la funcionalidad primaria del SRS (FP-01 a FP-10). \\
+\texttt{EO-n} & Escenario de operación del enunciado (EO-1 a EO-5). \\
+\texttt{S-n} & Supuesto del SRS (S-1 a S-5). \\
+\texttt{SE-n} & Familia de sistemas externos (SE-1 a SE-8). \\
+\texttt{CU-n} & Caso de uso especificado en el SAD, con tabla y secuencia. \\
+\texttt{CU-nn} & Caso de uso del módulo de Reconstrucción (CU-01 a CU-12). \\
+\texttt{AD-nn} & Decisión del SAD: AD-01 a AD-49 son estructurales y AD-50 a AD-65 son de tecnología. \\
+\texttt{DT-nn} & Decisión de tecnología de la revisión de arquitectura (DT-01 a DT-20). \\
+\texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-43). \\
+\texttt{EV-nn} & Evento del catálogo del SAD (EV-01 a EV-29). \\
+\texttt{L-nn} & Límite declarado de la implementación (L-01 a L-10). \\
+\texttt{R-nn} & Riesgo del ATAM (R-01 a R-14). \\
+\end{longtable}
+
+\begin{longtable}{L{1.4cm} L{14.4cm}}
+\cabecera{2}{tab:limites}{Límites declarados de la implementación}{\textbf{ID} & \textbf{Límite}}
+L-01 & Una sola región: no hay enrutador global ni réplica en otra ubicación (AD-26, AD-27, QA-03). \\
+L-02 & Los rechazos del punto de entrada y la alarma de la bandeja de revisión no se registran en Auditoría (QA-11, R-08). \\
+L-03 & No hay pruebas de carga en un clúster ni de caos (QA-05, QA-06 y la consulta de 10\,000 entradas de QA-13). \\
+L-04 & Las latencias se midieron con 20 clientes en un computador, no con 10\,000 usuarios. \\
+L-05 & El despliegue en el clúster local no se verificó de punta a punta, y el inicio de sesión exige reenviar puertos. \\
+L-06 & Fuera de la implementación: Consolidación, Notificación (SE-8, QA-08), Gestión de Recursos, Personas Afectadas (QA-12), Coordinación de Organismos, Portal público y adaptadores de SE-1, SE-3, SE-4, SE-5 y SE-8. \\
+L-07 & La aplicación móvil entregada es la variante de depuración, que admite conexiones sin cifrar, y el proveedor de identidad corre sin TLS. \\
+L-08 & El emisor de los tokens es una dirección local: el emulador necesita reenviar ese puerto y un teléfono físico exige cambiar la dirección en el proveedor y en quienes validan el token. \\
+L-09 & Pendientes menores: filtro de Auditoría por jurisdicción, validación condicional en la descarga, aviso de activo fusionado al cliente incremental, base única del adaptador de SE-2, índice del historial por municipio, recarga de las llaves del token y evaluaciones rechazadas en la consola. \\
+L-10 & La aplicación móvil adjunta solo fotografías como evidencia, y la evidencia no guarda un autor propio (RF-ED-03 parcial). \\
+\end{longtable}
+
+\begin{longtable}{L{1.4cm} L{14.4cm}}
+\cabecera{2}{tab:enmiendas}{Enmiendas citadas en este documento}{\textbf{ID} & \textbf{Enmienda}}
+E-01 & Reconstrucción consume EV-08 y obtiene las candidatas de su copia local, sin consultar a Consulta de Daños (AD-46). \\
+E-02 & EV-08 agrega activo, referencia, municipio, departamento, estado de validación, autor e instante. \\
+E-04 & Evento nuevo EV-24: avance o contratista reportado por SE-7. \\
+E-05 & Evento nuevo EV-22: conflicto o duplicado resuelto. \\
+E-06 & Evento nuevo EV-26: evaluación actualizada en el servidor. \\
+E-07 & Gestión de Desastres consume EV-18 y EV-20: un desastre no se cierra con proyectos no finales (AD-47). \\
+E-09 & Rutas que faltaban en el catálogo de APIs. \\
+E-10 & Contenido de EV-18, EV-19 y EV-20: EV-19 lleva presupuesto y fuente, y EV-20 lleva cronograma, responsable, avance y costo. \\
+E-11 & Evento nuevo EV-21: capa geográfica actualizada por SE-2. \\
+E-13 & La bandeja de revisión pertenece a Evaluación de Daños. Consulta de Daños solo marca el activo e informa indicadores. \\
+E-14 & Definición de fusionar evaluaciones duplicadas (RF-ED-09). \\
+E-15 & Evento nuevo EV-23: estado de integración cambiado (mitigación de R-10). \\
+E-16 & Evento nuevo EV-25: catálogo de tipos de activo actualizado. \\
+E-18 & Secuencia del productor en el sobre canónico (mitigación de R-02). \\
+E-19 & La bandeja de salida se aplica en todo microservicio productor (AD-45). \\
+E-20 & Jurisdicción de la aprobación: autoridad local, regional o nacional según el territorio del proyecto. \\
+E-21 & La caché de geometrías atiende también a Consulta de Daños (AD-17). \\
+E-22 & Las simplificaciones del prototipo inicial quedan superadas. \\
+E-23 & Colas acotadas: rechazo de la publicación al llenarse, mensajes muertos y eventos sin ruta. \\
+E-25 & Evento nuevo EV-27: organismos del desastre cambiados. \\
+E-26 & Descarga previa filtrada por desastre y zona, e incremental. \\
+E-27 & Cifrado en tránsito: TLS en el borde y cifrado mutuo en el tráfico interno. \\
+E-28 & Origen de las candidatas en el diseño de Reconstrucción: copia local alimentada por eventos. \\
+E-29 & Evaluación de Daños consume los eventos de Gestión de Desastres. \\
+E-30 & Campos adicionales de EV-03, EV-06, EV-10, EV-18, EV-19 y EV-20, entre ellos el nombre del desastre. \\
+E-31 & La secuencia del productor la asigna el relevo de la bandeja, sin huecos. \\
+E-32 & El límite de entregas de un mensaje lo aplica el consumidor. \\
+E-33 & EV-18 lleva el autor de la creación del proyecto. \\
+E-34 & Auditoría registra también los tipos de evento que aún no conoce. \\
+E-35 & Rutas de configuración del ciclo de vida y perfil mínimo por nivel de severidad. \\
+E-36 & Reconstrucción consume EV-21 para mostrar el nombre del municipio. \\
+E-37 & Notificación: EV-07 entra en alcance y se agregan EV-28 y EV-29 hacia SE-8. \\
+E-38 & El marcador de la descarga incremental es el instante del servidor. \\
+E-39 & La autoridad solo ve y usa los proyectos y las evaluaciones de su jurisdicción. \\
+E-40 & Evolución por zona en Consulta de Daños (RF-ED-15). \\
+E-41 & Tablero de daños en páginas Razor: segundo adaptador de entrada de Consulta de Daños, excepción a la consola única. \\
+E-42 & Registro del desastre en campo desde el cliente móvil, con identificador del cliente (RF-GD-02, AD-48). \\
+E-43 & El Proveedor de identidad aparece en las vistas lógica y física (AD-49). \\
+\end{longtable}
+
 %==============================================================================
 \section{Restricciones y drivers arquitectónicos}
 \label{sec:drivers}
@@ -378,7 +471,7 @@ El diseño se dirigió por tres conjuntos de entradas, que el SRS detalla y just
 Funcionalidad primaria & Diez casos de uso, FP-01 a FP-10, seleccionados entre los 65 requisitos
 funcionales. Cubren los seis módulos del alcance. \\
 Escenarios de atributo de calidad & Quince escenarios, QA-01 a QA-15, con medida de respuesta
-numérica. Las cuatro hojas del árbol de utilidad con calificación (A, A) son QA-02 (disponibilidad
+numérica \cite{bass}, relacionados con ISO/IEC 25010 \cite{iso25010}. Las cuatro hojas del árbol de utilidad con calificación (A, A) son QA-02 (disponibilidad
 de \qty{99.95}{\percent} de los servicios críticos), QA-03 (RTO $\le$ \qty{15}{\minute} y RPO $\le$
 \qty{60}{\second}), QA-09 (incorporación de un sistema externo) y QA-14 (integridad de la
 sincronización sin conexión). \\
@@ -416,36 +509,38 @@ AD-01 a AD-49 no nombran productos, de modo que una tecnología puede cambiarse 
 \subsection{Estilo arquitectónico}
 \label{sec:estilo}
 
-El diseño parte de un estilo de microservicios (AD-01). La plataforma es un conjunto de
-microservicios y no de servicios de grano grueso sobre un almacén compartido: cada microservicio se
+El diseño parte del estilo basado en servicios, con el patrón microservicios (AD-01). La plataforma
+es un conjunto de microservicios y no de servicios de grano grueso sobre un almacén compartido: cada microservicio se
 despliega, se escala y falla por separado, y es dueño de su almacén. Esta elección responde a QA-02,
 QA-05 y CON-4, que exigen aislar el fallo y escalar solo los componentes bajo presión.
 
-La arquitectura es heterogénea. El estilo de microservicios define las unidades de despliegue, y
-sobre él se combinan otros estilos y patrones, cada uno en un ámbito distinto. El \cref{tab:estilos}
-los relaciona.
+La arquitectura es heterogénea: combina el estilo basado en servicios, el estilo basado en eventos
+(publicación y suscripción), las capas (arquitectura limpia \cite{martin}) y la separación de lectura
+y escritura. El patrón microservicios define las unidades de despliegue, y sobre él se combinan los
+demás estilos, patrones y tácticas, cada uno en un ámbito distinto. El \cref{tab:estilos} los
+relaciona, y su columna Tipo indica qué es cada uno y de qué familia viene.
 
-\begin{longtable}{L{4.2cm} L{6.0cm} L{2.6cm} L{2.8cm}}
-\cabecera{4}{tab:estilos}{Estilos y patrones que combina la arquitectura}{\textbf{Estilo o patrón} &
-\textbf{Ámbito de aplicación} & \textbf{Decisión} & \textbf{Driver}}
+\begin{longtable}{L{3.3cm} L{4.2cm} L{1.7cm} L{2.2cm} L{3.8cm}}
+\cabecera{5}{tab:estilos}{Estilos, patrones y tácticas que combina la arquitectura}{\textbf{Elemento} &
+\textbf{Ámbito de aplicación} & \textbf{Decisión} & \textbf{Driver} & \textbf{Tipo}}
 Microservicios & Estructura general: doce microservicios, cada uno con almacén propio & AD-01 &
-QA-02, QA-05, CON-4 \\
+QA-02, QA-05, CON-4 & Patrón microservicios, del estilo basado en servicios \\
 Arquitectura dirigida por eventos con intermediario (\emph{broker}) & Comunicación asíncrona entre
-microservicios y con los adaptadores & AD-02 & QA-01, QA-04, QA-08, CON-5 \\
+microservicios y con los adaptadores & AD-02 & QA-01, QA-04, QA-08, CON-5 & Patrón publicación y suscripción, del estilo basado en eventos \\
 Capas & Organización lógica de la plataforma y estructura interna de cada microservicio:
-presentación, acceso, dominio e infraestructura & AD-08 & QA-10 \\
+presentación, acceso, dominio e infraestructura & AD-08 & QA-10 & Patrón capas, del estilo llamada y retorno. Dentro de cada microservicio, patrón arquitectura limpia, del estilo microkernel \cite{martin} \\
 \emph{API Gateway} & Punto único de entrada de las peticiones síncronas & AD-04, AD-19 & QA-11,
-QA-06 \\
+QA-06 & Patrón API Gateway, del estilo basado en servicios \\
 Adaptador con modelo canónico & Integración con los ocho sistemas externos & AD-03, AD-09 & QA-09,
-CON-2 \\
+CON-2 & Patrón adaptador (puertos y adaptadores), del estilo microkernel \\
 Separación de lectura y escritura (CQRS) & Tres microservicios de consulta con proyecciones propias &
-AD-15, AD-34, AD-42 & QA-05, QA-06 \\
+AD-15, AD-34, AD-42 & QA-05, QA-06 & Patrón separación de lectura y escritura, del estilo basado en eventos \\
 Bandeja de salida transaccional (\emph{outbox}) & Publicación de eventos de todo microservicio
-productor & AD-45 & QA-04, QA-15 \\
+productor & AD-45 & QA-04, QA-15 & Patrón bandeja de salida, del estilo basado en eventos \\
 Identidad federada con validación en dos niveles & Autenticación de todos los clientes por el
-Proveedor de identidad & AD-22, AD-49 & QA-11 \\
+Proveedor de identidad & AD-22, AD-49 & QA-11 & Táctica de seguridad, rama resistir ataques: identificar, autenticar y autorizar actores \\
 Réplica local con sincronización diferida & Cliente móvil del evaluador de campo & AD-31, AD-43,
-AD-44 & QA-14 \\
+AD-44 & QA-14 & Táctica de disponibilidad, rama recuperarse de fallos: resincronización de estado \\
 \end{longtable}
 
 \subsection{Vista lógica}
@@ -477,6 +572,10 @@ diagrama materializa las decisiones siguientes:
         «implementado» [\texttt{keycloak}]. La Consola de coordinación y el
         Cliente móvil obtienen el token con OpenID Connect y PKCE. El API Gateway valida el token
         (nivel 1) y cada microservicio lo valida de nuevo (nivel 2, AD-22).
+  \item E-41. El tablero de daños pertenece a la capa de presentación. Es un conjunto de páginas
+        Razor dentro de \texttt{consulta-\br{}danos} y funciona como segundo adaptador de entrada de
+        Consulta de Daños, sobre los mismos casos de uso de la API. Por eso no es un microservicio
+        ni un despliegue aparte. La \cref{fig:vista-logica} todavía no lo dibuja.
   \item AD-46 y AD-47. El almacén de Reconstrucción contiene las copias locales de desastres,
         evaluaciones validadas y municipios. Gestión de Desastres consume EV-18 y EV-20 para
         impedir el cierre de un desastre con proyectos abiertos. Ninguna de las dos relaciones es
@@ -503,6 +602,11 @@ Presentación & Portal público & Interfaz del ciudadano: consulta de informaci�
 de solicitudes de ayuda. \\
 Presentación & Cliente móvil & Interfaz del evaluador de campo. Opera sobre una réplica local y
 sincroniza por lotes (AD-31, AD-44). \\
+Presentación & Tablero de daños & Páginas Razor de \texttt{ConsultaDanos.\br{}Api}
+(\texttt{/\br{}tablero-\br{}danos}) con el consolidado, la priorización y los indicadores de revisión. Son
+un segundo adaptador de entrada de Consulta de Daños: llaman en el mismo proceso a
+\texttt{ConsultarConsolidado} y \texttt{ConsultarIndicadores}, los casos de uso de su API. Dominio y
+Aplicación no cambian (AD-08, E-41). \\
 Acceso & API Gateway & Autentica, valida el rol y la organización (primer nivel de AD-22), limita
 la tasa por cliente y prioriza (AD-04, AD-19). \\
 Externo & Proveedor de identidad & Autentica a los usuarios con OpenID Connect y PKCE, administra
@@ -541,12 +645,17 @@ Auditoría. \\
 Infraestructura & Bus de eventos & Transporta los eventos por el exchange
 \texttt{plataforma.\br{}eventos}, con una cola acotada por consumidor y su cola de mensajes muertos
 (AD-02, \cref{tab:colas}). \\
-Infraestructura & \texttt{ContratoAdaptador} y \texttt{EventoCanónico} & Interfaz que implementan
+Infraestructura (paquete Integración) & \texttt{ContratoAdaptador} y \texttt{EventoCanónico} & Interfaz que implementan
 los adaptadores y esquema de datos de los mensajes (AD-09). \\
-Infraestructura & Adaptadores & Uno por sistema externo. Traducen entre el formato externo y el
-evento canónico. Cada uno tiene cortacircuitos, cola de salida y marca de avance (AD-03, AD-05,
-AD-14, AD-36). \\
+Infraestructura (paquete Integración) & Adaptadores & Uno por sistema externo. Traducen entre el
+formato externo y el evento canónico. Cada uno tiene cortacircuitos, cola de salida y marca de avance
+(AD-03, AD-05, AD-14, AD-36). \\
 \end{longtable}
+
+AD-08 define cuatro capas. El paquete Integración de la \cref{fig:vista-logica} no es una quinta capa:
+agrupa los elementos de la capa de infraestructura que conectan con los sistemas externos, es decir,
+los adaptadores, \texttt{ContratoAdaptador} y la base con su marca de avance. Se dibuja aparte para
+mostrar esa frontera.
 
 \subsection{Vista de procesos}
 \label{sec:vista-procesos}
@@ -591,38 +700,39 @@ resiliencia.}
 \end{figure}
 \end{landscape}
 
-El \cref{tab:tacticas-procesos} indica en qué proceso actúa cada táctica de resiliencia.
+El \cref{tab:tacticas-procesos} indica en qué proceso actúa cada táctica de resiliencia y a qué rama
+del árbol de tácticas de Bass, Clements y Kazman pertenece \cite{bass}.
 
-\begin{longtable}{L{3.6cm} L{4.2cm} L{5.4cm} L{2.4cm}}
-\cabecera{4}{tab:tacticas-procesos}{Tácticas de resiliencia y proceso en el que actúan}{\textbf{Táctica}
-& \textbf{Dónde actúa} & \textbf{Comportamiento} & \textbf{Decisión}}
-Cortacircuitos & En cada adaptador, sobre las llamadas a su sistema externo & Se abre tras tres
-fallos de tres llamadas en \qty{30}{\second} y permanece abierto \qty{15}{\second} antes de una
+\begin{longtable}{L{2.5cm} L{2.8cm} L{5.0cm} L{1.6cm} L{3.4cm}}
+\cabecera{5}{tab:tacticas-procesos}{Tácticas de resiliencia y proceso en el que actúan}{\textbf{Táctica}
+& \textbf{Dónde actúa} & \textbf{Comportamiento} & \textbf{Decisión} & \textbf{Rama de Bass}}
+Cortacircuitos & En cada adaptador, sobre las llamadas a su sistema externo & Se abre cuando, con al
+menos tres llamadas en \qty{30}{\second}, el \qty{100}{\percent} falla, y permanece abierto \qty{15}{\second} antes de una
 llamada de prueba. Mientras está abierto, el adaptador no invoca al sistema externo y publica
-EV-23 & AD-05, AD-37, AD-64 \\
+EV-23 & AD-05, AD-37, AD-64 & Disponibilidad, prevenir fallos: retirar de servicio \\
 Tiempo de espera y reintento & En cada adaptador y en las llamadas del API Gateway a los
 microservicios & En los adaptadores implementados: tiempo de espera de \qty{3}{\second} por intento
 y \qty{20}{\second} por operación, y dos reintentos con espera exponencial desde
-\qty{0,5}{\second}. Solo se reintentan operaciones idempotentes & AD-05, AD-64 \\
+\qty{0,5}{\second}. Solo se reintentan operaciones idempotentes & AD-05, AD-64 & Disponibilidad, detectar fallos (tiempo de espera) y recuperarse de fallos (reintento) \\
 Cola acotada & En cada cola \texttt{q.*} del bus & Límite de \num{100000} mensajes y
 \qty{256}{\mega\byte}. Al llenarse, la cola rechaza la publicación y el evento permanece en la bandeja del
-productor. Ningún evento se descarta (E-23) & AD-02, AD-54 \\
+productor. Ningún evento se descarta (E-23) & AD-02, AD-54 & Rendimiento, gestionar recursos: acotar las colas \\
 Cola de salida & En el bus, una por adaptador & Acumula los mensajes dirigidos a un sistema
-externo no disponible y los entrega cuando el circuito se cierra & AD-36 \\
+externo no disponible y los entrega cuando el circuito se cierra & AD-36 & Disponibilidad, recuperarse de fallos: reintento diferido \\
 Marca de avance & En cada adaptador & Al cerrarse el circuito, el adaptador pide el rango pendiente
-desde el último dato recibido & AD-14, AD-37 \\
+desde el último dato recibido & AD-14, AD-37 & Disponibilidad, recuperarse de fallos: resincronización de estado \\
 Degradación controlada & En el API Gateway y en los microservicios de consulta & El API Gateway
 reduce primero el portal público. La consulta devuelve el último dato conocido con su marca de
-tiempo & AD-16, AD-19 \\
+tiempo & AD-16, AD-19 & Disponibilidad, recuperarse de fallos: degradación \\
 Réplica activa con sondeo de salud & En los procesos persistentes & Una réplica que no responde al
-sondeo deja de recibir tráfico en \qty{30}{\second} o menos & AD-24 \\
+sondeo deja de recibir tráfico en \qty{30}{\second} o menos & AD-24 & Disponibilidad, detectar fallos (sondeo) y recuperarse de fallos (repuesto redundante) \\
 Consumo idempotente & En cada consumidor del bus & Un mensaje entregado más de una vez se procesa
 una sola vez, por la clave de idempotencia. Un fallo transitorio se reintenta hasta cinco entregas.
 Al superarlas, o si el mensaje no cumple el contrato, el consumidor lo aparta a su cola
-\texttt{dlq.*} (E-32) & AD-02, AD-14 \\
+\texttt{dlq.*} (E-32) & AD-02, AD-14 & Disponibilidad, recuperarse de fallos: reintento seguro y manejo de excepciones \\
 Bandeja de salida & En cada microservicio productor & El relevo publica los eventos que la
 transacción dejó en la bandeja y les asigna la secuencia del productor. Si el bus no está
-disponible, el evento permanece en la bandeja (E-19, E-31) & AD-45 \\
+disponible, el evento permanece en la bandeja (E-19, E-31) & AD-45 & Disponibilidad, prevenir fallos: transacciones \\
 \end{longtable}
 
 \subsection{Vista física}
@@ -908,7 +1018,7 @@ microservicios, los proyectos \texttt{Plataforma.\br{}Comun.\br{}*} y los adapta
 componentes existentes modificados \\
 Incorporar un tipo de desastre & Se agrega una entrada al catálogo de tipos, con su perfil de ciclo
 de vida y sus criterios, por medio de la API de catálogos & Ningún paquete. No hay cambio de código
-ni redespliegue & QA-10: 0 componentes modificados y 0 redespliegues \\
+ni redespliegue & QA-10: 0 componentes modificados o redesplegados \\
 Incorporar un microservicio & Se agrega un paquete con las cuatro capas, su almacén, su cola en el
 bus y sus rutas en el API Gateway & Los microservicios existentes. Los eventos que el microservicio
 nuevo consume ya se publican & QA-10 y QA-05 (CON-4) \\
@@ -919,14 +1029,51 @@ nuevo consume ya se publican & QA-10 y QA-05 (CON-4) \\
 
 La quinta vista del modelo 4+1 muestra cómo los elementos de las otras cuatro vistas colaboran para
 realizar los casos de uso. La \cref{fig:casos-uso} presenta los diez casos de uso primarios del SRS
-con sus actores y el caso de registro del desastre en campo. A continuación se especifican cuatro
+con sus actores y el caso de registro del desastre en campo. A continuación se especifican cinco
 casos de uso. Los tres primeros corresponden a los escenarios de operación EO-1, EO-3 y EO-4 del
 SRS. Se eligen porque cada uno recorre una combinación distinta de mecanismos: la cadena de
 integración y notificación (QA-07, QA-08, QA-09), la tolerancia al fallo de un sistema externo
 (QA-01) y la sincronización sin conexión (QA-14). CU-4 recorre el registro en campo con
-identificador del cliente (AD-48). Cada especificación se acompaña de un diagrama de secuencia UML.
-CU-1 y CU-2 recorren elementos que quedan como diseño (SE-1, SE-3, Consolidación y Notificación,
-L-06). CU-3 y CU-4 están implementados de punta a punta.
+identificador del cliente (AD-48). CU-5 recorre la reconstrucción (EO-5). CU-1 a CU-4 se acompañan de
+un diagrama de secuencia UML, y las secuencias de CU-5 están en el documento de diseño del módulo de
+Reconstrucción \cite{diseno-rc}. CU-1 y CU-2 recorren elementos que quedan como diseño (SE-1, SE-3,
+Consolidación y Notificación, L-06). CU-3, CU-4 y CU-5 están implementados de punta a punta.
+
+El \cref{tab:actores-cu} lista los actores de esta vista. SE-6 y SE-7 son actores distintos: SE-6 es
+el sistema financiero y recibe el presupuesto y los costos, y SE-7 es el sistema de proyectos, que
+recibe las obras y además reporta avance y contratista. El administrador, el auditor y el responsable
+de proyecto son roles de la plataforma (\cref{tab:apis}).
+
+\begin{longtable}{L{3.9cm} L{3.0cm} L{8.9cm}}
+\cabecera{3}{tab:actores-cu}{Actores de la vista de casos de uso}{\textbf{Actor} & \textbf{Tipo o rol} &
+\textbf{Participación}}
+Organismo de respuesta & \texttt{organismo} & Actualiza el desastre y consulta su estado (CU-1, CU-2).
+Lo registra en campo (CU-4) \\
+Autoridad & \texttt{autoridad} & Registra desastres en campo (CU-4). Crea, asigna y aprueba proyectos
+de su jurisdicción (CU-5) \\
+Evaluador de campo & \texttt{evaluador} & Registra evaluaciones sin conexión (CU-3) \\
+Operador de la plataforma & \texttt{operador} & Resuelve conflictos y duplicados (CU-3) \\
+Administrador & \texttt{administrador} & Administra los catálogos de tipos de desastre, los perfiles
+de ciclo de vida y los tipos de activo (FP-01, FP-06, QA-10) \\
+Auditor & \texttt{auditor} & Consulta el rastro de auditoría y el historial de los proyectos, sin
+modificar nada (QA-13, QA-15, CU-5) \\
+Responsable de proyecto & \texttt{responsable-\br{}proyecto} & Inicia la ejecución y registra avance y
+costos del proyecto que tiene asignado (CU-5) \\
+Ciudadano & Portal público & Consulta información pública y registra solicitudes de ayuda (FP-02,
+«diseño») \\
+SE-1 & Sistema externo & Origina el registro automático de un desastre (CU-1) \\
+SE-2 & Sistema externo & Aporta capas y zonas geográficas \\
+SE-3 & Sistema externo & Sistema hospitalario cuya caída se analiza en CU-2 \\
+SE-4 y SE-5 & Sistemas externos & Recursos, y personas afectadas (FP-07 y FP-10, «diseño») \\
+SE-6 & Sistema externo & Sistema financiero: recibe presupuesto y costos (EV-18, EV-19 y EV-20, CU-5) \\
+SE-7 & Sistema externo & Sistema de proyectos: recibe las obras (EV-18 y EV-20) y reporta avance y
+contratista (EV-24, CU-5) \\
+SE-8 & Sistema externo & Entrega las alertas y devuelve el acuse (CU-1) \\
+Proveedor de identidad & Sistema externo & Autentica a los usuarios de todos los clientes (CU-4, AD-49) \\
+\end{longtable}
+
+La \cref{fig:casos-uso} todavía agrupa a SE-6 y SE-7 en un solo actor y no dibuja al administrador, al
+auditor ni al responsable de proyecto. El \cref{tab:actores-cu} es la lista vigente.
 
 \begin{figure}[H]
 \centering
@@ -990,7 +1137,8 @@ modifica ningún microservicio (QA-09). La \cref{fig:seq-eo1} muestra la secuenc
 Nombre & Continuar la operación cuando SE-3 no responde y sincronizar cuando se restablece \\
 Casos de uso primarios & FP-02 (consulta degradada). Los demás casos de uso continúan sin cambio \\
 Actores & SE-3, organismo de respuesta \\
-Disparador & Tres invocaciones consecutivas del adaptador de SE-3 agotan su tiempo de espera \\
+Disparador & SE-3 deja de responder: en una ventana de \qty{30}{\second}, con al menos tres llamadas
+del adaptador, el \qty{100}{\percent} falla (AD-05, AD-64) \\
 Precondiciones & Hay una emergencia activa. La proyección de consulta contiene un dato hospitalario
 anterior, con su marca de tiempo \\
 Flujo principal &
@@ -1091,8 +1239,9 @@ La \cref{fig:seq-eo4} muestra la secuencia con un conflicto.
 \subsubsection{Caso de uso CU-4: registro del desastre en campo}
 \label{sec:cu4}
 
-CU-4 se agrega en la versión 1.2 y realiza el mínimo a) de la entrega 2: la caracterización de un
-desastre desde el cliente móvil (E-42, AD-48). Aparece en la \cref{fig:casos-uso} como el caso
+CU-4 se agrega en la versión 1.2 y permite registrar desde el cliente móvil el desastre al que se
+asocian las evaluaciones (E-42, AD-48). Pertenece a Gestión de Desastres y complementa el mínimo a) de
+la entrega 2, que realiza CU-3. Aparece en la \cref{fig:casos-uso} como el caso
 \enquote{Registrar y caracterizar un desastre en campo} (RF-GD-02), con el actor organismo de
 respuesta en campo.
 
@@ -1148,6 +1297,63 @@ idempotente. Las líneas de vida usan los nombres del código.
 \label{fig:seq-registro-desastre}
 \end{figure}
 \clearpage
+
+\subsubsection{Caso de uso CU-5: crear y dar seguimiento a proyectos de reconstrucción (EO-5)}
+\label{sec:cu5}
+
+CU-5 realiza el mínimo b) de la entrega 2. Resume los casos de uso CU-01 a CU-06 del documento de
+diseño del módulo de Reconstrucción \cite{diseno-rc}, donde están sus diagramas de secuencia.
+
+\begin{longtable}{L{3.2cm} L{12.6cm}}
+\cabecera{2}{tab:cu5}{Especificación del caso de uso CU-5}{\textbf{Campo} & \textbf{Contenido}}
+Nombre & Crear proyectos por lote a partir de evaluaciones validadas, aprobarlos con jurisdicción y
+registrar su avance y su costo \\
+Casos de uso primarios & FP-08. Requisitos RF-RC-01, RF-RC-03, RF-RC-04, RF-RC-05, RF-RC-07 y
+RF-RC-08 \\
+Actores & Autoridad (primario), responsable de proyecto, auditor, SE-6, SE-7 \\
+Disparador & Un desastre está en reconstrucción y la autoridad decide intervenir activos con daño grave
+o destrucción total \\
+Precondiciones & El usuario inició sesión y tiene el rol \texttt{autoridad} (AD-49). El desastre está
+en estado En reconstrucción. Las evaluaciones validadas están en la copia local de Reconstrucción
+(AD-46) \\
+Flujo principal &
+1. La autoridad consulta las candidatas de su jurisdicción (\texttt{GET /\br{}v1/\br{}reconstruccion/\br{}candidatas}).\newline
+2. Envía el desastre, las evaluaciones y la clave de idempotencia
+(\texttt{POST /\br{}v1/\br{}proyectos:lote}).\newline
+3. \texttt{reconstruccion} valida la jurisdicción y el lote, y crea un proyecto por activo en estado
+Formulado. En una transacción guarda los proyectos, su historial y un EV-18 por proyecto en la bandeja
+de salida (AD-40, AD-41, AD-45).\newline
+4. El relevo publica EV-18. Los adaptadores entregan el proyecto a SE-7 y a SE-6 por sus colas de salida
+(AD-36, AD-37).\newline
+5. La autoridad asigna presupuesto, fuente y cronograma, y asigna el responsable, con justificación.
+Reconstrucción publica EV-19 para el presupuesto y la fuente, y EV-20 para el cronograma y el
+responsable (E-10).\newline
+6. La autoridad con jurisdicción sobre el territorio del proyecto lo aprueba: local si es municipal,
+regional si abarca varios municipios de un departamento y nacional si abarca varios departamentos
+(E-20). Reconstrucción publica EV-20.\newline
+7. El responsable registra el contratista, o se usa el que reportó SE-7 (EV-24), e inicia la
+ejecución. Reconstrucción publica EV-20.\newline
+8. El responsable registra avance y costo (\texttt{POST /\br{}v1/\br{}proyectos/\{id\}/\br{}avance}).
+Reconstrucción actualiza los acumulados, guarda el historial y publica EV-20, que llega a SE-6 y a
+SE-7.\newline
+9. Consulta del Programa actualiza el consolidado y Auditoría registra los eventos \\
+Flujos alternativos &
+3a. Un lote con alguna evaluación fuera de la jurisdicción se rechaza entero con 403.\newline
+3b. Una evaluación incumple una regla: no se crea ningún proyecto y se informa cuáles fallaron (422).\newline
+3c. Reenvío con la misma clave de idempotencia: se devuelven los mismos proyectos.\newline
+6a. Quien no ve el proyecto recibe 404. Quien lo ve y no es la autoridad que lo aprueba recibe 403
+(E-39).\newline
+6b. Faltan presupuesto, fuente, responsable o cronograma: 422.\newline
+8a. El proyecto no está en ejecución: 409. Un valor fuera de rango: 422.\newline
+8b. El costo ejecutado supera el presupuesto: el proyecto queda marcado en sobrecosto y el registro se
+acepta.\newline
+4a, 8c. SE-6 o SE-7 no responden: la operación se confirma y la entrega queda en su cola de salida \\
+Postcondiciones & Cada proyecto conserva el vínculo con su evaluación de origen. Cada cambio queda en
+el historial de solo inserción, con valor anterior, valor nuevo, autor y justificación, y el auditor
+puede consultarlo \\
+Escenarios de calidad & QA-15, QA-13, QA-01 \\
+Decisiones & AD-36, AD-37, AD-40, AD-41, AD-42, AD-45, AD-46, AD-47 \\
+\end{longtable}
 
 \subsection{Estado consolidado de los drivers}
 
@@ -1258,8 +1464,8 @@ AD-22 & Autorización en dos niveles & L, I, CU & API Gateway con la metadata \t
 \texttt{reglaDominio} de \texttt{rutas.json} (nivel 1). \texttt{Plataforma.\br{}Comun.\br{}Seguridad} y las
 reglas de dominio de cada \texttt{*.Api} (nivel 2). Paso 5 de CU-4 \\
 AD-23 & Cifrado por columna & L & Almacén de Personas Afectadas \\
-AD-24 & Réplica activa con sondeo de salud & P, F & Multiplicidad [2..*] y nota de sondeo.
-Multiplicidad de los artefactos \\
+AD-24 & Réplica activa con sondeo de salud & P, F & Multiplicidad de los procesos y de los
+artefactos \\
 AD-25 & Ejecución híbrida & P, F & Procesos persistentes y adaptador efímero. Nodo de ejecución bajo
 demanda \\
 AD-26 & Dos regiones con conmutación & F & Región primaria, región secundaria, enrutador global y
@@ -2135,7 +2341,7 @@ un cambio en la imagen redespliega los dos procesos \\
 AD-43 & Regla determinista de conflicto: hay conflicto si el activo tiene una versión mayor que la
 versión base de la operación, producida por otro dispositivo & 8 & QA-14, RF-ED-13 & Cada operación
 del cliente declara la versión del activo que el dispositivo conocía. Todo cambio de otro
-dispositivo aumenta la versión, de modo que se detecta siempre: 0 falsos negativos (QA-14 b). Las
+dispositivo aumenta la versión, de modo que se detecta siempre: 0 falsos negativos, como pide la respuesta de QA-14. Las
 secuencias de crear y luego editar de un mismo dispositivo sin conexión no se marcan como conflicto.
 Alternativas descartadas: comparar solo el número de versión, que produce falsos positivos en esas
 secuencias; y comparar marcas de tiempo, que depende de los relojes de los dispositivos y no cumple
@@ -2143,8 +2349,8 @@ S-5. Costo aceptado: el microservicio conserva, por cada versión del activo, el
 produjo \\
 AD-44 & Cola local de operaciones inmutables, con copia completa del contenido al encolar & 8 &
 QA-14 & Una operación solo sale de la cola cuando el servidor responde por ella, lo que evita
-pérdidas (QA-14 a). El reenvío es idempotente por identificador de operación: el servidor guarda el
-resultado de cada operación y lo devuelve ante un reenvío, sin crear registros (QA-14 c).
+pérdidas (medida de QA-14). El reenvío es idempotente por identificador de operación: el servidor guarda el
+resultado de cada operación y lo devuelve ante un reenvío, sin crear registros, como pide la respuesta de QA-14.
 Alternativa descartada: enviar el estado vigente de la réplica local al sincronizar, que pierde las
 ediciones intermedias y no permite un reenvío idempotente. Costo aceptado: espacio en el
 dispositivo y un registro de operaciones procesadas en el servidor \\
@@ -2152,7 +2358,7 @@ AD-45 & Bandeja de salida transaccional en todo microservicio productor & 8 & RF
 QA-15 & Todo microservicio que publica eventos de cambio los escribe en su bandeja de salida, en la
 misma transacción que el cambio, y un relevo los envía al bus después (E-19). La versión 1.1 la
 aplicaba solo a EV-09 y EV-10. Si el bus no está disponible, el evento permanece en la bandeja: 0
-eventos perdidos (QA-04 d) y 0 cambios sin registro (QA-15 b). El relevo asigna la secuencia del
+eventos perdidos y 0 cambios sin registro, como piden las respuestas de QA-04 y QA-15. El relevo asigna la secuencia del
 productor (E-31). Alternativa descartada: publicar en el bus después de confirmar la transacción,
 que pierde el evento si el proceso falla entre ambos pasos. Costo aceptado: la entrega es al menos
 una vez, por lo que los consumidores deben ser idempotentes (AD-02) \\
@@ -2263,16 +2469,23 @@ y QA-15.
 
 \subsubsection*{Autenticación en un único punto}
 
-Todas las peticiones entran por el API Gateway (AD-04),
-que verifica la identidad antes de reenviar. Los usuarios se autentican en el Proveedor de
+Todas las peticiones entran por el API Gateway (AD-04). Para las rutas de la API, el gateway
+verifica la identidad antes de reenviar. Los usuarios se autentican en el Proveedor de
 identidad con OpenID Connect y PKCE (AD-49). En la implementación el proveedor es
-\texttt{keycloak}, con el realm \texttt{plataforma}, y los clientes son la consola y el cliente
-móvil (AD-58). El token es un JWT firmado. El \texttt{gateway} valida la firma, el emisor, la
+\texttt{keycloak}, con el realm \texttt{plataforma}, y los clientes son la consola, el cliente
+móvil y el tablero de daños (AD-58). Para la API, el token es un JWT firmado. El \texttt{gateway} valida la firma, el emisor, la
 audiencia y el rol que declara cada ruta en \texttt{rutas.json}, y reenvía el mismo token. Una ruta
 sin rol declarado invalida el catálogo y el \texttt{gateway} no arranca
 (\texttt{CatalogoRutas.\br{}cs}), de modo que no quedan rutas sin proteger. El \texttt{gateway}
 aplica además el límite por clase de tráfico, de modo que un abuso se detiene antes de llegar a los
 microservicios de dominio (AD-19).
+
+El tablero de daños es una excepción declarada (E-41). Su ruta \texttt{GET /\br{}tablero-\br{}danos/\br{}\{**resto\}}
+es pública en el catálogo del gateway, porque el navegador presenta una cookie y no un token. La sesión
+la valida la propia página con OpenID Connect y PKCE, con el cliente confidencial
+\texttt{consulta-\br{}danos-\br{}tablero}, y solo admite los roles \texttt{autoridad}, \texttt{organismo},
+\texttt{operador} y \texttt{auditor}. La ruta es de solo lectura: el catálogo no admite rutas públicas
+de modificación, y por eso el retorno del inicio de sesión también usa \texttt{GET}.
 \subsubsection*{Autorización en dos niveles}
 
 El API Gateway valida la regla general: si el rol del usuario
@@ -2285,7 +2498,7 @@ modificar. En la implementación, cada microservicio valida de nuevo el JWT con
 dominio que exige cada ruta está declarada en \texttt{rutas.json} (\texttt{reglaDominio}), por
 ejemplo \texttt{organismo-\br{}responsable} o \texttt{jurisdiccion-\br{}territorial}. Las operaciones
 autorizadas quedan en el registro de auditoría por sus eventos. El registro de los intentos
-rechazados no está implementado (QA-11 c, L-02).
+rechazados, que pide la respuesta de QA-11, no está implementado (L-02).
 \subsubsection*{Cifrado por columna}
 
 Se cifran los datos de contacto del responsable y de los organismos,
@@ -2326,7 +2539,8 @@ espera, reintento con espera creciente, cola de salida acotada y degradación co
 implementación, \texttt{Resiliencia.\br{}cs} de \texttt{Plataforma.\br{}Comun.\br{}Adaptadores} configura con
 Polly (AD-64), de afuera hacia adentro: tiempo total de \qty{20}{\second}; dos reintentos con
 espera exponencial desde \qty{0,5}{\second}, solo para métodos idempotentes; un cortacircuitos
-que se abre con tres fallos de tres llamadas en \qty{30}{\second} y permanece abierto
+que se abre cuando, con al menos tres llamadas en \qty{30}{\second}, el \qty{100}{\percent} falla,
+y permanece abierto
 \qty{15}{\second}; y un tiempo de espera de \qty{3}{\second} por intento. Cada cambio del circuito
 publica EV-23, que muestra el estado de la integración en la consola (R-10).
 Ante un fallo parcial, la plataforma devuelve una respuesta reducida y marcada, con la marca
@@ -2414,12 +2628,13 @@ instrumentadas en verde, 7 de ellas de contrato contra el \texttt{gateway} y \te
 \begin{longtable}{L{1.9cm} L{9.1cm} L{4.8cm}}
 \cabecera{3}{tab:verificacion}{Medidas obtenidas en la implementación}{\textbf{Escenario} &
 \textbf{Resultado} & \textbf{Decisiones verificadas}}
-QA-14 & 120 evaluaciones: 115 aplicadas y 5 en conflicto. 0 pérdidas, 0 sobrescrituras, 0
-duplicados en el reenvío y 120 de 120 fotos, en \qty{27,8}{\second} & AD-31, AD-32, AD-43, AD-44,
+QA-14 & Parcial. Medida cumplida: 0 evaluaciones perdidas o sobrescritas en silencio. 120 evaluaciones:
+115 aplicadas y 5 en conflicto, 0 duplicados en el reenvío y 120 de 120 fotos, en \qty{27,8}{\second}.
+La detección se verificó con 5 conflictos por corrida, no con los 100 casos de la ficha & AD-31, AD-32, AD-43, AD-44,
 AD-45 \\
-QA-11 & 218 de 218 intentos de un organismo no responsable rechazados (\qty{100}{\percent}), 0
-falsos negativos y 0 datos modificados, sobre las 12 rutas con regla de dominio. La medida (c) no
-está implementada (L-02) & AD-22, AD-49 \\
+QA-11 & Medida cumplida: 218 de 218 intentos de un organismo no responsable rechazados
+(\qty{100}{\percent}), con 0 falsos negativos y 0 datos modificados, sobre las 12 rutas con regla de
+dominio. El registro del intento que pide la respuesta no está implementado (L-02) & AD-22, AD-49 \\
 QA-06 & Consolidado del desastre: p95 de \qty{34}{\milli\second} y p99 de \qty{47}{\milli\second}.
 Mapa de desastres: p95 de \qty{142}{\milli\second} y p99 de \qty{159}{\milli\second}. Mapa de daños:
 p95 de 1\,628\,ms y p99 de 1\,935\,ms. \texttt{datoAl} en el
@@ -2427,8 +2642,12 @@ p95 de 1\,628\,ms y p99 de 1\,935\,ms. \texttt{datoAl} en el
 \qty{11,8}{\second} & AD-15, AD-16, AD-17, AD-34 \\
 QA-07 & p95 de 1\,334\,ms y p99 de 1\,353\,ms. 100 de 100 registros
 con respuesta 201 & AD-06, AD-15, AD-48 \\
-QA-01, QA-04, QA-10, QA-13 (a, b), QA-15 & Verificados con pruebas de integración contra
-PostgreSQL, RabbitMQ y los simuladores & AD-02, AD-05, AD-07, AD-21, AD-41, AD-45, AD-64 \\
+QA-04, QA-10, QA-13, QA-15 & Medida verificada con pruebas de integración contra PostgreSQL y
+RabbitMQ. En QA-04 no se midieron la tasa de errores ni el plazo de \qty{60}{\second} de la respuesta,
+y en QA-13 no se corrió la consulta de \num{10000} entradas (L-03) & AD-02, AD-07, AD-21, AD-41,
+AD-45 \\
+QA-01 & Parcial. Verificado con pruebas de integración de los adaptadores de SE-6 y SE-7 contra sus
+simuladores, no con SE-3, que no se implementó (L-06) & AD-05, AD-64 \\
 QA-02, QA-03, QA-05, QA-08, QA-09, QA-12 & No medidos. Requieren dos regiones, carga de
 \num{10000} usuarios o elementos de diseño sin implementar (L-01, L-04, L-06) & -- \\
 \end{longtable}
@@ -2467,6 +2686,10 @@ S. Gantiva, D. Guiza y J. Rubiano. \textit{Enmiendas a los documentos}. Reposito
 \texttt{proyectoparte2}, \texttt{docs/\br{}decisiones/\br{}ENMIENDAS\_\br{}DOCUMENTOS.\br{}md}, 2026. Enmiendas E-01 a
 E-43.
 
+\bibitem{diseno-rc}
+C. D. Guiza, J. F. Rubiano y S. Gantiva. \textit{Documento de diseño. Módulo de Reconstrucción}.
+Versión 1.2, 18 de noviembre de 2026.
+
 \bibitem{donaciones}
 S. Gantiva, D. Guiza y J. Rubiano. \textit{Subsistema de Donaciones Económicas. Modelado de
 alternativas y análisis de compromisos}. 2026.
@@ -2483,6 +2706,28 @@ Addison-Wesley, 2021.
 P. Kruchten. \textit{Architectural Blueprints: The \enquote{4+1} View Model of Software
 Architecture}. IEEE Software, 12(6), 1995.
 
+\bibitem{enunciado}
+Departamento de Ingeniería de Sistemas, Pontificia Universidad Javeriana. \textit{Arquitectura de
+Software. Proyecto del semestre: Plataforma para la Gestión de Desastres y Reconstrucción}.
+Enunciado, versión 0.9, 2026.
+
+\bibitem{iso25010}
+ISO/IEC 25010:2011. \textit{Systems and software engineering. Systems and software Quality
+Requirements and Evaluation (SQuaRE). System and software quality models}. International
+Organization for Standardization, 2011.
+
+\bibitem{iso42010}
+ISO/IEC/IEEE 42010:2011. \textit{Systems and software engineering. Architecture description}.
+International Organization for Standardization, 2011.
+
+\bibitem{clements}
+P. Clements, F. Bachmann, L. Bass, D. Garlan, J. Ivers, R. Little, P. Merson, R. Nord y J. Stafford.
+\textit{Documenting Software Architectures: Views and Beyond}. 2.ª edición. Addison-Wesley, 2011.
+
+\bibitem{martin}
+R. C. Martin. \textit{Clean Architecture: A Craftsman's Guide to Software Structure and Design}.
+Prentice Hall, 2017.
+
 \end{thebibliography}
 \endgroup
 
@@ -2493,7 +2738,7 @@ Architecture}. IEEE Software, 12(6), 1995.
 \label{sec:anexo-a}
 
 Este anexo describe la implementación del caso de uso FP-06 en la entrega 2 y su verificación
-contra las medidas de QA-14. La implementación materializa las decisiones AD-31, AD-32, AD-33,
+contra QA-14. La implementación materializa las decisiones AD-31, AD-32, AD-33,
 AD-43, AD-44 y AD-45, y usa las tecnologías de la \cref{sec:tecnologia} (AD-50 a AD-65). En la
 versión 1.1 este anexo describía un prototipo reducido, declarado como excepción a CON-8. Ese
 prototipo es el proyecto \texttt{danos/api}, que fue el primer prototipo del servidor. La entrega 2
@@ -2561,7 +2806,7 @@ Pruebas & xUnit y el simulador \texttt{simuladores/\br{}simulador-\br{}qa14}, qu
 
 Cada operación del lote se procesa en su propia transacción, que incluye el registro de la operación
 procesada y la escritura en la bandeja de salida. El \cref{tab:proto-ramas} lista los casos. Ningún
-caso elimina ni sobrescribe una versión, que es la condición de las medidas (a) de QA-14.
+caso elimina ni sobrescribe una versión, que es la condición de la medida de QA-14.
 
 \begin{longtable}{L{2.4cm} L{4.6cm} L{5.4cm} L{3.2cm}}
 \cabecera{4}{tab:proto-ramas}{Casos de tratamiento de una operación de sincronización}{\textbf{Caso} &
@@ -2589,23 +2834,25 @@ la arquitectura.
 
 \subsection{Verificación contra QA-14}
 
-Las medidas se obtuvieron en el compose, a través del \texttt{gateway} y con tokens reales de
-\texttt{keycloak} \cite{revision}.
+Los resultados se obtuvieron en el compose, a través del \texttt{gateway} y con tokens reales de
+\texttt{keycloak} \cite{revision}. El escenario queda parcial: la medida se cumple, pero la detección
+se verificó con menos casos que la ficha, el tiempo del lote viene de una sola corrida y la degradación
+no se midió.
 
 \begin{longtable}{L{5.2cm} L{10.6cm}}
-\cabecera{2}{tab:proto-verif}{Verificación de las medidas de QA-14 en la implementación}{\textbf{Medida}
+\cabecera{2}{tab:proto-verif}{Verificación de QA-14 en la implementación}{\textbf{Exigencia}
 & \textbf{Prueba y resultado}}
-(a) 0 evaluaciones perdidas y 0 sobrescrituras silenciosas & \texttt{simulador-\br{}qa14}: 0 pérdidas y
+Medida: 0 evaluaciones perdidas o sobrescritas en silencio & \texttt{simulador-\br{}qa14}: 0 pérdidas y
 0 sobrescrituras en 120 evaluaciones. Prueba instrumentada de la réplica local: una operación sin
 respuesta permanece en la cola. Pruebas de los seis casos del \cref{tab:proto-ramas} \\
-(b) \qty{100}{\percent} de los conflictos detectados & 5 de 5 conflictos por corrida. La regla de
-conflicto tiene además 7 pruebas unitarias y 21 de sincronización. La prueba de contrato de la
-aplicación detecta el conflicto entre dos dispositivos \\
-(c) 0 registros duplicados al reenviar & El simulador envía el lote dos veces. El segundo envío
+Respuesta: \qty{100}{\percent} de los conflictos detectados & 5 de 5 conflictos por corrida, no los 100
+casos de la ficha. La regla de conflicto tiene además 7 pruebas unitarias y 21 de sincronización. La
+prueba de contrato de la aplicación detecta el conflicto entre dos dispositivos \\
+Respuesta: 0 registros duplicados al reenviar & El simulador envía el lote dos veces. El segundo envío
 crea 0 registros y devuelve resultados idénticos \\
-(d) Lote de 120 evaluaciones en $\le$ \qty{10}{\minute} & 115 aplicadas, 5 en conflicto y 120 de 120
-fotos en \qty{27,8}{\second} \\
-(e) Degradación $\le$ \qty{10}{\percent} de las funciones de coordinación & No se mide con carga.
+Respuesta: lote de 120 evaluaciones en $\le$ \qty{10}{\minute} & 115 aplicadas, 5 en conflicto y 120 de
+120 fotos en \qty{27,8}{\second}, en una sola corrida \\
+Respuesta: degradación $\le$ \qty{10}{\percent} de las funciones de coordinación & No se mide con carga.
 El camino de escritura de \texttt{evaluacion-\br{}danos} está separado de las consultas (AD-34), pero la
 prueba de carga simultánea no se ejecutó (L-03) \\
 Cliente real & \texttt{ContratoServidorTest} en el emulador contra el \texttt{gateway} y

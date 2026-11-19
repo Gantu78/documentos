@@ -57,7 +57,7 @@ AD-54 & Mensajería & RabbitMQ 4.4 (3 nodos, colas quorum acotadas, DLQ) con Rab
 AD-55 & Caché & Redis 8.8 (\texttt{redis:8.8.4-alpine}) con StackExchange.Redis 3.4.29 & AD-16, AD-17 & QA-05, QA-06 \\
 AD-56 & Almacén de objetos & MinIO con API S3 (paquete Minio 7.0.0) & AD-24, AD-31 & QA-02, QA-03, QA-14 \\
 AD-57 & Puerta de entrada & YARP 2.3.0 con catálogo \texttt{rutas.json} (56 rutas) & AD-04, AD-19, AD-22 & QA-05, QA-06, QA-11 \\
-AD-58 & Identidad & Keycloak 26.5.2 (realm \texttt{plataforma}), AppAuth-Android 0.11.1, angular-auth-oidc-client 22.0.2 y validador JWT propio en \texttt{Plataforma.Comun.Seguridad} & AD-04, AD-22, AD-49 & QA-11, QA-14 \\
+AD-58 & Identidad & Keycloak 26.5.2 (realm \texttt{plataforma}), AppAuth-Android 0.11.1, angular-auth-oidc-client 22.0.2, cliente OpenID Connect de ASP.NET Core para el tablero y validador JWT propio en \texttt{Plataforma.Comun.Seguridad} & AD-04, AD-22, AD-49 & QA-11, QA-14 \\
 AD-59 & Cliente web & Angular 22.2 (TypeScript 6.0) servido por nginx 1.29 detrás del gateway & AD-04, AD-08 & QA-06, QA-10, QA-11 \\
 AD-60 & Mapas & Leaflet 1.9.4 con teselas de OpenStreetMap & AD-16, AD-17 & QA-06 \\
 AD-61 & Cliente móvil & Android nativo: Kotlin 2.0.21, Jetpack Compose (BOM 2024.09.00), Hilt 2.60.1, minSdk 26, targetSdk 36 & AD-31, AD-44, AD-48 & QA-07, QA-14 \\
@@ -279,7 +279,7 @@ Archivos de evidencia:
 \label{sec:tec-ad54}
 
 \paragraph{Contexto.} Esta decisión materializa el bus de eventos con colas por consumidor (AD-02), las colas acotadas de la frontera (AD-05), la cola de salida con reintento (AD-36) y la entrega desde la bandeja de salida (AD-45).
-El bus atiende QA-04, que exige 0 eventos perdidos ante el fallo de un componente interno, y QA-01, que exige procesar el 100\,\% de lo encolado cuando el sistema externo vuelve.
+El bus atiende QA-04, cuya respuesta exige 0 eventos perdidos ante el fallo de un componente interno, y QA-01, que exige procesar el 100\,\% de lo encolado cuando el sistema externo vuelve.
 
 \paragraph{Alternativas.} Se consideran RabbitMQ, Apache Kafka, NATS JetStream y MassTransit sobre RabbitMQ.
 MassTransit se evalúa como capa de abstracción sobre el mismo intermediario.
@@ -489,6 +489,7 @@ Archivos de evidencia:
 \label{sec:tec-ad58}
 
 \paragraph{Contexto.} Esta decisión materializa el proveedor de identidad federado con OIDC y PKCE (AD-49) y la validación del token en el gateway y en cada microservicio (AD-04, AD-22).
+Sus clientes son la consola, el cliente móvil y el tablero de daños. El tablero usa el cliente confidencial \texttt{consulta-\br{}danos-\br{}tablero} y una sesión con cookie que valida la propia página, porque su ruta es pública en el gateway (E-41).
 El proveedor atiende QA-11, porque emite los roles y el atributo de organismo que usa la regla de dominio.
 También atiende QA-14, porque el refresco del token sin conexión permite trabajar días en campo y sincronizar al volver.
 
@@ -645,7 +646,7 @@ Archivos de evidencia:
 \label{sec:tec-ad61}
 
 \paragraph{Contexto.} Esta decisión materializa la réplica local del cliente móvil (AD-31), la cola local de operaciones (AD-44) y el registro del desastre en campo (AD-48).
-La plataforma atiende QA-14, que exige 0 pérdidas, 0 sobrescrituras silenciosas y 0 duplicados al sincronizar 120 evaluaciones.
+La plataforma atiende QA-14, cuya medida es 0 evaluaciones perdidas o sobrescritas en silencio al sincronizar 120 evaluaciones, y cuya respuesta exige 0 duplicados.
 
 \paragraph{Alternativas.} Se consideran Android nativo con Kotlin, Flutter, React Native y Kotlin Multiplatform.
 El \cref{tab:tec-ad61} presenta la matriz de decisión ponderada.
@@ -746,7 +747,7 @@ Archivos de evidencia:
 \label{sec:tec-ad63}
 
 \paragraph{Contexto.} Esta decisión materializa la sincronización diferida (AD-31), el reenvío de la cola local (AD-44) y el envío idempotente del registro del desastre por el identificador del cliente (AD-48).
-La sincronización atiende QA-14, que exige reenvío sin duplicados y 120 evaluaciones en $\le$ 10\,min.
+La sincronización atiende QA-14, cuya respuesta exige reenvío sin duplicados y 120 evaluaciones en $\le$ 10\,min.
 También atiende QA-11, porque todo envío pasa por el gateway con el token OIDC.
 
 \paragraph{Alternativas.} Se consideran WorkManager, SyncAdapter, un servicio en primer plano y Firebase.
@@ -797,7 +798,7 @@ Archivos de evidencia:
 \label{sec:tec-ad64}
 
 \paragraph{Contexto.} Esta decisión materializa el tiempo de espera, el reintento con espera creciente y el cortacircuitos de las fronteras (AD-05) y el cortacircuitos por adaptador (AD-37).
-La biblioteca atiende QA-04, que exige cortar la propagación del fallo en $\le$ 60\,s.
+La biblioteca atiende QA-04, cuya respuesta exige cortar la propagación del fallo en $\le$ 60\,s.
 También atiende QA-01, porque la caída de un sistema externo no debe degradar las demás funciones.
 
 \paragraph{Alternativas.} Se consideran Microsoft.Extensions.Http.Resilience, una implementación propia y Steeltoe.
@@ -885,7 +886,7 @@ El escalado de 0 a N con KEDA no se midió (QA-01) y QA-05 no se midió con 10\,
 
 \paragraph{Dónde se ve.} Vista física de la implementación: nodo Docker Engine con los servicios del archivo de composición y anotación de Kubernetes con HPA y KEDA.
 
-\paragraph{Evidencia en el código.} Los manifiestos declaran HPA de 2 a 5 réplicas y \texttt{ScaledObject} de KEDA de 0 a 4 réplicas para la salida de SE-6.
+\paragraph{Evidencia en el código.} Los manifiestos declaran HPA de 2 a 6 réplicas para \texttt{consulta} y \texttt{consulta-\br{}danos}, de 2 a 5 para \texttt{consulta-\br{}programa}, y \texttt{ScaledObject} de KEDA de 0 a 4 réplicas para la salida de SE-6.
 Archivos de evidencia:
 {\raggedright
 \begin{itemize}
