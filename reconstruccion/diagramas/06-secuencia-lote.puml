@@ -1,0 +1,63 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam monochrome true
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+autonumber
+
+actor Autoridad as AUT
+participant "web" as WEB
+participant "gateway" as GW
+participant "ProyectosController" as PC
+participant "CrearProyectosPorLote" as INT
+participant "CopiasLocalesEf\nRepositorioProyectosEf" as REP
+participant "CreacionDeProyectos\nProyectoReconstruccion" as DOM
+participant "GuardadoDeProyectos" as GDP
+participant "PublicadorHechosBandeja" as PUB
+database "db: reconstruccion" as DB
+participant "RelevoBandeja" as RB
+queue "plataforma.eventos\n(bus1..3)" as EX
+queue "q.salida.se7" as Q7
+participant "adaptador-se7-salida" as A7
+participant "SE-7 (sim-se7)" as SE7
+
+AUT -> WEB : selecciona candidatas
+WEB -> GW : POST /v1/proyectos:lote\n{idDesastre, idsEvaluaciones, claveIdempotencia} + JWT
+GW -> GW : valida JWT y rol autoridad (rc-lote)
+GW -> PC : reenvía con el mismo token
+PC -> INT : EjecutarAsync(SolicitudLote, PresentadorHttp)
+INT -> REP : BuscarLoteAsync(clave)
+alt la clave ya existe (reenvío)
+  INT --> PC : Exito(ids, Reenvio = true)
+  PC --> GW : 201 con los mismos ids
+else lote nuevo
+  INT -> REP : DesastreAsync, EvaluacionesDeDesastreAsync,\nEvaluacionesVinculadasAsync (copia local, AD-46)
+  INT -> DOM : Jurisdiccion.ExigirJurisdiccionSobre (403 si hay ajenas, E-39)
+  INT -> DOM : ValidarLote (422 LOTE_INVALIDO con la lista)
+  INT -> DOM : CrearProyectos (uno por activo, estado Formulado)
+  INT -> GDP : GuardarAsync(proyectos, lote)
+  group una transacción (AD-45)
+    GDP -> DB : INSERT proyectos, evaluaciones_origen
+    GDP -> DB : INSERT historial (Creacion)
+    GDP -> PUB : RegistrarAsync(hechos)
+    PUB -> DB : INSERT bandeja_salida (EV-18 por proyecto)
+    GDP -> DB : INSERT lotes_creacion ; COMMIT
+  end
+  INT --> PC : Exito(ids, Reenvio = false)
+  PC --> GW : 201 Created
+end
+GW --> WEB : respuesta
+== asíncrono ==
+RB -> DB : lee bandeja_salida pendiente
+RB -> EX : publica ev18.proyecto.creado (confirmación del bus)
+RB -> DB : marca publicada
+EX -> Q7 : ev18.#
+note right of EX : también a q.salida.se6, q.consulta-programa,\nq.gestion-desastres y q.auditoria
+A7 -> Q7 : consume EV-18
+A7 -> SE7 : alta de obra (tiempo de espera, reintento,\ncortacircuitos; AD-36, AD-37)
+alt SE-7 responde
+  A7 -> Q7 : ack
+else SE-7 caído
+  A7 -> Q7 : el mensaje sigue en la cola; reintento (AD-36)
+end
+@enduml

@@ -1,0 +1,96 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam monochrome true
+skinparam shadowing false
+skinparam nodesep 25
+skinparam ranksep 40
+left to right direction
+
+node "Computador del usuario" <<device>> as PCU {
+  node "Navegador web" <<executionEnvironment>> as NAV
+}
+
+node "Servidor anfitrión" <<device>> as HOST {
+ node "Docker Engine (Docker Compose)" <<executionEnvironment>> as DOCK {
+
+  node "gateway ×2" <<executionEnvironment>> as NGW {
+    artifact "plataforma/gateway:local\n(rutas.json: rc-*, cp-consolidado)" <<artifact>> as AGW
+  }
+  node "web" <<executionEnvironment>> as NWEB {
+    artifact "consola (Angular) en nginx" <<artifact>> as AWEB
+  }
+  node "keycloak" <<executionEnvironment>> as NKC {
+    artifact "keycloak 26.5.2\n(realm plataforma)" <<artifact>> as AKC
+  }
+
+  node "reconstruccion ×2\n(Reconstruccion__Rol=escritura)" <<executionEnvironment>> as NRC {
+    artifact "plataforma/reconstruccion:local" <<artifact>> as ARC
+  }
+  node "consulta-programa ×2\n(Reconstruccion__Rol=consulta)" <<executionEnvironment>> as NCP {
+    artifact "plataforma/reconstruccion:local " <<artifact>> as ACP
+  }
+  node "reconstruccion-migrador\n(migrar --sembrar, corre una vez)" <<executionEnvironment>> as NMIG {
+    artifact "plataforma/reconstruccion:local  " <<artifact>> as AMIG
+  }
+
+  node "adaptador-se6 ×2 (salida)" <<executionEnvironment>> as NA6 {
+    artifact "plataforma/adaptador-se6:local" <<artifact>> as AA6
+  }
+  node "adaptador-se7-salida ×2" <<executionEnvironment>> as NA7S {
+    artifact "plataforma/adaptador-se7:local" <<artifact>> as AA7S
+  }
+  node "adaptador-se7-entrada ×1" <<executionEnvironment>> as NA7E {
+    artifact "plataforma/adaptador-se7:local " <<artifact>> as AA7E
+  }
+  node "sim-se6" <<executionEnvironment>> as NS6 {
+    artifact "plataforma/sim-se6:local" <<artifact>> as AS6
+  }
+  node "sim-se7" <<executionEnvironment>> as NS7 {
+    artifact "plataforma/sim-se7:local" <<artifact>> as AS7
+  }
+
+  node "bus1, bus2, bus3" <<executionEnvironment>> as NBUS {
+    artifact "RabbitMQ 4.4 (definiciones.json)\nplataforma.eventos, q.reconstruccion,\nq.consulta-programa, q.salida.se6,\nq.salida.se7, dlq.*" <<artifact>> as ABUS
+  }
+  node "db" <<executionEnvironment>> as NDB {
+    artifact "postgis/postgis:18-3.6\nbases reconstruccion, programa, adaptadores" <<artifact>> as ADB
+  }
+  node "db-replica" <<executionEnvironment>> as NDBR {
+    artifact "postgis/postgis:18-3.6 (hot standby)" <<artifact>> as ADBR
+  }
+  node "archivos" <<executionEnvironment>> as NARCH {
+    artifact "MinIO\nbucket reconstruccion-documentos" <<artifact>> as AARCH
+  }
+ }
+}
+
+NAV --> NGW : HTTPS :8080 (JWT)
+NAV ..> NKC : OIDC con PKCE :8180
+NGW --> NWEB : HTTP (archivos de la consola)
+NGW ..> NKC : llaves JWKS
+NGW --> NRC : HTTP rc-* (1..2)
+NGW --> NCP : HTTP cp-consolidado (1..2)
+NRC --> NDB : TCP 5432 (base reconstruccion)
+NCP --> NDB : TCP 5432 (base programa)
+NMIG --> NDB : migraciones y GRANT
+NDB --> NDBR : replicación continua (WAL)
+NRC --> NARCH : S3 :9000 (documentos)
+NRC --> NBUS : AMQP: publica EV-18/19/20 (relevo);\nconsume q.reconstruccion
+NCP --> NBUS : AMQP: consume q.consulta-programa
+NA6 --> NBUS : AMQP: consume q.salida.se6
+NA7S --> NBUS : AMQP: consume q.salida.se7
+NA7E --> NBUS : AMQP: publica EV-24
+NA6 --> NS6 : HTTP PUT /v1/lotes/{idLote}
+NA7S --> NS7 : HTTP alta y cambio de obra
+NA7E --> NS7 : HTTP consulta de cambios cada 30 s
+NA6 --> NDB : base adaptadores (esquema se6)
+NA7S --> NDB : base adaptadores (esquema se7)
+
+note bottom of DOCK
+  <<implementado>>: todos los nodos de esta figura (despliegue/compose/docker-compose.yml).
+  <<diseño>>: en Kubernetes (despliegue/k8s/base/20-servicios.yaml) consulta-programa
+  escala con HPA de 2 a 5 réplicas por CPU (AD-18, AD-42) y KEDA enciende
+  adaptador-se7-entrada con un disparador cron (AD-25). SE-6 y SE-7 reales
+  reemplazan a sim-se6 y sim-se7 sin cambiar los adaptadores.
+end note
+@enduml

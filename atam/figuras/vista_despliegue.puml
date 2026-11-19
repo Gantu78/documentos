@@ -1,0 +1,227 @@
+@startuml vista_despliegue
+' SAD v1.2 - Vista física de diseño: despliegue UML en dos regiones (AD-24, AD-25, AD-26, AD-27, AD-31, AD-49; L-01)
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam ArrowFontSize 10
+skinparam ArrowColor #333333
+skinparam componentStyle uml2
+skinparam BackgroundColor #FFFFFF
+skinparam ComponentBorderColor #333333
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBackgroundColor<<diseño>> #E8E8E8
+skinparam ComponentBorderStyle<<diseño>> dashed
+skinparam DatabaseBorderColor #333333
+skinparam DatabaseBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor<<diseño>> #E8E8E8
+skinparam QueueBorderColor #333333
+skinparam QueueBackgroundColor #FFFFFF
+skinparam QueueBackgroundColor<<diseño>> #E8E8E8
+skinparam NodeBorderColor #333333
+skinparam NodeBackgroundColor #FFFFFF
+skinparam NodeBackgroundColor<<diseño>> #E8E8E8
+skinparam ArtifactBorderColor #333333
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam PackageBorderColor #555555
+skinparam PackageBackgroundColor #FFFFFF
+skinparam PackageBackgroundColor<<diseño>> #EFEFEF
+skinparam FrameBorderColor #555555
+skinparam InterfaceBorderColor #333333
+skinparam InterfaceBackgroundColor #FFFFFF
+skinparam ActorBorderColor #333333
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #333333
+skinparam UsecaseBackgroundColor #FFFFFF
+skinparam UsecaseBackgroundColor<<diseño>> #E8E8E8
+skinparam RectangleBorderColor #333333
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #777777
+skinparam NoteBackgroundColor #FFFFFF
+skinparam NoteFontSize 10
+skinparam LegendBorderColor #777777
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendFontSize 10
+skinparam StereotypeFontSize 10
+skinparam ParticipantBorderColor #333333
+skinparam ParticipantBackgroundColor #FFFFFF
+skinparam ParticipantBackgroundColor<<diseño>> #E8E8E8
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceBoxBorderColor #777777
+skinparam SequenceBoxBackgroundColor #FFFFFF
+skinparam SequenceDividerBackgroundColor #F2F2F2
+skinparam defaultFontSize 18
+skinparam ArrowFontSize 15
+skinparam StereotypeFontSize 14
+skinparam LegendFontSize 15
+skinparam NoteFontSize 15
+skinparam PackageFontSize 17
+skinparam FrameBackgroundColor #FFFFFF
+left to right direction
+skinparam nodesep 10
+skinparam ranksep 22
+
+node "Teléfono del evaluador  [*]" <<device>> as MOV {
+  node MOVEE <<executionEnvironment>> [
+    **Android Runtime**
+    ----
+    «artifact» DanosCampo.apk
+    «artifact» danos.db (réplica local y cola)
+  ]
+}
+node "Estación de trabajo  [*]" <<device>> as PC {
+  node PCEE <<executionEnvironment>> [
+    **Navegador web**
+    ----
+    «artifact» consola (web)
+    «artifact» portal-publico «diseño»
+  ]
+}
+node "Enrutador global  [2]" <<device>> <<diseño>> as ENR {
+  node ENREE <<executionEnvironment>> [
+    **Servicio de enrutamiento**
+    ----
+    «artifact» reglas-enrutamiento
+    «artifact» sondeo-salud
+  ]
+}
+node "Proveedor de identidad  [2]" <<device>> as IDP {
+  node IDPEE <<executionEnvironment>> [
+    **Servidor OIDC**
+    ----
+    «artifact» realm plataforma
+    (usuarios, roles, llaves JWKS)
+  ]
+}
+node "Sistemas externos SE-1 a SE-8" <<device>> as SE
+
+frame "Región primaria (activa)" as R1 {
+  node "Nodo de entrada  [2..*]" <<device>> as N1E {
+    node N1EE <<executionEnvironment>> [
+      **Entorno de contenedores**
+      ----
+      «artifact» gateway  [2..*]
+    ]
+  }
+  node "Nodo de cómputo de dominio  [3..*]" <<device>> as N1D {
+    node N1DE <<executionEnvironment>> [
+      **Entorno de contenedores**
+      ----
+      «artifact» gestion-desastres  [2..*]
+      «artifact» evaluacion-danos  [2..*]
+      «artifact» reconstruccion  [2..*]
+      «artifact» auditoria  [2..*]
+      «artifact» consolidacion  [2..*] «diseño»
+      «artifact» notificacion  [2..*] «diseño»
+      «artifact» gestion-recursos  [2..*] «diseño»
+      «artifact» personas-afectadas  [2..*] «diseño»
+      «artifact» coordinacion-organismos  [2..*] «diseño»
+    ]
+  }
+  node "Nodo de cómputo de consulta  [2..N]" <<device>> as N1Q {
+    node N1QE <<executionEnvironment>> [
+      **Entorno de contenedores**
+      ----
+      «artifact» consulta  [2..N]
+      «artifact» consulta-danos  [2..N]
+      «artifact» consulta-programa  [2..N]
+    ]
+  }
+  node "Nodo de ejecución bajo demanda  [0..*]" <<device>> as N1A {
+    node N1AE <<executionEnvironment>> [
+      **Entorno de contenedores con escalado por cola**
+      ----
+      «artifact» adaptador-se2, adaptador-se6
+      «artifact» adaptador-se7-salida  [0..N]
+      «artifact» adaptador-se7-entrada  [0..1]
+      «artifact» adaptador-se1, -se3, -se4, -se5  «diseño»
+      «artifact» adaptador-se8  [1..*] «diseño»
+    ]
+  }
+  node "Nodo de mensajería  [3]" <<device>> as N1M {
+    node N1ME <<executionEnvironment>> [
+      **Intermediario de mensajería**
+      ----
+      «artifact» plataforma.eventos y colas q.*
+    ]
+  }
+  node "Nodo de datos  [primario y réplica local]" <<device>> as N1B {
+    node N1BE <<executionEnvironment>> [
+      **Motor de base de datos**
+      ----
+      «artifact» una base por microservicio
+      «artifact» auditoria (solo inserción)
+    ]
+    node N1CE <<executionEnvironment>> [
+      **Motor de caché**
+      ----
+      «artifact» cache
+    ]
+    node N1FE <<executionEnvironment>> [
+      **Almacén de objetos**
+      ----
+      «artifact» archivos (evidencias)
+    ]
+  }
+}
+
+frame "Región secundaria (en espera)  «diseño»" as R2 #EFEFEF {
+  node "Nodo de entrada  [1..*]" <<device>> as N2E {
+    node N2EE <<executionEnvironment>> [
+      **Entorno de contenedores**
+      ----
+      «artifact» gateway  [1..*]
+    ]
+  }
+  node "Nodo de cómputo  [1..*]" <<device>> as N2D {
+    node N2DE <<executionEnvironment>> [
+      **Entorno de contenedores**
+      ----
+      «artifact» los mismos microservicios,
+      con capacidad mínima  [1..*]
+    ]
+  }
+  node "Nodo de mensajería  [3]" <<device>> as N2M {
+    node N2ME <<executionEnvironment>> [
+      **Intermediario de mensajería**
+      ----
+      «artifact» plataforma.eventos
+    ]
+  }
+  node "Nodo de datos  [réplica]" <<device>> as N2B {
+    node N2BE <<executionEnvironment>> [
+      **Motor de base de datos**
+      ----
+      «artifact» réplica de todas las bases
+    ]
+  }
+}
+
+MOV -- ENR : <<HTTPS/JSON>>
+PC -- ENR : <<HTTPS/JSON>>
+MOV -- IDP : <<HTTPS>> OIDC con PKCE
+PC -- IDP : <<HTTPS>> OIDC con PKCE
+ENR -- N1E : <<HTTPS/JSON>>
+ENR .. N2E : «HTTPS/JSON»\nsolo tras la conmutación
+N1E -- IDP : <<HTTPS>> JWKS
+N1E -- N1D : <<HTTP/JSON>>
+N1E -- N1Q : <<HTTP/JSON>>
+N1D -- N1M : <<AMQP>>
+N1Q -- N1M : <<AMQP>>
+N1A -- N1M : <<AMQP>>
+N1D -- N1B : <<SQL, S3>>
+N1Q -- N1B : <<SQL, RESP>>
+N1A -- SE : <<protocolo de\ncada sistema>>
+N1B ..> N2B : «replicación asíncrona»\nRPO ≤ 60 s
+N1M ..> N2M : «replicación asíncrona»
+N2E -- N2D : <<HTTP/JSON>>
+N2D -- N2M : <<AMQP>>
+N2D -- N2B : <<SQL>>
+
+legend bottom left
+  **Notación** (diagrama de despliegue UML). Nodo «device»: recurso de cómputo. Nodo «executionEnvironment»: entorno anidado en un dispositivo. «artifact»: unidad desplegada, con el nombre del servicio de docker-compose.
+  [n..m]: multiplicidad de nodos o de réplicas. Línea continua: ruta de comunicación con su protocolo. Línea discontinua con flecha: replicación entre regiones. Marco: región geográfica.
+  «diseño» (fondo gris): elemento sin implementar; la región secundaria y el enrutador global no existen en la implementación (L-01). La implementación en un computador se muestra en la vista física de la implementación.
+endlegend
+@enduml

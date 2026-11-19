@@ -1,0 +1,76 @@
+@startuml seq_conmutacion
+' ATAM v1.1 - QA-02 y QA-03: fallo de una instancia y perdida de la region primaria (AD-24, AD-26, AD-27)
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam ArrowColor #333333
+skinparam SequenceLifeLineBorderColor #666666
+skinparam ParticipantBorderColor #444444
+skinparam ParticipantBackgroundColor #FFFFFF
+skinparam ActorBorderColor #333333
+skinparam ActorBackgroundColor #FFFFFF
+skinparam QueueBorderColor #444444
+skinparam QueueBackgroundColor #E7F3EC
+skinparam DatabaseBorderColor #444444
+skinparam DatabaseBackgroundColor #F1F1F1
+skinparam SequenceGroupBorderColor #777777
+skinparam SequenceGroupBackgroundColor #F1F1F1
+skinparam NoteBorderColor #888888
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteFontSize 11
+skinparam LegendBorderColor #888888
+skinparam LegendBackgroundColor #F7F7F7
+skinparam LegendFontSize 11
+skinparam SequenceMessageAlign left
+skinparam ParticipantPadding 6
+hide footbox
+actor "Usuario" as US
+participant "Enrutador\nglobal" as ENR <<device>>
+participant "API Gateway\n(región primaria)" as GW1 <<punto de entrada>>
+participant "Réplica 1 del\nmicroservicio" as R1 <<microservicio>>
+participant "Réplica 2 del\nmicroservicio" as R2 <<microservicio>>
+database "Almacenes\n(región primaria)" as D1
+database "Almacenes\n(región secundaria)" as D2
+participant "Región secundaria\n(en espera)" as S2 <<punto de entrada>>
+participant "Auditoría" as AU <<microservicio>>
+
+== QA-02: fallo de una instancia (EA-13) ==
+GW1 -> R1 : sondeo de salud
+R1 --> GW1 : correcto
+GW1 -> R2 : sondeo de salud
+R2 --> GW1 : correcto
+US -> ENR : petición
+ENR -> GW1 : reenvía
+GW1 -> R1 : petición
+note over R1 : La réplica 1 falla
+GW1 -> R1 : sondeo de salud
+GW1 -> GW1 : sin respuesta: retira la réplica 1\ndel reparto en 30 s o menos
+US -> ENR : petición
+ENR -> GW1 : reenvía
+GW1 -> R2 : petición
+R2 --> US : respuesta
+note over GW1, R2 : El servicio crítico continúa con la réplica 2.\nLa plataforma repone la réplica 1.
+
+== QA-03: pérdida de la región primaria (EA-14) ==
+D1 ->> D2 : replicación asíncrona continua\n(retraso objetivo: p99 menor que 30 s)
+note over GW1, D1 : La región primaria deja de responder
+ENR -> GW1 : sondeo de salud
+ENR -> ENR : sin respuesta: declara la pérdida\nde la región primaria
+ENR -> S2 : conmuta el tráfico
+S2 -> S2 : aumenta la capacidad de los\nmicroservicios desplegados
+note over D1, D2 : Se pierden las transacciones confirmadas en la\nprimaria y no replicadas: RPO de 60 s o menos
+S2 ->> AU : registra la conmutación
+US -> ENR : petición
+ENR -> S2 : reenvía
+S2 --> US : respuesta
+note over ENR, S2 : RTO de 15 min o menos, medido hasta que la secundaria\nresponde el 95 % de las peticiones de los servicios críticos
+
+== Recuperación de la región primaria (AD-27) ==
+D2 ->> D1 : resincronización de estado
+D1 -> D1 : las discrepancias se escalan\na un operador
+ENR -> GW1 : devuelve el tráfico cuando\nlos datos convergen
+
+legend bottom left
+  Flecha con punta llena: llamada síncrona.  Flecha con punta abierta: mensaje o replicación asíncrona.  Flecha discontinua: respuesta.
+endlegend
+@enduml

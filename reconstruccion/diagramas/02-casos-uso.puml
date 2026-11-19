@@ -1,0 +1,44 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam monochrome true
+skinparam shadowing false
+left to right direction
+
+actor "Autoridad" as AUT
+actor "Responsable de proyecto" as RES
+actor "Auditor" as AUD
+actor "SE-7\n(vía adaptador-se7-entrada)" as SE7
+
+rectangle "Módulo de Reconstrucción" {
+  usecase "CU-01 Consultar\nevaluaciones candidatas" as CU01
+  usecase "CU-02 Crear proyectos\na partir de evaluaciones" as CU02
+  usecase "CU-03 Asignar presupuesto,\nfuente, cronograma y responsable" as CU03
+  usecase "CU-04 Aprobar proyecto" as CU04
+  usecase "CU-05 Iniciar ejecución" as CU05
+  usecase "CU-06 Registrar\navance y costo" as CU06
+  usecase "CU-07 Adjuntar\ndocumentos y evidencias" as CU07
+  usecase "CU-08 Finalizar proyecto" as CU08
+  usecase "CU-09 Cancelar proyecto" as CU09
+  usecase "CU-10 Consultar historial\ndel proyecto" as CU10
+  usecase "CU-11 Consultar consolidado\ndel programa" as CU11
+  usecase "CU-12 Registrar reporte\nde SE-7 (EV-24)" as CU12
+}
+
+AUT --> CU01
+AUT --> CU02
+AUT --> CU03
+AUT --> CU04
+AUT --> CU09
+AUT --> CU10
+AUT --> CU11
+RES --> CU05
+RES --> CU06
+RES --> CU07
+RES --> CU08
+AUD --> CU10
+AUD --> CU11
+SE7 --> CU12
+CU02 ..> CU01 : <<include>>
+CU12 ..> CU05 : <<extend>>\n(contratista)
+CU12 ..> CU06 : <<extend>>\n(avance)
+@enduml

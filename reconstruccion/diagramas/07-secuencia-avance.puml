@@ -1,0 +1,50 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam monochrome true
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+autonumber
+
+actor "Responsable" as RES
+participant "gateway" as GW
+participant "ProyectosController" as PC
+participant "RegistrarAvanceYCosto" as INT
+participant "RepositorioProyectosEf" as REP
+participant "ProyectoReconstruccion" as DOM
+participant "GuardadoDeProyectos" as GDP
+database "db: reconstruccion" as DB
+participant "RelevoBandeja" as RB
+queue "plataforma.eventos" as EX
+queue "q.consulta-programa" as QCP
+participant "consulta-programa:\nManejadorEventosPrograma" as MEP
+participant "ActualizarProyeccionPrograma\nProyeccionProgramaEf" as PPE
+database "db: programa" as DBP
+
+RES -> GW : POST /v1/proyectos/{id}/avance\n{avance, costo, concepto, justificacion}
+GW -> PC : rol responsable-proyecto (rc-avance)
+PC -> INT : EjecutarAsync(SolicitudAvanceYCosto)
+INT -> REP : BuscarAsync(id)
+INT -> DOM : RegistrarAvance / RegistrarCosto
+note right of DOM : responsable asignado, estado EnEjecucion,\navance 0..100, costo > 0; Version++
+INT -> GDP : GuardarAsync(proyecto)
+group una transacción (AD-45)
+  GDP -> DB : UPDATE proyectos WHERE version = anterior
+  GDP -> DB : INSERT historial, registros_avance, registros_costo
+  GDP -> DB : INSERT bandeja_salida (EV-20 por entrada)
+end
+alt otra petición cambió la versión
+  INT --> PC : ReglaIncumplida(CONFLICTO)
+  PC --> GW : 409 Conflict
+else confirmado
+  INT --> PC : Exito(ProyectoDto)
+  PC --> GW : 200 OK
+end
+== asíncrono ==
+RB -> EX : ev20.proyecto.estado-avance-cambiado
+EX -> QCP : ev20.#
+note right of EX : también a q.gestion-desastres (AD-47),\nq.salida.se6, q.salida.se7 y q.auditoria
+MEP -> QCP : consume (ConsumidorIdempotente)
+MEP -> PPE : AplicarAsync(FilaPrograma)
+PPE -> DBP : INSERT mensajes_procesados ;\nUPDATE proyeccion_proyectos si la versión es mayor
+MEP -> QCP : ack (un fallo repetido va a dlq.consulta-programa, AD-02)
+@enduml

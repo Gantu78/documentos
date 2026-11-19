@@ -1,0 +1,176 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam monochrome true
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "Reconstruccion.Dominio" {
+
+class ProyectoReconstruccion <<agregado>> {
+  + Id : Guid
+  + IdDesastre : Guid
+  + IdActivo : Guid
+  + Nombre : string
+  + Alcance : AlcanceTerritorial
+  + Estado : EstadoProyecto
+  + Presupuesto : Dinero?
+  + FuenteFinanciacion : string?
+  + Responsable : string?
+  + Contratista : string?
+  + Cronograma : Cronograma?
+  + Avance : decimal
+  + CostoEjecutado : Dinero
+  + Version : int
+  + EnSobrecosto : bool
+  + CodigosMunicipio : IReadOnlyList<string>
+  --
+  + {static} Crear(...) : ProyectoReconstruccion
+  + AsignarPresupuesto(actor, presupuesto, fuente, cronograma, justificacion, instante)
+  + AsignarResponsable(actor, responsable, justificacion, instante)
+  + Aprobar(actor, instante)
+  + IniciarEjecucion(actor, contratista, instante)
+  + RegistrarAvance(actor, porcentaje, justificacion, instante)
+  + RegistrarAvanceExterno(sistema, porcentaje, instante)
+  + RegistrarContratistaExterno(sistema, contratista, instante)
+  + RegistrarCosto(actor, monto, concepto, instante)
+  + Finalizar(actor, instante)
+  + Cancelar(actor, justificacion, instante)
+  + AdjuntarDocumento(actor, nombre, tipo, ubicacion, hash, instante) : Documento
+}
+
+class EvaluacionOrigen {
+  + IdEvaluacion : Guid
+  + IdActivo : Guid
+  + TipoActivo : string
+  + NivelDano : NivelDano
+  + CodigoMunicipio : string
+  + Vigente : bool
+}
+
+class EntradaHistorial <<record>> {
+  + Version : int
+  + TipoCambio : TipoCambio
+  + ValorAnterior : string?
+  + ValorNuevo : string?
+  + Autor : string
+  + Justificacion : string
+  + Instante : DateTimeOffset
+  + Procedencia : string
+}
+
+class RegistroAvance <<record>> {
+  + Porcentaje : decimal
+  + Autor : string
+  + Instante : DateTimeOffset
+  + Procedencia : string
+}
+class RegistroCosto <<record>> {
+  + Monto : Dinero
+  + Concepto : string
+  + Autor : string
+  + Instante : DateTimeOffset
+}
+class Documento <<record>> {
+  + Nombre : string
+  + Tipo : string
+  + Ubicacion : string
+  + Hash : string
+  + Autor : string
+  + Instante : DateTimeOffset
+}
+class LoteCreacion <<record>> {
+  + ClaveIdempotencia : string
+  + IdDesastre : Guid
+  + IdsProyectos : IReadOnlyList<Guid>
+}
+
+class Dinero <<objeto de valor>> {
+  + Monto : decimal {Monto >= 0}
+}
+class Cronograma <<objeto de valor>> {
+  + Inicio : DateOnly
+  + Fin : DateOnly {Fin > Inicio}
+}
+class Actor <<record>> {
+  + Usuario : string
+  + Rol : Rol
+  + Ambito : Ambito?
+  + Territorio : string?
+}
+
+class DesastreLocal <<copia local>> {
+  + Id : Guid
+  + Nombre : string
+  + Estado : string
+}
+class EvaluacionValidada <<copia local>> {
+  + Id : Guid
+  + IdDesastre : Guid
+  + IdActivo : Guid
+  + NivelDano : NivelDano
+  + CodigoMunicipio : string
+  + Estado : string
+}
+
+class MaquinaEstadosProyecto <<utility>> {
+  + {static} Destino(estado, accion) : EstadoProyecto
+  + {static} EsFinal(estado) : bool
+}
+class Jurisdiccion <<utility>> {
+  + {static} AlcanceDe(municipios) : AlcanceTerritorial
+  + {static} ExigirQueLoVe(actor, municipios)
+  + {static} ExigirAprobador(actor, alcance, municipios)
+  + {static} ExigirJurisdiccionSobre(actor, municipios)
+}
+class CreacionDeProyectos <<utility>> {
+  + {static} Candidatas(...) : List<EvaluacionValidada>
+  + {static} ValidarLote(...) : List<string>
+  + {static} CrearProyectos(...) : List<ProyectoReconstruccion>
+}
+class ConsolidadoPrograma <<utility>> {
+  + {static} Calcular(idDesastre, filas) : Consolidado
+}
+
+enum EstadoProyecto {
+  Formulado
+  Aprobado
+  EnEjecucion
+  Finalizado
+  Cancelado
+}
+enum AccionProyecto {
+  Asignar
+  Aprobar
+  Iniciar
+  RegistrarAvance
+  RegistrarCosto
+  Finalizar
+  Cancelar
+}
+enum AlcanceTerritorial {
+  Municipal
+  Regional
+  Nacional
+}
+}
+
+ProyectoReconstruccion "1" *-- "1..*" EvaluacionOrigen
+ProyectoReconstruccion "1" *-- "0..*" EntradaHistorial
+ProyectoReconstruccion "1" *-- "0..*" RegistroAvance
+ProyectoReconstruccion "1" *-- "0..*" RegistroCosto
+ProyectoReconstruccion "1" *-- "0..*" Documento
+ProyectoReconstruccion --> Dinero
+ProyectoReconstruccion --> Cronograma
+ProyectoReconstruccion --> EstadoProyecto
+ProyectoReconstruccion ..> MaquinaEstadosProyecto : <<use>>
+ProyectoReconstruccion ..> Jurisdiccion : <<use>>
+ProyectoReconstruccion ..> Actor : <<use>>
+MaquinaEstadosProyecto ..> AccionProyecto : <<use>>
+Jurisdiccion ..> AlcanceTerritorial : <<use>>
+LoteCreacion "1" o-- "1..*" ProyectoReconstruccion : IdsProyectos
+CreacionDeProyectos ..> DesastreLocal : <<use>>
+CreacionDeProyectos ..> EvaluacionValidada : <<use>>
+CreacionDeProyectos ..> ProyectoReconstruccion : <<create>>
+EvaluacionValidada "1" <.. "0..1" EvaluacionOrigen : copia al crear
+@enduml

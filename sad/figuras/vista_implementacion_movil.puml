@@ -1,0 +1,162 @@
+@startuml vista_implementacion_movil
+' SAD v1.2 - Vista de implementación del cliente móvil: paquetes reales de danos/app, com.example.danos (AD-31, AD-44, AD-48, AD-58, AD-61, AD-62, AD-63)
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam ArrowFontSize 10
+skinparam ArrowColor #333333
+skinparam componentStyle uml2
+skinparam BackgroundColor #FFFFFF
+skinparam ComponentBorderColor #333333
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBackgroundColor<<diseño>> #E8E8E8
+skinparam ComponentBorderStyle<<diseño>> dashed
+skinparam DatabaseBorderColor #333333
+skinparam DatabaseBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor<<diseño>> #E8E8E8
+skinparam QueueBorderColor #333333
+skinparam QueueBackgroundColor #FFFFFF
+skinparam QueueBackgroundColor<<diseño>> #E8E8E8
+skinparam NodeBorderColor #333333
+skinparam NodeBackgroundColor #FFFFFF
+skinparam NodeBackgroundColor<<diseño>> #E8E8E8
+skinparam ArtifactBorderColor #333333
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam PackageBorderColor #555555
+skinparam PackageBackgroundColor #FFFFFF
+skinparam PackageBackgroundColor<<diseño>> #EFEFEF
+skinparam FrameBorderColor #555555
+skinparam InterfaceBorderColor #333333
+skinparam InterfaceBackgroundColor #FFFFFF
+skinparam ActorBorderColor #333333
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #333333
+skinparam UsecaseBackgroundColor #FFFFFF
+skinparam UsecaseBackgroundColor<<diseño>> #E8E8E8
+skinparam RectangleBorderColor #333333
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #777777
+skinparam NoteBackgroundColor #FFFFFF
+skinparam NoteFontSize 10
+skinparam LegendBorderColor #777777
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendFontSize 10
+skinparam StereotypeFontSize 10
+skinparam ParticipantBorderColor #333333
+skinparam ParticipantBackgroundColor #FFFFFF
+skinparam ParticipantBackgroundColor<<diseño>> #E8E8E8
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceBoxBorderColor #777777
+skinparam SequenceBoxBackgroundColor #FFFFFF
+skinparam SequenceDividerBackgroundColor #F2F2F2
+skinparam defaultFontSize 15
+skinparam StereotypeFontSize 12
+skinparam LegendFontSize 13
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam nodesep 14
+skinparam ranksep 36
+hide empty members
+hide circle
+set separator none
+left to right direction
+
+package "com.example.danos  (DanosCampo.apk, co.plataforma.danos 2.1.0)" as APP {
+  package "presentacion  (Jetpack Compose, ViewModel)" as PRE {
+    package "ingreso" as P1 {
+      class "IngresoViewModel" as IVM
+    }
+    package "lista" as P2 {
+      class "ListaViewModel" as LVM
+    }
+    package "evaluar" as P3 {
+      class "EvaluarViewModel" as EVM
+    }
+    package "descarga" as P4 {
+      class "DescargaViewModel" as DVM
+    }
+    package "desastre" as P5 {
+      class "RegistrarDesastreViewModel" as RVM
+      class "DesastresPantalla" as DP
+    }
+    package "navegacion" as P6 {
+      class "AppNavegacion" as NAV
+    }
+    package "componentes, tema" as P7 {
+      class "EvaluacionCard, ChipEstado,\nIndicadorConexion" as COMP
+    }
+  }
+  package "acceso  (repositorios)" as ACC {
+    interface "EvaluacionRepositorio" as ER
+    interface "DesastreRepositorio" as DR
+    interface "SincronizacionRepositorio" as SR
+    interface "IdentidadRepositorio" as IR
+    interface "CatalogoRepositorio,\nConfiguracionRepositorio,\nDispositivoRepositorio" as OR
+  }
+  package "dominio" as DOM {
+    class "Modelos" as MOD
+    class "RegistroDesastre" as RD
+    class "ValidadorEvaluacion" as VE
+    class "ValidadorRegistroDesastre" as VRD
+    class "ValidadorIngreso, Limites, Fotos" as VOT
+  }
+  package "infraestructura" as INF {
+    package "local  (Room)" as LOC {
+      class "AppDatabase\nversion 3, tabla registro_desastre" as ADB
+      class "Daos, Entidades,\nRegistroDesastreLocal" as DAO
+    }
+    package "sync  (WorkManager)" as SYN {
+      class "SincronizacionWorker" as SW
+      class "MotorSincronizacion" as MS
+      class "EnviadorDesastres" as ENV
+      class "ProgramadorSincronizacion" as PS
+    }
+    package "remoto  (Retrofit, OkHttp)" as REM {
+      interface "DanosApi" as DA
+      interface "DesastresApi" as DSA
+      class "ConfiguracionInterceptor" as CI
+      class "ProbadorConexion" as PC
+    }
+    package "identidad  (AppAuth)" as IDE {
+      class "IdentidadRepositorioImpl" as IRI
+      class "ConexionOidcBuilder" as COB
+      class "CifradorDatos\n(Android Keystore)" as CD
+    }
+    package "dispositivo" as DIS {
+      class "Conectividad, ServicioUbicacion,\nProcesadorFotos" as DSP
+    }
+    package "preferencias" as PRF {
+      class "PreferenciasLocales" as PL
+    }
+    package "di  (Hilt)" as DI {
+      class "ModuloDatos, ModuloRed,\nModuloDispositivo, ModuloEnlaces" as MODS
+    }
+  }
+}
+
+PRE ..> ACC : <<use>>
+PRE ..> DOM : <<use>>
+ACC ..> DOM : <<use>>
+ACC ..> INF : <<use>>\n(implementaciones *Impl)
+INF ..> DOM : <<use>>
+RVM ..> DR
+DR ..> VRD
+SW ..> MS
+MS ..> ENV
+ENV ..> DSA
+ENV ..> DAO
+MS ..> DA
+IRI ..|> IR
+IRI ..> COB
+IRI ..> CD
+DI ..> LOC
+DI ..> REM
+
+legend bottom left
+  **Notación** (diagrama de paquetes UML). Paquete: paquete Kotlin real bajo app/src/main/java/com/example/danos. Rectángulo: clase o archivo clave. Interfaz: contrato que otra capa implementa (realización con triángulo).
+  Flecha discontinua: dependencia «use» (import). Capas: presentacion → acceso → dominio; infraestructura implementa los repositorios de acceso y depende de dominio. presentacion no importa infraestructura.
+  La base local danos.db (Room, esquema 3) guarda la réplica, la cola de operaciones (AD-44) y registro_desastre con estado PENDIENTE, ENVIADO o RECHAZADO (AD-48).
+endlegend
+@enduml

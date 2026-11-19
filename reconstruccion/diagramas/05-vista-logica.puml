@@ -1,0 +1,103 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam monochrome true
+skinparam shadowing false
+skinparam componentStyle uml2
+skinparam packageStyle rectangle
+left to right direction
+
+package "Reconstruccion.Api  (capa de acceso · adaptadores de interfaz)" as API {
+  component ProyectosController
+  component ProgramaController
+  component "PresentadorHttp<T>" as PH
+}
+
+package "Reconstruccion.Aplicacion  (capa de dominio · casos de uso)" as APL {
+  interface "IPuertoEntrada<TSolicitud,TRespuesta>" as IPE
+  interface "IPuertoSalida<TRespuesta>" as IPS
+  component "Interactores de escritura\nCrearProyectosPorLote · AsignarPresupuesto\nAsignarResponsable · AprobarProyecto\nIniciarEjecucion · RegistrarAvanceYCosto\nAdjuntarDocumento · FinalizarProyecto\nCancelarProyecto" as IW
+  component "Interactores de lectura\nConsultarDesastres · ConsultarCandidatas\nConsultarProyectos · ConsultarProyecto\nConsultarHistorial" as IR
+  component "ConsultarConsolidado\nActualizarProyeccionPrograma" as ICP
+  component "ActualizarCopiasLocales\nRegistrarReporteExterno" as IEV
+  component GuardadoDeProyectos as GDP
+  interface IRepositorioProyectos as I1
+  interface IHistorial as I2
+  interface ICopiasLocales as I3
+  interface IPublicadorHechos as I4
+  interface IUnidadDeTrabajo as I5
+  interface IAlmacenDocumentos as I6
+  interface IEscrituraCopiasLocales as I7
+  interface IProyeccionPrograma as I8
+}
+
+package "Reconstruccion.Dominio  (entidades)" as DOM {
+  component "ProyectoReconstruccion · MaquinaEstadosProyecto\nJurisdiccion · CreacionDeProyectos\nConsolidadoPrograma · ReconstruccionHistorica" as ENT
+}
+
+package "Reconstruccion.Infraestructura  (capa de infraestructura · gateways)" as INF {
+  component "RepositorioProyectosEf\nHistorialEf · CopiasLocalesEf\nUnidadDeTrabajoEf" as GEF
+  component PublicadorHechosBandeja as PUB
+  component AlmacenDocumentosMinio as MIN
+  component EscrituraCopiasLocalesEf as ECL
+  component ManejadorEventosReconstruccion as MER
+  component ManejadorEventosPrograma as MEP
+  component ProyeccionProgramaEf as PPE
+  component ReconstruccionDbContext as RDB
+  component ProgramaDbContext as PDB
+}
+
+package "Plataforma.Comun.Mensajeria  (comun)" as COM {
+  interface IManejadorEvento as IME
+  component "EscritorBandeja<TContexto>" as EB
+  component "RelevoBandeja<TContexto>" as RB
+  component "ConsumidorIdempotente<TContexto>" as CI
+}
+
+ProyectosController ..> IPE : <<use>>
+ProgramaController ..> IPE : <<use>>
+PH -() IPS
+IW - IPE
+IR - IPE
+ICP - IPE
+IW ..> IPS : <<use>>
+IW ..> GDP : <<use>>
+IW ..> ENT : <<use>>
+IR ..> ENT : <<use>>
+ICP ..> ENT : <<use>>
+IEV ..> ENT : <<use>>
+IEV ..> GDP : <<use>>
+GDP ..> I1 : <<use>>
+GDP ..> I2 : <<use>>
+GDP ..> I4 : <<use>>
+GDP ..> I5 : <<use>>
+IW ..> I3 : <<use>>
+IW ..> I6 : <<use>>
+IEV ..> I7 : <<use>>
+ICP ..> I8 : <<use>>
+
+GEF -up- I1
+GEF -up- I2
+GEF -up- I3
+GEF -up- I5
+PUB -up- I4
+MIN -up- I6
+ECL -up- I7
+PPE -up- I8
+MER -up- IME
+MEP -up- IME
+MER ..> IEV : <<use>>
+MEP ..> ICP : <<use>>
+GEF ..> RDB : <<use>>
+PUB ..> EB : <<use>>
+ECL ..> RDB : <<use>>
+PPE ..> PDB : <<use>>
+CI ..> IME : <<use>>
+RB ..> RDB : lee bandeja_salida
+
+note bottom of COM
+  Rol escritura (reconstruccion): RelevoBandeja<ReconstruccionDbContext> y
+  ConsumidorIdempotente<ReconstruccionDbContext> con ManejadorEventosReconstruccion (q.reconstruccion).
+  Rol consulta (consulta-programa): ConsumidorIdempotente<ProgramaDbContext>
+  con ManejadorEventosPrograma (q.consulta-programa). Registro.AgregarInfraestructura elige por rol.
+end note
+@enduml

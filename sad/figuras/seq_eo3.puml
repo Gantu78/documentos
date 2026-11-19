@@ -1,0 +1,106 @@
+@startuml seq_eo3
+' SAD v1.2 - EO-3 Fallo de SE-3 con cortacircuitos, cola y marca de avance (QA-01; AD-05, AD-14, AD-16, AD-36, AD-37, AD-45, AD-64)
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam ArrowFontSize 10
+skinparam ArrowColor #333333
+skinparam componentStyle uml2
+skinparam BackgroundColor #FFFFFF
+skinparam ComponentBorderColor #333333
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBackgroundColor<<diseño>> #E8E8E8
+skinparam ComponentBorderStyle<<diseño>> dashed
+skinparam DatabaseBorderColor #333333
+skinparam DatabaseBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor<<diseño>> #E8E8E8
+skinparam QueueBorderColor #333333
+skinparam QueueBackgroundColor #FFFFFF
+skinparam QueueBackgroundColor<<diseño>> #E8E8E8
+skinparam NodeBorderColor #333333
+skinparam NodeBackgroundColor #FFFFFF
+skinparam NodeBackgroundColor<<diseño>> #E8E8E8
+skinparam ArtifactBorderColor #333333
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam PackageBorderColor #555555
+skinparam PackageBackgroundColor #FFFFFF
+skinparam PackageBackgroundColor<<diseño>> #EFEFEF
+skinparam FrameBorderColor #555555
+skinparam InterfaceBorderColor #333333
+skinparam InterfaceBackgroundColor #FFFFFF
+skinparam ActorBorderColor #333333
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #333333
+skinparam UsecaseBackgroundColor #FFFFFF
+skinparam UsecaseBackgroundColor<<diseño>> #E8E8E8
+skinparam RectangleBorderColor #333333
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #777777
+skinparam NoteBackgroundColor #FFFFFF
+skinparam NoteFontSize 10
+skinparam LegendBorderColor #777777
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendFontSize 10
+skinparam StereotypeFontSize 10
+skinparam ParticipantBorderColor #333333
+skinparam ParticipantBackgroundColor #FFFFFF
+skinparam ParticipantBackgroundColor<<diseño>> #E8E8E8
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceBoxBorderColor #777777
+skinparam SequenceBoxBackgroundColor #FFFFFF
+skinparam SequenceDividerBackgroundColor #F2F2F2
+skinparam defaultFontSize 13
+skinparam LegendFontSize 11
+hide footbox
+participant "Gestión de Desastres\n[gestion-desastres]\n(productor)" as MS
+queue "Bus de eventos\nplataforma.eventos" as BUS
+queue "Cola de salida\nde SE-3" as QS <<diseño>>
+participant "Adaptador SE-3\n(cortacircuitos)" as AD3 <<diseño>>
+participant "SE-3\nHospitalario" as SE3 <<sistema externo>>
+participant "Consulta\n[consulta]" as CQ
+participant "API Gateway\n[gateway]" as GW
+actor "Organismo de\nrespuesta" as OR
+
+== Operación normal ==
+AD3 -> SE3 : consulta periódica de capacidad
+SE3 --> AD3 : capacidad y personas atendidas
+AD3 -> AD3 : actualiza la marca de avance
+AD3 ->> BUS : EventoCanónico de capacidad
+BUS ->> CQ : actualiza la proyección\ncon su marca de tiempo
+
+== SE-3 deja de responder ==
+loop 3 veces, con espera creciente (Resiliencia, AD-64)
+  AD3 -> SE3 : consulta
+  AD3 -> AD3 : agota el tiempo de espera
+end
+AD3 -> AD3 : abre el circuito\ny deja de invocar a SE-3
+AD3 ->> BUS : el relevo publica EV-23\nEstado de integración cambiado (abierto)
+BUS ->> CQ : EV-23 (q.consulta)
+MS ->> BUS : el relevo de bandeja publica un\nevento dirigido a SE-3 (por ejemplo, EV-03)
+BUS ->> QS : se acumula (cola quorum acotada)
+note over QS, AD3 : El circuito abierto impide la entrega.\nEl productor no espera (AD-36).
+OR -> GW : GET /v1/consulta/desastres/{id}
+GW -> CQ : reenvía
+CQ --> GW : último dato hospitalario\ncon su marca de tiempo (AD-16)\ny el estado de la integración
+GW --> OR : respuesta degradada y marcada (CON-6)
+note over MS, OR : El registro de daños, recursos y tareas continúa.\nNinguna de esas operaciones invoca a SE-3 (CON-3).
+
+== SE-3 se restablece ==
+AD3 -> SE3 : llamada de prueba (circuito semiabierto)
+SE3 --> AD3 : respuesta correcta
+AD3 -> AD3 : cierra el circuito
+AD3 ->> BUS : EV-23 (cerrado)
+QS ->> AD3 : entrega los mensajes pendientes
+AD3 -> SE3 : envía cada mensaje con su\nclave de idempotencia
+AD3 -> SE3 : solicita el rango pendiente\ndesde la marca de avance (AD-14)
+SE3 --> AD3 : datos del intervalo sin conexión
+AD3 ->> BUS : eventos canónicos, ordenados por\nel instante del hecho
+BUS ->> CQ : actualiza la proyección\n(consumo idempotente)
+
+legend bottom left
+  Flecha con punta llena: llamada síncrona.  Flecha con punta abierta: mensaje asíncrono por el bus.  Flecha discontinua: respuesta.  Fondo gris «diseño»: elemento sin implementar.
+  El mismo mecanismo está implementado y probado en adaptador-se6 y adaptador-se7-salida con q.salida.se6 y q.salida.se7 (Plataforma.Comun.Adaptadores: Salida, MonitorCircuito, MarcaAvance; QA-01).
+endlegend
+@enduml

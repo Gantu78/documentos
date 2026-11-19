@@ -1,0 +1,31 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam monochrome true
+skinparam shadowing false
+hide empty description
+
+state Formulado
+state Aprobado
+state "EnEjecucion" as EnEjecucion
+state Finalizado
+state Cancelado
+
+[*] --> Formulado : ProyectoReconstruccion.Crear\n[evaluaciones validadas,\ndesastre EN_RECONSTRUCCION]\n(CrearProyectosPorLote, sin AccionProyecto)
+Formulado --> Formulado : Asignar [justificación]
+Formulado --> Aprobado : Aprobar [presupuesto > 0, fuente,\nresponsable, cronograma,\nautoridad aprobadora]
+Aprobado --> Aprobado : Asignar [justificación,\nsin perder condiciones]
+Aprobado --> EnEjecucion : Iniciar [contratista]
+EnEjecucion --> EnEjecucion : Asignar\nRegistrarAvance [0..100]\nRegistrarCosto [monto > 0]
+EnEjecucion --> Finalizado : Finalizar [Avance = 100]
+Formulado --> Cancelado : Cancelar [justificación]
+Aprobado --> Cancelado : Cancelar [justificación]
+EnEjecucion --> Cancelado : Cancelar [justificación]
+Finalizado --> [*]
+Cancelado --> [*]
+
+note right of EnEjecucion
+  EV-24 (CU-12): RegistrarAvanceExterno usa la
+  acción RegistrarAvance; RegistrarContratistaExterno
+  solo se rechaza en Finalizado o Cancelado.
+end note
+@enduml

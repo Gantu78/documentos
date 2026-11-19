@@ -1,0 +1,111 @@
+@startuml seq_eo1
+' SAD v1.2 - EO-1 Inicio de una emergencia (FP-01, FP-04, FP-05; QA-07, QA-08, QA-09; AD-45, AD-49)
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam ArrowFontSize 10
+skinparam ArrowColor #333333
+skinparam componentStyle uml2
+skinparam BackgroundColor #FFFFFF
+skinparam ComponentBorderColor #333333
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBackgroundColor<<diseño>> #E8E8E8
+skinparam ComponentBorderStyle<<diseño>> dashed
+skinparam DatabaseBorderColor #333333
+skinparam DatabaseBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor<<diseño>> #E8E8E8
+skinparam QueueBorderColor #333333
+skinparam QueueBackgroundColor #FFFFFF
+skinparam QueueBackgroundColor<<diseño>> #E8E8E8
+skinparam NodeBorderColor #333333
+skinparam NodeBackgroundColor #FFFFFF
+skinparam NodeBackgroundColor<<diseño>> #E8E8E8
+skinparam ArtifactBorderColor #333333
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam PackageBorderColor #555555
+skinparam PackageBackgroundColor #FFFFFF
+skinparam PackageBackgroundColor<<diseño>> #EFEFEF
+skinparam FrameBorderColor #555555
+skinparam InterfaceBorderColor #333333
+skinparam InterfaceBackgroundColor #FFFFFF
+skinparam ActorBorderColor #333333
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #333333
+skinparam UsecaseBackgroundColor #FFFFFF
+skinparam UsecaseBackgroundColor<<diseño>> #E8E8E8
+skinparam RectangleBorderColor #333333
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #777777
+skinparam NoteBackgroundColor #FFFFFF
+skinparam NoteFontSize 10
+skinparam LegendBorderColor #777777
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendFontSize 10
+skinparam StereotypeFontSize 10
+skinparam ParticipantBorderColor #333333
+skinparam ParticipantBackgroundColor #FFFFFF
+skinparam ParticipantBackgroundColor<<diseño>> #E8E8E8
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceBoxBorderColor #777777
+skinparam SequenceBoxBackgroundColor #FFFFFF
+skinparam SequenceDividerBackgroundColor #F2F2F2
+skinparam defaultFontSize 13
+skinparam LegendFontSize 11
+hide footbox
+participant "SE-1\nAlertas" as SE1 <<sistema externo>>
+participant "Adaptador\nSE-1" as AD1 <<diseño>>
+queue "Bus de eventos\nplataforma.eventos" as BUS
+participant "Consolidación" as CO <<diseño>>
+participant "Gestión de Desastres\n[gestion-desastres]" as GD
+participant "Notificación" as NO <<diseño>>
+participant "Adaptador\nSE-8" as AD8 <<diseño>>
+participant "SE-8\nNotificación" as SE8 <<sistema externo>>
+participant "Consulta\n[consulta]" as CQ
+participant "Auditoría\n[auditoria]" as AU
+participant "API Gateway\n[gateway]" as GW
+participant "Proveedor de\nidentidad [keycloak]" as IDP
+actor "Organismo\nresponsable" as OR
+
+SE1 -> AD1 : aviso de terremoto\n(formato de SE-1)
+AD1 -> AD1 : traduce a EventoCanónico\ny actualiza la marca de avance
+AD1 ->> BUS : EV-01 Reporte recibido
+BUS ->> CO : EV-01
+CO -> CO : descarta reenvíos por clave de origen\ny correlaciona por ventana de espacio\ny tiempo (AD-10)
+CO ->> BUS : EV-02 Reporte consolidado\n(con procedencia, AD-11)
+BUS ->> GD : EV-02
+GD -> GD : valida el tipo contra el catálogo (AD-07),\ncrea el desastre en estado Detectado y escribe\nEV-03 en la bandeja de salida (AD-45)
+GD ->> BUS : el relevo de bandeja publica\nEV-03 Desastre creado
+par difusión del evento
+  BUS ->> NO : EV-03 (q.notificacion)
+  NO -> NO : resuelve suscripciones (AD-13)
+  NO ->> BUS : EV-28 Envío de notificación solicitado
+  BUS ->> AD8 : EV-28 (q.salida.se8)
+  AD8 -> SE8 : envía la alerta
+  SE8 --> AD8 : acuse de entrega
+  AD8 ->> BUS : EV-29 Acuse de notificación
+  BUS ->> NO : EV-29 (q.notificacion)
+  NO ->> BUS : EV-07 Notificación despachada\n(estado: entregada)
+else
+  BUS ->> CQ : EV-03 (q.consulta)
+  CQ -> CQ : actualiza proyecciones
+else
+  BUS ->> AU : EV-01 a EV-03, EV-07, EV-28, EV-29\n(q.auditoria)
+  AU -> AU : registra de forma inmutable
+end
+OR -> IDP : inicia sesión (OIDC con PKCE)
+IDP --> OR : JWT con rol organismo
+OR -> GW : POST /v1/desastres/{id}/transiciones\ncon el JWT
+GW -> GW : valida firma, emisor y audiencia con\nlas llaves JWKS del proveedor y el rol\nde la ruta en rutas.json (nivel 1, AD-49)
+GW -> GD : reenvía la petición con el mismo JWT
+GD -> GD : valida de nuevo el JWT, que el organismo\nes el responsable (nivel 2, AD-22) y la\ntransición contra el perfil (RN-2)
+GD --> GW : 200, estado Registrado
+GW --> OR : 200
+GD ->> BUS : el relevo publica EV-06\nEstado de desastre cambiado
+
+legend bottom left
+  Flecha con punta llena: llamada síncrona.  Flecha con punta abierta: mensaje asíncrono por el bus (entre paréntesis, la cola que lo entrega).  Flecha discontinua: respuesta.
+  Participante con fondo gris «diseño»: elemento sin implementar. Los demás llevan entre corchetes el servicio de docker-compose que los implementa.
+endlegend
+@enduml

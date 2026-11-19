@@ -1,0 +1,61 @@
+@startmindmap arbol_utilidad
+' ATAM v1.1 - Arbol de utilidad con la priorizacion P = I x D del SRS 1.1
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam ArrowColor #555555
+skinparam NodeBorderColor #555555
+<style>
+mindmapDiagram {
+  node { BackgroundColor #FFFFFF; LineColor #555555; Padding 5; Margin 4 }
+  .p9 { BackgroundColor #F8C9C9 }
+  .p6 { BackgroundColor #FBE3B5 }
+  .p0 { BackgroundColor #F1F1F1 }
+}
+</style>
+* Utilidad
+** Disponibilidad
+*** Tolerancia al fallo de una fuente externa
+**** QA-01  (A, M)  P = 6 <<p6>>
+*** Continuidad del servicio crítico
+**** QA-02  (A, A)  P = 9 <<p9>>
+** Recuperación ante fallos
+*** Pérdida de la ubicación primaria
+**** QA-03  (A, A)  P = 9 <<p9>>
+** Resiliencia
+*** Contención del fallo interno
+**** QA-04  (A, M)  P = 6 <<p6>>
+** Escalabilidad
+*** Elasticidad del camino de lectura
+**** QA-05  (A, M)  P = 6 <<p6>>
+** Rendimiento
+*** Latencia de consulta
+**** QA-06  (M, M)  P = 4 <<p0>>
+*** Latencia de escritura
+**** QA-07  (M, M)  P = 4 <<p0>>
+*** Latencia de la cadena de alerta
+**** QA-08  (A, M)  P = 6 <<p6>>
+** Interoperabilidad
+*** Incorporación de una fuente nueva
+**** QA-09  (A, A)  P = 9 <<p9>>
+** Modificabilidad
+*** Variabilidad del dominio
+**** QA-10  (M, B)  P = 2 <<p0>>
+** Seguridad
+*** Autorización por organización
+**** QA-11  (A, M)  P = 6 <<p6>>
+*** Protección de datos personales
+**** QA-12  (A, M)  P = 6 <<p6>>
+** Trazabilidad
+*** Auditoría de las operaciones críticas
+**** QA-13  (A, B)  P = 3 <<p0>>
+*** Auditoría de la reconstrucción
+**** QA-15  (A, B)  P = 3 <<p0>>
+** Integridad de datos
+*** Sincronización diferida desde campo
+**** QA-14  (A, A)  P = 9 <<p9>>
+legend bottom left
+  (I, D): importancia y dificultad. A = 3, M = 2, B = 1. P = I × D.
+  Rojo: P = 9, análisis completo.  Naranja: P = 6, análisis abreviado.  Gris: P de 2 a 4, análisis resumido.
+endlegend
+@endmindmap

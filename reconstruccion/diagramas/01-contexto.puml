@@ -1,0 +1,49 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam monochrome true
+skinparam shadowing false
+skinparam componentStyle uml2
+left to right direction
+
+actor "Autoridad\n(local, regional, nacional)" as AUT
+actor "Responsable de proyecto" as RES
+actor "Auditor" as AUD
+
+component "web\n(consola Angular,\nmódulo reconstruccion)" as WEB
+component "gateway\n(API Gateway, YARP)" as GW
+component "keycloak\n(Proveedor de identidad)" as KC
+
+rectangle "Módulo de Reconstrucción" <<microservicio>> {
+  component "reconstruccion\n(Reconstruccion__Rol=escritura)" as RC
+  component "consulta-programa\n(Reconstruccion__Rol=consulta)" as CP
+}
+
+component "gestion-desastres" as GD
+component "evaluacion-danos" as ED
+component "adaptador-se2" as A2
+component "auditoria" as AU
+component "adaptador-se6" as A6
+component "adaptador-se7-salida\nadaptador-se7-entrada" as A7
+component "SE-6\nSistema financiero" <<sistema externo>> as SE6
+component "SE-7\nSistema de proyectos" <<sistema externo>> as SE7
+
+AUT --> WEB : HTTPS
+RES --> WEB
+AUD --> WEB
+WEB --> GW : HTTPS + JWT
+GW ..> KC : valida el token (OIDC)
+GW --> RC : rc-* (HTTP)
+GW --> CP : cp-consolidado (HTTP)
+
+GD --> RC : EV-03, EV-06\n(q.reconstruccion)
+ED --> RC : EV-08\n(q.reconstruccion)
+A2 --> RC : EV-21\n(q.reconstruccion)
+A7 --> RC : EV-24\n(q.reconstruccion)
+RC --> CP : EV-18, EV-19, EV-20\n(q.consulta-programa)
+RC --> GD : EV-18, EV-20\n(q.gestion-desastres)
+RC --> AU : todos (q.auditoria)
+RC --> A6 : EV-18, EV-19, EV-20\n(q.salida.se6)
+RC --> A7 : EV-18, EV-20\n(q.salida.se7)
+A6 --> SE6 : PUT /v1/lotes/{idLote}
+A7 <--> SE7 : altas y cambios de obra
+@enduml

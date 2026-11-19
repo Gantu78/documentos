@@ -1,0 +1,926 @@
+%==============================================================================
+%  Decisiones de tecnología (SAD v1.2). Archivo incluido desde main.tex con \input{tecnologia}.
+%  Generado a partir de la especificación de la versión 1.2. No carga paquetes.
+%==============================================================================
+\section{Decisiones de tecnología}
+\label{sec:tecnologia}
+
+El enunciado del proyecto (§8) pide seleccionar las tecnologías en la segunda entrega.
+CON-8 exigía independencia tecnológica en la primera entrega.
+Esta sección sustituye esa condición para la segunda entrega.
+El Anexo~\ref{sec:anexo-a} deja de ser una excepción a CON-8 y describe la implementación de FP-06 con las tecnologías elegidas aquí.
+
+Las decisiones se numeran de AD-50 a AD-65.
+Ninguna modifica una decisión estructural.
+Cada una materializa uno o varios mecanismos de AD-01 a AD-49, y su justificación parte de los escenarios QA-nn que ese mecanismo debe cumplir (CON-7).
+
+\subsection{Método de decisión}
+\label{sec:tec-metodo}
+
+Cada decisión sigue cinco pasos:
+\begin{enumerate}
+  \item Se identifica el mecanismo del SAD que la tecnología materializa y los escenarios QA-nn que ese mecanismo atiende.
+  \item Se eligen entre tres y cinco alternativas con uso real para ese mecanismo.
+  \item Se definen los criterios. Cada criterio cita el QA-nn, AD-nn o CON-n del que proviene. La experiencia del equipo y la licencia o el costo se incluyen con un peso menor que los criterios de calidad.
+  \item Se asigna un peso a cada criterio. Los pesos de una decisión suman 100\,\%.
+  \item Se califica cada alternativa en cada criterio y se calcula el total ponderado.
+\end{enumerate}
+
+La escala de calificación tiene cinco niveles:
+\begin{itemize}
+  \item 1: la alternativa no satisface el criterio o lo impide.
+  \item 2: lo satisface con desarrollo propio considerable.
+  \item 3: lo satisface con configuración adicional o con complementos de terceros.
+  \item 4: lo satisface de forma nativa con limitaciones menores.
+  \item 5: lo satisface de forma nativa y la implementación lo verifica.
+\end{itemize}
+
+El total ponderado de una alternativa es $\sum_i p_i \, c_i / 100$, donde $p_i$ es el peso en porcentaje y $c_i$ la calificación del criterio $i$.
+El máximo es 5.
+Las cifras de verificación citadas provienen del perfil local de un computador, con 20 clientes, y no reemplazan la prueba con 10\,000 usuarios (L-04).
+
+\subsection{Resumen de las decisiones}
+\label{sec:tec-resumen}
+
+El \cref{tab:tecnologia-resumen} relaciona cada decisión con su tecnología, el mecanismo que materializa y los escenarios que favorece.
+Las versiones son las de los archivos de proyecto.
+
+\begingroup\small
+\begin{longtable}{L{1.15cm} L{2.2cm} L{6.0cm} L{2.6cm} L{2.6cm}}
+\cabecera{5}{tab:tecnologia-resumen}{Resumen de las decisiones de tecnología}{\textbf{ID} & \textbf{Categoría} &
+\textbf{Tecnología y versión} & \textbf{Mecanismo} & \textbf{QA que favorece}}
+AD-50 & Lenguaje y plataforma & C\# sobre .NET 10 (SDK 10.0.100, \texttt{net10.0}) & AD-01, AD-08, AD-09, AD-45 & QA-06, QA-07, QA-14 \\
+AD-51 & Marco web & ASP.NET Core 10 (controladores y \emph{minimal APIs}) & AD-08, AD-22, AD-24 & QA-06, QA-07, QA-11 \\
+AD-52 & Persistencia & PostgreSQL 18 con PostGIS 3.6 (\texttt{postgis/postgis:18-3.6}), una base por microservicio y réplica \texttt{db-replica} & AD-01, AD-17, AD-20, AD-24, AD-41, AD-45 & QA-03, QA-04, QA-06, QA-13, QA-15 \\
+AD-53 & Acceso a datos & Entity Framework Core 10.0.14, Npgsql 10.0.3 y NetTopologySuite 10.0.3, con contenedor migrador & AD-08, AD-17, AD-41, AD-45 & QA-06, QA-10, QA-13 \\
+AD-54 & Mensajería & RabbitMQ 4.4 (3 nodos, colas quorum acotadas, DLQ) con RabbitMQ.Client 7.2.2 & AD-02, AD-05, AD-36, AD-45 & QA-01, QA-04, QA-08 \\
+AD-55 & Caché & Redis 8.8 (\texttt{redis:8.8.4-alpine}) con StackExchange.Redis 3.4.29 & AD-16, AD-17 & QA-05, QA-06 \\
+AD-56 & Almacén de objetos & MinIO con API S3 (paquete Minio 7.0.0) & AD-24, AD-31 & QA-02, QA-03, QA-14 \\
+AD-57 & Puerta de entrada & YARP 2.3.0 con catálogo \texttt{rutas.json} (56 rutas) & AD-04, AD-19, AD-22 & QA-05, QA-06, QA-11 \\
+AD-58 & Identidad & Keycloak 26.5.2 (realm \texttt{plataforma}), AppAuth-Android 0.11.1, angular-auth-oidc-client 22.0.2 y validador JWT propio en \texttt{Plataforma.Comun.Seguridad} & AD-04, AD-22, AD-49 & QA-11, QA-14 \\
+AD-59 & Cliente web & Angular 22.2 (TypeScript 6.0) servido por nginx 1.29 detrás del gateway & AD-04, AD-08 & QA-06, QA-10, QA-11 \\
+AD-60 & Mapas & Leaflet 1.9.4 con teselas de OpenStreetMap & AD-16, AD-17 & QA-06 \\
+AD-61 & Cliente móvil & Android nativo: Kotlin 2.0.21, Jetpack Compose (BOM 2024.09.00), Hilt 2.60.1, minSdk 26, targetSdk 36 & AD-31, AD-44, AD-48 & QA-07, QA-14 \\
+AD-62 & Persistencia móvil & Room 2.8.5 sobre SQLite, migraciones explícitas 1$\to$2$\to$3 & AD-31, AD-44, AD-48 & QA-14 \\
+AD-63 & Sincronización móvil & WorkManager 2.12.0, Retrofit 3.0.0, OkHttp 5.4.0 y kotlinx.serialization 1.9.0 & AD-31, AD-44, AD-48 & QA-11, QA-14 \\
+AD-64 & Resiliencia & Microsoft.Extensions.Http.Resilience 10.11.0 (Polly v8) & AD-05, AD-37 & QA-01, QA-04 \\
+AD-65 & Despliegue & Contenedores Docker (\texttt{mcr.microsoft.com/\br{}dotnet/\br{}aspnet:10.0}), Docker Compose para un computador y Kubernetes con HPA y KEDA para escalar & AD-18, AD-24, AD-25 & QA-01, QA-02, QA-05 \\
+\end{longtable}
+\endgroup
+
+%---------------------------------------------------------------------- AD-50
+\subsection{AD-50. Lenguaje y plataforma de los microservicios}
+\label{sec:tec-ad50}
+
+\paragraph{Contexto.} Esta decisión materializa los microservicios con almacén propio (AD-01), las cuatro capas de cada microservicio (AD-08), el contrato común de los adaptadores (AD-09) y la bandeja de salida transaccional (AD-45).
+El lenguaje determina la latencia del camino síncrono, que exige QA-06 (p95 $<$ 2\,s) y QA-07 (p95 $<$ 3\,s).
+También determina si la base común \texttt{comun} y el prototipo de FP-06 del Anexo~\ref{sec:anexo-a} se reutilizan, lo que afecta la verificación de QA-14.
+CON-2 exige integrarse con sistemas de tecnologías diferentes, y esa heterogeneidad la absorben los adaptadores (AD-03), no el lenguaje de los microservicios.
+
+\paragraph{Alternativas.} Se consideran C\# sobre .NET 10, Java 21, Node.js 22 con TypeScript y Go.
+Las cuatro tienen licencia libre y ejecución en contenedores.
+El \cref{tab:tec-ad50} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,90 y la segunda mejor, Java 21, obtiene 3,85.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad50}{Matriz de decisión ponderada de AD-50}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{.NET 10} & \hspace{0pt}\textbf{Java 21} & \hspace{0pt}\textbf{Node.js 22} & \hspace{0pt}\textbf{Go}}
+Rendimiento del camino síncrono (QA-06, QA-07) & 25\,\% & 5 & 4 & 3 & 5 \\
+Bibliotecas maduras para bus, resiliencia, datos espaciales y JWT (AD-02, AD-05, AD-17, AD-22) & 25\,\% & 5 & 5 & 3 & 3 \\
+Reutilización de \texttt{comun} y del prototipo de FP-06 (QA-14, AD-09) & 20\,\% & 5 & 2 & 2 & 2 \\
+Memoria y arranque de cada réplica (QA-05, AD-18) & 10\,\% & 4 & 3 & 4 & 5 \\
+Experiencia del equipo & 10\,\% & 5 & 4 & 3 & 1 \\
+Licencia y costo & 10\,\% & 5 & 5 & 5 & 5 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,90} & 3,85 & 3,10 & 3,50 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Java 21 pierde en la reutilización de \texttt{comun} y del prototipo de FP-06 (QA-14), que habría que reescribir.
+  \item Node.js 22 pierde en el rendimiento del camino síncrono (QA-06, QA-07) y en la madurez de las bibliotecas para datos espaciales y bus.
+  \item Go gana en memoria y arranque de cada réplica (QA-05), pero pierde en bibliotecas para los mecanismos del SAD y en experiencia del equipo.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} Una sola pila reduce el costo de mantener \texttt{comun} (AD-09) y acepta que todos los microservicios dependen del ciclo de soporte de .NET.
+La heterogeneidad que exige CON-2 queda confinada en los adaptadores (AD-03).
+
+\paragraph{Riesgo.} El fin del soporte de .NET 10 obligaría a migrar todos los microservicios a la vez.
+El archivo \texttt{global.json} fija el SDK con avance solo de la versión de características, lo que acota este riesgo.
+No corresponde a un riesgo del ATAM.
+
+\paragraph{Dónde se ve.} Vista de implementación: proyectos \texttt{*.Api}, \texttt{*.Aplicacion}, \texttt{*.Dominio} e \texttt{*.Infraestructura} de cada microservicio.
+Vista física de la implementación: artefactos \texttt{plataforma/<servicio>:local} sobre \texttt{mcr.microsoft.com/\br{}dotnet/\br{}aspnet:10.0}.
+
+\paragraph{Evidencia en el código.} La suite de .NET suma 1\,008 pruebas en 19 proyectos en verde. QA-07 se midió con p95 de 1\,334\,ms en el perfil local (L-04).
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}global.json}
+  \item \texttt{proyectoparte2/\br{}Directory.Build.props}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-51
+\subsection{AD-51. Marco de las API de los microservicios}
+\label{sec:tec-ad51}
+
+\paragraph{Contexto.} Esta decisión materializa la capa de acceso de cada microservicio (AD-08), el nivel 2 de la autorización (AD-22) y el sondeo de salud de la réplica activa (AD-24).
+El marco atiende la latencia de QA-06 y QA-07 y el rechazo del 100\,\% de las modificaciones no autorizadas de QA-11.
+La elección está condicionada por AD-50, porque el marco debe pertenecer a la pila elegida.
+
+\paragraph{Alternativas.} Se consideran ASP.NET Core 10, Spring Boot 3 y NestJS.
+Spring Boot 3 y NestJS se evalúan como el marco que se habría usado con Java y con Node.js.
+El \cref{tab:tec-ad51} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,85 y la segunda mejor, Spring Boot 3, obtiene 3,75.
+
+\begingroup\small
+\begin{longtable}{L{6.74cm} C{1.10cm} C{2.50cm} C{2.50cm} C{2.50cm}}
+\cabecera{5}{tab:tec-ad51}{Matriz de decisión ponderada de AD-51}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{ASP.NET Core 10} & \hspace{0pt}\textbf{Spring Boot 3} & \hspace{0pt}\textbf{NestJS}}
+Latencia por petición (QA-06, QA-07) & 25\,\% & 5 & 4 & 3 \\
+Validación JWT y autorización de nivel 2 en la tubería (QA-11, AD-22) & 20\,\% & 5 & 5 & 4 \\
+Sondeos de salud vivo y listo (QA-02, QA-04, AD-24) & 15\,\% & 4 & 5 & 4 \\
+Coherencia con AD-50 y con el gateway (QA-10, AD-57) & 20\,\% & 5 & 1 & 1 \\
+Experiencia del equipo & 10\,\% & 5 & 3 & 3 \\
+Licencia y costo & 10\,\% & 5 & 5 & 5 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,85} & 3,75 & 3,15 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Spring Boot 3 gana en sondeos de salud con Actuator (QA-02), pero pierde en coherencia con AD-50, porque introduce una segunda pila.
+  \item NestJS pierde en latencia por petición (QA-06, QA-07) y en coherencia con AD-50.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} Los sondeos de salud se componen con \texttt{Plataforma.Comun.Salud} en lugar de un módulo integrado como Actuator (AD-24).
+
+\paragraph{Riesgo.} Una actualización mayor del marco afecta a todos los microservicios a la vez.
+No corresponde a un riesgo del ATAM.
+
+\paragraph{Dónde se ve.} Vista de implementación: proyectos \texttt{*.Api} con \texttt{Sdk.Web}.
+Vista física de la implementación: artefactos \texttt{plataforma/<servicio>:local}.
+
+\paragraph{Evidencia en el código.} Los proyectos \texttt{*.Api.csproj} usan \texttt{Microsoft.NET.Sdk.Web}. QA-07 se cumple con 100 de 100 registros respondidos con 201.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}servicios/\br{}gestion-desastres/\br{}src/\br{}GestionDesastres.Api}
+  \item \texttt{proyectoparte2/\br{}comun/\br{}Plataforma.Comun.Salud}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-52
+\subsection{AD-52. Motor de base de datos}
+\label{sec:tec-ad52}
+
+\paragraph{Contexto.} Esta decisión materializa el almacén propio de cada microservicio (AD-01), la geometría precalculada de las zonas (AD-17), los historiales versionados y de solo inserción (AD-20, AD-41), la réplica activa (AD-24) y la bandeja de salida (AD-45).
+El motor atiende la consulta espacial de QA-06, la publicación sin pérdida de QA-04, la inmutabilidad de QA-13 y QA-15 y el RPO $\le$ 60\,s de QA-03.
+
+\paragraph{Alternativas.} Se consideran PostgreSQL con PostGIS, MySQL 8, SQL Server y MongoDB.
+El \cref{tab:tec-ad52} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,85 y la segunda mejor, SQL Server, obtiene 4,10.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad52}{Matriz de decisión ponderada de AD-52}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{PostgreSQL + PostGIS} & \hspace{0pt}\textbf{MySQL 8} & \hspace{0pt}\textbf{SQL Server} & \hspace{0pt}\textbf{MongoDB}}
+Consulta espacial con índice (QA-06, AD-17) & 25\,\% & 5 & 3 & 4 & 3 \\
+Transacción ACID para la bandeja y el historial (QA-04, AD-20, AD-45) & 20\,\% & 5 & 4 & 5 & 3 \\
+Inmutabilidad garantizada por permisos del almacén (QA-13, QA-15, AD-41) & 15\,\% & 5 & 4 & 5 & 3 \\
+Réplica continua para la réplica activa y el RPO (QA-03, AD-24, AD-27) & 15\,\% & 4 & 4 & 5 & 5 \\
+Experiencia del equipo & 10\,\% & 5 & 4 & 3 & 3 \\
+Licencia y costo & 15\,\% & 5 & 4 & 2 & 3 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,85} & 3,75 & 4,10 & 3,30 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item MySQL 8 pierde en consulta espacial con índice (QA-06), porque sus funciones espaciales son menos completas que PostGIS.
+  \item SQL Server gana en réplica continua (QA-03), pero pierde en licencia y costo, porque su licencia comercial se cobra por núcleo.
+  \item MongoDB gana en réplica continua (QA-03), pero pierde en transacción ACID para la bandeja (QA-04) y en inmutabilidad por permisos (QA-13).
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} En el entorno de un computador las nueve bases comparten la instancia \texttt{db}.
+La separación por microservicio se conserva por base y por rol con mínimo privilegio (AD-01), no por servidor.
+
+\paragraph{Riesgo.} La instancia \texttt{db} es un punto único de fallo en el entorno de un computador.
+La réplica \texttt{db-replica} reduce la pérdida de datos, pero la promoción no es automática y no hay segunda región (L-01).
+QA-02 y QA-03 no se midieron.
+
+\paragraph{Dónde se ve.} Vista física de la implementación: nodos \texttt{db} y \texttt{db-replica}.
+Vista de implementación: paquete \texttt{Infraestructura/Persistencia} de cada microservicio y migradores.
+
+\paragraph{Evidencia en el código.} Los servicios \texttt{db} y \texttt{db-replica} usan la imagen \texttt{postgis/postgis:18-3.6}. QA-06 se midió con p95 de 34\,ms en el consolidado del desastre en el perfil local (L-04).
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}despliegue/\br{}compose/\br{}docker-compose.yml}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-53
+\subsection{AD-53. Acceso a datos y migraciones}
+\label{sec:tec-ad53}
+
+\paragraph{Contexto.} Esta decisión materializa la capa de infraestructura de cada microservicio (AD-08), el mapeo de las geometrías (AD-17), los permisos del historial de solo inserción (AD-41) y la escritura atómica con la bandeja (AD-45).
+El acceso a datos afecta la latencia de QA-06, la evolución del esquema que pide QA-10 y la inmutabilidad de QA-13.
+
+\paragraph{Alternativas.} Se consideran Entity Framework Core, Dapper, NHibernate y SQL directo con Npgsql sin mapeador.
+El \cref{tab:tec-ad53} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,80 y la segunda mejor, Dapper, obtiene 3,60.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad53}{Matriz de decisión ponderada de AD-53}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{EF Core 10} & \hspace{0pt}\textbf{Dapper} & \hspace{0pt}\textbf{NHibernate} & \hspace{0pt}\textbf{SQL directo}}
+Migraciones versionadas con los permisos del historial (QA-10, QA-13, AD-41) & 25\,\% & 5 & 2 & 3 & 1 \\
+Tipos espaciales mapeados (QA-06, AD-17) & 20\,\% & 5 & 3 & 2 & 3 \\
+Control del SQL en las lecturas críticas (QA-06) & 20\,\% & 4 & 5 & 3 & 5 \\
+Aislamiento en la capa de infraestructura y pruebas (QA-10, AD-08) & 15\,\% & 5 & 4 & 4 & 3 \\
+Experiencia del equipo & 10\,\% & 5 & 4 & 2 & 4 \\
+Licencia y costo & 10\,\% & 5 & 5 & 5 & 5 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,80} & 3,60 & 3,05 & 3,20 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Dapper gana en control del SQL (QA-06), pero pierde en migraciones versionadas (QA-10, QA-13), que exigirían otra herramienta.
+  \item NHibernate pierde en tipos espaciales mapeados (QA-06) y en experiencia del equipo.
+  \item SQL directo gana en control del SQL (QA-06), pero pierde en migraciones versionadas y en aislamiento de la capa de infraestructura (QA-10).
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} El mapeador agrega una capa sobre el SQL.
+Las lecturas críticas del modelo de lectura (AD-15) pueden usar SQL explícito dentro del mismo contexto cuando QA-06 lo exija.
+El esquema lo aplica un contenedor migrador con el rol dueño, y el microservicio corre con un rol sin permisos de DDL (AD-41).
+
+\paragraph{Riesgo.} Una consulta generada por el mapeador puede degradar la latencia del mapa de daños, que se midió con p95 de 1\,628\,ms frente al límite de 2\,s de QA-06.
+No corresponde a un riesgo del ATAM.
+
+\paragraph{Dónde se ve.} Vista de implementación: paquete \texttt{Infraestructura/Persistencia} y migradores (\texttt{*-migrador}).
+Vista física de la implementación: nodos \texttt{db} y \texttt{db-replica}.
+
+\paragraph{Evidencia en el código.} El servicio \texttt{reconstruccion-migrador} del archivo de composición crea los roles y aplica las migraciones antes de arrancar el microservicio.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}Directory.Packages.props}
+  \item \texttt{proyectoparte2/\br{}comun/\br{}Plataforma.Comun.Migraciones}
+  \item \texttt{proyectoparte2/\br{}servicios/\br{}evaluacion-danos/\br{}src/\br{}EvaluacionDanos.Infraestructura/\br{}Persistencia}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-54
+\subsection{AD-54. Bus de eventos}
+\label{sec:tec-ad54}
+
+\paragraph{Contexto.} Esta decisión materializa el bus de eventos con colas por consumidor (AD-02), las colas acotadas de la frontera (AD-05), la cola de salida con reintento (AD-36) y la entrega desde la bandeja de salida (AD-45).
+El bus atiende QA-04, que exige 0 eventos perdidos ante el fallo de un componente interno, y QA-01, que exige procesar el 100\,\% de lo encolado cuando el sistema externo vuelve.
+
+\paragraph{Alternativas.} Se consideran RabbitMQ, Apache Kafka, NATS JetStream y MassTransit sobre RabbitMQ.
+MassTransit se evalúa como capa de abstracción sobre el mismo intermediario.
+El \cref{tab:tec-ad54} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,90 y la segunda mejor, NATS JetStream, obtiene 3,85.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad54}{Matriz de decisión ponderada de AD-54}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{RabbitMQ 4.4} & \hspace{0pt}\textbf{Kafka} & \hspace{0pt}\textbf{NATS JetStream} & \hspace{0pt}\textbf{MassTransit}}
+Cola acotada por consumidor con rechazo al productor (QA-04, AD-05) & 25\,\% & 5 & 2 & 4 & 4 \\
+Confirmación por mensaje, límite de entregas y DLQ (QA-01, QA-04, AD-36) & 20\,\% & 5 & 2 & 4 & 5 \\
+Replicación de la cola ante la caída de un nodo (QA-02, QA-04) & 15\,\% & 5 & 5 & 5 & 5 \\
+Topología explícita y declarada al desplegar (QA-09, QA-10) & 15\,\% & 5 & 3 & 3 & 2 \\
+Experiencia del equipo & 10\,\% & 4 & 2 & 1 & 3 \\
+Licencia y costo & 15\,\% & 5 & 5 & 5 & 2 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,90} & 3,05 & 3,85 & 3,65 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Kafka iguala en replicación (QA-04), pero pierde en cola acotada por consumidor y en confirmación por mensaje con DLQ, que no ofrece de forma nativa.
+  \item NATS JetStream pierde en topología declarada (QA-09) y en experiencia del equipo.
+  \item MassTransit gana en confirmación y DLQ (QA-04), pero pierde en topología explícita, porque la oculta, y en licencia, porque sus autores anunciaron licencia comercial para la versión 9.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} La retención de un registro de eventos, que Kafka ofrece, no existe en RabbitMQ.
+La recuperación de los mensajes pendientes descansa en la bandeja de salida de cada productor (AD-45).
+La política \texttt{plataforma-colas} acota cada cola a 100\,000 mensajes y rechaza la publicación al llenarse.
+
+\paragraph{Riesgo.} Una cola llena rechaza la publicación y el relevo de la bandeja reintenta.
+Si la saturación persiste, la bandeja crece en la base del productor.
+La alarma de la bandeja no se registra en Auditoría (L-02).
+
+\paragraph{Dónde se ve.} Vista de procesos: exchange \texttt{plataforma.eventos} y colas \texttt{q.*} con su \texttt{dlq.*}.
+Vista física de la implementación: nodos \texttt{bus1}, \texttt{bus2} y \texttt{bus3}.
+
+\paragraph{Evidencia en el código.} Las 71 pruebas de \texttt{Plataforma.Comun.Pruebas} con RabbitMQ real verifican consumidor detenido sin pérdida, mensaje envenenado apartado y cola llena sin descarte (QA-04).
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}despliegue/\br{}bus/\br{}definiciones.json}
+  \item \texttt{proyectoparte2/\br{}comun/\br{}Plataforma.Comun.Mensajeria}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-55
+\subsection{AD-55. Motor de caché}
+\label{sec:tec-ad55}
+
+\paragraph{Contexto.} Esta decisión materializa la caché de geometrías y de respuestas del mapa (AD-17) y la marca de tiempo del dato consultado (AD-16).
+El motor atiende QA-06, que exige p95 $<$ 2\,s y antigüedad del dato $\le$ 2\,s en el p95.
+También atiende QA-05, porque la caché separa la carga de lectura de la base de datos.
+
+\paragraph{Alternativas.} Se consideran Redis, Valkey, Memcached y una vista materializada en PostgreSQL.
+El \cref{tab:tec-ad55} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,70 y la segunda mejor, Valkey, obtiene 4,45.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad55}{Matriz de decisión ponderada de AD-55}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{Redis 8.8} & \hspace{0pt}\textbf{Valkey} & \hspace{0pt}\textbf{Memcached} & \hspace{0pt}\textbf{Vista materializada}}
+Lectura con TTL e invalidación por clave (QA-06, AD-17) & 30\,\% & 5 & 5 & 4 & 3 \\
+Antigüedad del dato controlada (QA-06, AD-16) & 20\,\% & 4 & 4 & 4 & 2 \\
+Componente separado de la base que escala aparte (QA-05, AD-18) & 15\,\% & 5 & 5 & 5 & 1 \\
+Cliente maduro en la pila de AD-50 & 15\,\% & 5 & 4 & 3 & 5 \\
+Experiencia del equipo & 10\,\% & 5 & 3 & 2 & 4 \\
+Licencia y costo & 10\,\% & 4 & 5 & 5 & 5 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,70} & 4,45 & 3,90 & 3,10 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Valkey gana en licencia, porque conserva la licencia BSD, pero pierde en experiencia del equipo y en madurez del cliente probado con la pila.
+  \item Memcached pierde en invalidación por clave (QA-06), porque no ofrece estructuras ni invalidación por patrón.
+  \item La vista materializada gana en cliente y licencia, pero pierde en componente separado (QA-05), porque concentra la lectura en la misma base.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} Redis 8 se distribuye con licencias RSALv2, SSPL y AGPLv3.
+La AGPLv3 permite su uso en este proyecto académico.
+Valkey es un sustituto compatible con el mismo protocolo si la licencia cambia.
+
+\paragraph{Riesgo.} Riesgo R-14 del ATAM: la antigüedad del dato presentado depende de la carga.
+En el perfil local se midió p95 de 1\,485\,ms con máximo de 11,8\,s.
+Una corrida anterior dio p95 de 4,2\,s con 10 muestras.
+
+\paragraph{Dónde se ve.} Vista física de la implementación: nodo \texttt{cache}.
+
+\paragraph{Evidencia en el código.} QA-06 se midió con p95 de 142\,ms en el mapa de desastres y con la marca \texttt{datoAl} en el 100\,\% de las respuestas.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}servicios/\br{}consulta-danos/\br{}src/\br{}ConsultaDanos.Infraestructura/\br{}Cache.cs}
+  \item \texttt{proyectoparte2/\br{}servicios/\br{}consulta/\br{}src/\br{}Consulta.Infraestructura/\br{}Adaptadores.cs}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-56
+\subsection{AD-56. Almacén de archivos}
+\label{sec:tec-ad56}
+
+\paragraph{Contexto.} Esta decisión materializa el almacén de archivos de la vista física, donde se guardan las evidencias de Evaluación de Daños y los documentos de Reconstrucción.
+El almacén debe mantener la evidencia disponible aunque falle una réplica del microservicio (AD-24, QA-02).
+También debe conservar el 100\,\% de las fotos sincronizadas desde el cliente móvil (AD-31, QA-14).
+
+\paragraph{Alternativas.} Se consideran MinIO, el disco local del contenedor, una columna binaria en PostgreSQL y SeaweedFS.
+El \cref{tab:tec-ad56} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,20 y la segunda mejor, SeaweedFS, obtiene 4,05.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad56}{Matriz de decisión ponderada de AD-56}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{MinIO} & \hspace{0pt}\textbf{Disco local} & \hspace{0pt}\textbf{Columna binaria} & \hspace{0pt}\textbf{SeaweedFS}}
+Evidencia disponible ante la pérdida de una réplica (QA-02, AD-24) & 25\,\% & 4 & 1 & 4 & 4 \\
+Integridad de la evidencia sincronizada (QA-14) & 20\,\% & 5 & 3 & 5 & 5 \\
+Tamaño de la base y de su respaldo (QA-03, QA-06) & 15\,\% & 5 & 4 & 1 & 5 \\
+Interfaz S3 estándar que permite sustituir el producto (QA-10) & 15\,\% & 5 & 1 & 1 & 4 \\
+Experiencia del equipo & 10\,\% & 4 & 5 & 4 & 1 \\
+Licencia y continuidad del producto & 15\,\% & 2 & 5 & 5 & 4 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,20} & 2,85 & 3,45 & 4,05 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item El disco local gana en experiencia y licencia, pero pierde en disponibilidad ante la pérdida de una réplica (QA-02), que AD-24 descarta.
+  \item La columna binaria iguala en integridad (QA-14), pero pierde en tamaño de la base y de su respaldo (QA-03).
+  \item SeaweedFS gana en continuidad del producto, pero pierde en experiencia del equipo y en compatibilidad S3 verificada.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} El proyecto original de MinIO dejó de publicar imágenes y el archivo de composición usa el fork comunitario \texttt{pgsty/minio} (DT-11).
+El código depende solo de la API S3, lo que permite sustituir el producto sin modificar los microservicios.
+
+\paragraph{Riesgo.} El fork comunitario puede dejar de mantenerse.
+En el entorno de un computador \texttt{archivos} es un solo nodo, y su caída deja sin evidencias a las réplicas de \texttt{evaluacion-danos}.
+No corresponde a un riesgo del ATAM.
+
+\paragraph{Dónde se ve.} Vista física de la implementación: nodo \texttt{archivos}.
+
+\paragraph{Evidencia en el código.} La corrida de QA-14 conservó 120 de 120 fotos a través del gateway.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}servicios/\br{}evaluacion-danos/\br{}src/\br{}EvaluacionDanos.Infraestructura/\br{}Archivos/\br{}AlmacenEvidenciasMinio.cs}
+  \item \texttt{proyectoparte2/\br{}servicios/\br{}reconstruccion/\br{}src/\br{}Reconstruccion.Infraestructura/\br{}Archivos/\br{}AlmacenDocumentosMinio.cs}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-57
+\subsection{AD-57. API Gateway}
+\label{sec:tec-ad57}
+
+\paragraph{Contexto.} Esta decisión materializa el punto único de entrada (AD-04), la priorización y degradación por tipo de cliente (AD-19) y el nivel 1 de la autorización (AD-22).
+El gateway atiende QA-11, que exige el rechazo del 100\,\% de las modificaciones de un organismo no responsable.
+También atiende QA-05 y QA-06, porque prioriza el tráfico crítico cuando la carga crece.
+
+\paragraph{Alternativas.} Se consideran YARP, Kong, Traefik, Ocelot y nginx.
+El \cref{tab:tec-ad57} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,85 y la segunda mejor, Kong, obtiene 3,45.
+
+\begingroup\small
+\begin{longtable}{L{3.93cm} C{1.10cm} C{1.95cm} C{1.95cm} C{1.95cm} C{1.95cm} C{1.95cm}}
+\cabecera{7}{tab:tec-ad57}{Matriz de decisión ponderada de AD-57}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{YARP 2.3} & \hspace{0pt}\textbf{Kong} & \hspace{0pt}\textbf{Traefik} & \hspace{0pt}\textbf{Ocelot} & \hspace{0pt}\textbf{nginx}}
+Priorización por clase de tráfico y degradación (QA-05, QA-06, AD-19) & 25\,\% & 5 & 3 & 2 & 3 & 2 \\
+Validación JWT y regla de dominio por ruta (QA-11, AD-22) & 25\,\% & 5 & 4 & 3 & 4 & 2 \\
+Catálogo de rutas validado al arrancar (QA-11) & 15\,\% & 5 & 4 & 3 & 3 & 2 \\
+Latencia agregada por el intermediario (QA-06) & 15\,\% & 4 & 4 & 4 & 3 & 5 \\
+Experiencia del equipo en la pila de AD-50 & 10\,\% & 5 & 2 & 3 & 4 & 3 \\
+Licencia y mantenimiento & 10\,\% & 5 & 3 & 5 & 3 & 5 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,85} & 3,45 & 3,10 & 3,35 & 2,85 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Kong pierde en priorización con degradación (QA-05), que exigiría complementos propios en otro lenguaje.
+  \item Traefik pierde en priorización y en validación de la regla de dominio por ruta (QA-11).
+  \item Ocelot pierde en catálogo validado al arrancar (QA-11) y en mantenimiento del proyecto.
+  \item nginx gana en latencia agregada (QA-06), pero pierde en validación JWT con regla de dominio (QA-11), que no ofrece sin módulos adicionales.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} La priorización y la regla de dominio son código propio en el gateway.
+Ese código se prueba con la misma suite de .NET, pero lo mantiene el equipo.
+
+\paragraph{Riesgo.} Riesgo R-12 del ATAM: el gateway recibe tráfico sin TLS en el entorno de laboratorio (L-07).
+Riesgo R-13 del ATAM: la validación depende de las llaves y del emisor de Keycloak (L-08).
+Los rechazos del gateway no se registran en Auditoría (L-02).
+
+\paragraph{Dónde se ve.} Vista lógica: componente API Gateway.
+Vista física de la implementación: nodo \texttt{gateway} con dos réplicas y el artefacto \texttt{rutas.json}.
+
+\paragraph{Evidencia en el código.} QA-11 se verificó con 218 de 218 intentos rechazados (100\,\%), 0 falsos negativos y 0 datos modificados sobre 12 rutas con regla de dominio.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}gateway/\br{}src/\br{}Plataforma.Gateway/\br{}rutas.json}
+  \item \texttt{proyectoparte2/\br{}gateway/\br{}src/\br{}Plataforma.Gateway/\br{}Prioridad/\br{}Priorizacion.cs}
+  \item \texttt{proyectoparte2/\br{}gateway/\br{}src/\br{}Plataforma.Gateway/\br{}Seguridad/\br{}AutorizacionNivel1.cs}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-58
+\subsection{AD-58. Proveedor de identidad y clientes OIDC}
+\label{sec:tec-ad58}
+
+\paragraph{Contexto.} Esta decisión materializa el proveedor de identidad federado con OIDC y PKCE (AD-49) y la validación del token en el gateway y en cada microservicio (AD-04, AD-22).
+El proveedor atiende QA-11, porque emite los roles y el atributo de organismo que usa la regla de dominio.
+También atiende QA-14, porque el refresco del token sin conexión permite trabajar días en campo y sincronizar al volver.
+
+\paragraph{Alternativas.} Se consideran Keycloak, Auth0, Duende IdentityServer y una identidad propia.
+El \cref{tab:tec-ad58} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,90 y la segunda mejor, Duende IdentityServer, obtiene 3,75.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad58}{Matriz de decisión ponderada de AD-58}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{Keycloak 26} & \hspace{0pt}\textbf{Auth0} & \hspace{0pt}\textbf{Duende IdentityServer} & \hspace{0pt}\textbf{Identidad propia}}
+OIDC con PKCE para la consola y el móvil, con refresco sin conexión (QA-11, QA-14, AD-49) & 25\,\% & 5 & 5 & 4 & 2 \\
+Roles y organismo como \emph{claims} para la regla de dominio (QA-11, AD-22) & 20\,\% & 5 & 4 & 4 & 3 \\
+Despliegue dentro de la plataforma, sin servicio externo en la emergencia (QA-02, CON-3) & 15\,\% & 5 & 2 & 5 & 5 \\
+Configuración declarada en un archivo versionado (QA-10) & 10\,\% & 5 & 3 & 4 & 3 \\
+Experiencia del equipo & 10\,\% & 4 & 2 & 2 & 3 \\
+Licencia y costo & 20\,\% & 5 & 2 & 3 & 5 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,90} & 3,25 & 3,75 & 3,45 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Auth0 iguala en OIDC con PKCE (QA-11), pero pierde en despliegue dentro de la plataforma (CON-3) y en costo por usuario activo.
+  \item Duende IdentityServer pierde en licencia, porque exige licencia comercial por encima de un umbral de ingresos, y en experiencia del equipo.
+  \item La identidad propia gana en licencia y despliegue, pero pierde en OIDC con PKCE (QA-11), porque obligaría a construir la seguridad desde cero.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} El token se valida dos veces, en el gateway y en el microservicio, con un validador propio en \texttt{Plataforma.Comun.Seguridad}.
+La doble validación agrega trabajo por petición a cambio de la defensa en profundidad de AD-22.
+
+\paragraph{Riesgo.} Riesgo R-13 del ATAM: el emisor del token es \texttt{http://localhost:8180} y debe coincidir en el gateway y en los microservicios (L-08).
+La recarga de las llaves JWT está pendiente (L-09).
+Riesgo R-12 del ATAM: Keycloak corre en \texttt{start-dev} sin TLS (L-07).
+
+\paragraph{Dónde se ve.} Vista lógica: componente externo Proveedor de identidad.
+Vista física de la implementación: nodo \texttt{keycloak}.
+Vista de implementación móvil: paquete \texttt{infraestructura/identidad}.
+
+\paragraph{Evidencia en el código.} Siete pruebas instrumentadas de la app corren contra el gateway y Keycloak, incluido el rechazo por rol.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}despliegue/\br{}keycloak/\br{}realm-plataforma.json}
+  \item \texttt{proyectoparte2/\br{}comun/\br{}Plataforma.Comun.Seguridad/\br{}IdentidadPorJwt.cs}
+  \item \texttt{danos/\br{}app/\br{}src/\br{}main/\br{}java/\br{}com/\br{}example/\br{}danos/\br{}infraestructura/\br{}identidad/\br{}ConexionOidcBuilder.kt}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-59
+\subsection{AD-59. Consola de coordinación}
+\label{sec:tec-ad59}
+
+\paragraph{Contexto.} Esta decisión materializa la capa de presentación web (AD-08) de la Consola de coordinación, con los módulos \texttt{mapa}, \texttt{evaluaciones} y \texttt{reconstruccion}.
+La consola entra por el gateway (AD-04) y atiende QA-06 en la carga del mapa, QA-11 en el inicio de sesión y QA-10 en la incorporación de módulos.
+
+\paragraph{Alternativas.} Se consideran Angular, React 19, Vue 3 y Blazor.
+El \cref{tab:tec-ad59} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,80 y la segunda mejor, Vue 3, obtiene 4,10.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad59}{Matriz de decisión ponderada de AD-59}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{Angular 22} & \hspace{0pt}\textbf{React 19} & \hspace{0pt}\textbf{Vue 3} & \hspace{0pt}\textbf{Blazor}}
+Módulos con rutas, inyección y guardas (QA-10, AD-08) & 25\,\% & 5 & 3 & 4 & 4 \\
+Cliente OIDC con PKCE certificado (QA-11, AD-49) & 20\,\% & 5 & 4 & 4 & 4 \\
+Carga inicial y respuesta de la interfaz (QA-06) & 20\,\% & 4 & 4 & 5 & 2 \\
+Archivos estáticos servidos detrás del gateway (QA-02, AD-04) & 10\,\% & 5 & 5 & 5 & 4 \\
+Experiencia del equipo & 15\,\% & 5 & 3 & 2 & 3 \\
+Licencia y costo & 10\,\% & 5 & 5 & 5 & 5 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,80} & 3,80 & 4,10 & 3,55 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item React 19 pierde en estructura por módulos con inyección y guardas (QA-10), que exige elegir y combinar bibliotecas.
+  \item Vue 3 gana en carga inicial (QA-06), pero pierde en experiencia del equipo y en estructura por módulos.
+  \item Blazor pierde en carga inicial (QA-06), por el tamaño del entorno WebAssembly que descarga el navegador.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} Angular produce un paquete inicial mayor que Vue.
+La carga se mitiga con módulos cargados bajo demanda por ruta.
+
+\paragraph{Riesgo.} Angular publica una versión mayor cada seis meses y obliga a actualizaciones frecuentes.
+No corresponde a un riesgo del ATAM.
+
+\paragraph{Dónde se ve.} Vista física de la implementación: nodo \texttt{web}.
+Vista lógica: Consola de coordinación con los módulos \texttt{mapa}, \texttt{evaluaciones} y \texttt{reconstruccion}.
+
+\paragraph{Evidencia en el código.} El \texttt{Dockerfile} compila con \texttt{node:22-alpine} y sirve los archivos con \texttt{nginx:1.29-alpine}.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}consola/\br{}package.json}
+  \item \texttt{proyectoparte2/\br{}consola/\br{}Dockerfile}
+  \item \texttt{proyectoparte2/\br{}consola/\br{}nginx.conf}
+  \item \texttt{proyectoparte2/\br{}consola/\br{}src/\br{}app/\br{}modulos}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-60
+\subsection{AD-60. Biblioteca de mapas}
+\label{sec:tec-ad60}
+
+\paragraph{Contexto.} Esta decisión materializa la presentación de las geometrías precalculadas (AD-17) y de su marca de tiempo (AD-16) en el módulo \texttt{mapa} de la consola.
+La biblioteca atiende QA-06, porque el mapa es la consulta frecuente del coordinador.
+
+\paragraph{Alternativas.} Se consideran Leaflet, OpenLayers, MapLibre GL y Google Maps.
+El \cref{tab:tec-ad60} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,80 y la segunda mejor, OpenLayers, obtiene 3,90.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad60}{Matriz de decisión ponderada de AD-60}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{Leaflet 1.9} & \hspace{0pt}\textbf{OpenLayers} & \hspace{0pt}\textbf{MapLibre GL} & \hspace{0pt}\textbf{Google Maps}}
+Capas GeoJSON agregadas por zona (QA-06, AD-17) & 25\,\% & 5 & 5 & 5 & 4 \\
+Peso de la biblioteca y tiempo de carga (QA-06) & 20\,\% & 5 & 3 & 2 & 3 \\
+Independencia de un proveedor y de una llave (QA-02, CON-3) & 20\,\% & 4 & 4 & 4 & 1 \\
+Integración con Angular y con el mapa del prototipo (QA-10) & 10\,\% & 5 & 3 & 3 & 3 \\
+Experiencia del equipo & 10\,\% & 5 & 2 & 2 & 3 \\
+Licencia y costo & 15\,\% & 5 & 5 & 5 & 2 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,80} & 3,90 & 3,70 & 2,70 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item OpenLayers iguala en capas GeoJSON (QA-06), pero pierde en peso de la biblioteca y en experiencia del equipo.
+  \item MapLibre GL iguala en capas GeoJSON, pero pierde en peso de la biblioteca (QA-06), porque su ventaja con millones de puntos no hace falta con zonas agregadas.
+  \item Google Maps pierde en independencia de un proveedor (CON-3) y en costo por carga de mapa.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} Leaflet dibuja en el navegador sin aceleración WebGL.
+El volumen se controla con la agregación por zona del servidor (AD-17).
+
+\paragraph{Riesgo.} Las teselas de OpenStreetMap no tienen acuerdo de servicio y su política de uso prohíbe el uso intensivo.
+No corresponde a un riesgo del ATAM.
+
+\paragraph{Dónde se ve.} Vista física de la implementación: nodo \texttt{web}.
+Vista lógica: módulo \texttt{mapa} de la Consola de coordinación.
+
+\paragraph{Evidencia en el código.} QA-06 se midió con p95 de 1\,628\,ms y p99 de 1\,935\,ms en el mapa de daños en el perfil local (L-04).
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}consola/\br{}src/\br{}app/\br{}modulos/\br{}mapa/\br{}lienzo-mapa.ts}
+  \item \texttt{proyectoparte2/\br{}consola/\br{}package.json}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-61
+\subsection{AD-61. Plataforma del cliente móvil}
+\label{sec:tec-ad61}
+
+\paragraph{Contexto.} Esta decisión materializa la réplica local del cliente móvil (AD-31), la cola local de operaciones (AD-44) y el registro del desastre en campo (AD-48).
+La plataforma atiende QA-14, que exige 0 pérdidas, 0 sobrescrituras silenciosas y 0 duplicados al sincronizar 120 evaluaciones.
+
+\paragraph{Alternativas.} Se consideran Android nativo con Kotlin, Flutter, React Native y Kotlin Multiplatform.
+El \cref{tab:tec-ad61} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,60 y la segunda mejor, Kotlin Multiplatform, obtiene 4,00.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad61}{Matriz de decisión ponderada de AD-61}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{Kotlin nativo} & \hspace{0pt}\textbf{Flutter} & \hspace{0pt}\textbf{React Native} & \hspace{0pt}\textbf{Kotlin Multiplatform}}
+Trabajo en segundo plano y almacenamiento del sistema (QA-14, AD-44) & 25\,\% & 5 & 3 & 3 & 4 \\
+Base local con transacciones y migraciones (QA-14, AD-31) & 20\,\% & 5 & 4 & 3 & 4 \\
+Cámara y ubicación para las evidencias (QA-14) & 10\,\% & 5 & 4 & 4 & 4 \\
+Reutilización del prototipo de FP-06 y de sus pruebas (QA-14) & 15\,\% & 5 & 1 & 1 & 4 \\
+Portabilidad a otro sistema operativo móvil (QA-10) & 10\,\% & 1 & 5 & 5 & 4 \\
+Experiencia del equipo & 10\,\% & 5 & 2 & 3 & 3 \\
+Licencia y costo & 10\,\% & 5 & 5 & 5 & 5 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,60} & 3,30 & 3,20 & 4,00 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Flutter gana en portabilidad (QA-10), pero pierde en reutilización del prototipo de FP-06 (QA-14), que habría que reescribir.
+  \item React Native gana en portabilidad, pero pierde en base local transaccional (QA-14) y en reutilización del prototipo.
+  \item Kotlin Multiplatform pierde en trabajo en segundo plano (QA-14), porque esa parte sigue siendo específica de cada plataforma.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} El cliente funciona solo en Android.
+Un cliente para iOS exigiría otra implementación de la capa de presentación y de la sincronización.
+
+\paragraph{Riesgo.} La app de entrega es la variante \texttt{debug}, que admite \texttt{http://} (L-07).
+La evidencia solo admite fotos y no guarda un autor propio (L-10).
+
+\paragraph{Dónde se ve.} Vista de implementación móvil: paquete \texttt{presentacion}.
+Vista física de la implementación: \texttt{<<device>>} Teléfono Android con \texttt{DanosCampo.apk}.
+
+\paragraph{Evidencia en el código.} La app \texttt{co.plataforma.danos} 2.1.0 tiene 81 pruebas unitarias y 16 instrumentadas en verde.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{danos/\br{}gradle/\br{}libs.versions.toml}
+  \item \texttt{danos/\br{}app/\br{}build.gradle.kts}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-62
+\subsection{AD-62. Base de datos local del cliente móvil}
+\label{sec:tec-ad62}
+
+\paragraph{Contexto.} Esta decisión materializa la réplica local (AD-31), la cola local de operaciones inmutables con copia completa del contenido (AD-44) y la tabla \texttt{registro\_desastre} del registro en campo (AD-48).
+La base atiende QA-14, porque la escritura y su operación en la cola deben confirmarse en la misma transacción.
+
+\paragraph{Alternativas.} Se consideran Room, Realm, SQLDelight y DataStore.
+El \cref{tab:tec-ad62} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,90 y la segunda mejor, SQLDelight, obtiene 4,35.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad62}{Matriz de decisión ponderada de AD-62}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{Room 2.8} & \hspace{0pt}\textbf{Realm} & \hspace{0pt}\textbf{SQLDelight} & \hspace{0pt}\textbf{DataStore}}
+Transacción atómica entre la escritura y la cola local (QA-14, AD-44) & 30\,\% & 5 & 4 & 5 & 1 \\
+Migraciones explícitas y verificables (QA-10, QA-14) & 20\,\% & 5 & 3 & 4 & 2 \\
+Integración con Compose y corrutinas (AD-61) & 15\,\% & 5 & 4 & 4 & 4 \\
+Continuidad del producto & 15\,\% & 5 & 1 & 5 & 5 \\
+Experiencia del equipo & 10\,\% & 5 & 2 & 2 & 4 \\
+Control del SQL verificado en compilación (QA-14) & 10\,\% & 4 & 2 & 5 & 1 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,90} & 2,95 & 4,35 & 2,55 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Realm pierde en continuidad del producto, porque su fabricante retiró el SDK de dispositivos.
+  \item SQLDelight gana en control del SQL verificado en compilación, pero pierde en migraciones con esquema exportado y en experiencia del equipo.
+  \item DataStore pierde en transacción atómica con la cola (QA-14), porque guarda pares clave y valor sin relaciones.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} Cada cambio de esquema exige una migración escrita a mano y su esquema exportado.
+Ese costo es el precio de no perder datos locales al actualizar la app (QA-14).
+
+\paragraph{Riesgo.} Una migración defectuosa puede impedir abrir la base local con operaciones pendientes.
+No corresponde a un riesgo del ATAM.
+
+\paragraph{Dónde se ve.} Vista de implementación móvil: paquete \texttt{infraestructura/local}.
+Vista física de la implementación: artefacto \texttt{danos.db} en el Teléfono Android.
+
+\paragraph{Evidencia en el código.} \texttt{AppDatabase} declara la versión 3 con \texttt{MIGRACION\_1\_2} y \texttt{MIGRACION\_2\_3}, y la carpeta de esquemas guarda las versiones 1, 2 y 3.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{danos/\br{}app/\br{}src/\br{}main/\br{}java/\br{}com/\br{}example/\br{}danos/\br{}infraestructura/\br{}local/\br{}AppDatabase.kt}
+  \item \texttt{danos/\br{}app/\br{}schemas}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-63
+\subsection{AD-63. Sincronización del cliente móvil}
+\label{sec:tec-ad63}
+
+\paragraph{Contexto.} Esta decisión materializa la sincronización diferida (AD-31), el reenvío de la cola local (AD-44) y el envío idempotente del registro del desastre por el identificador del cliente (AD-48).
+La sincronización atiende QA-14, que exige reenvío sin duplicados y 120 evaluaciones en $\le$ 10\,min.
+También atiende QA-11, porque todo envío pasa por el gateway con el token OIDC.
+
+\paragraph{Alternativas.} Se consideran WorkManager, SyncAdapter, un servicio en primer plano y Firebase.
+El \cref{tab:tec-ad63} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,85 y la segunda mejor, SyncAdapter, obtiene 4,10.
+
+\begingroup\small
+\begin{longtable}{L{4.96cm} C{1.10cm} C{2.25cm} C{2.25cm} C{2.25cm} C{2.25cm}}
+\cabecera{6}{tab:tec-ad63}{Matriz de decisión ponderada de AD-63}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{WorkManager} & \hspace{0pt}\textbf{SyncAdapter} & \hspace{0pt}\textbf{Servicio en primer plano} & \hspace{0pt}\textbf{Firebase}}
+Ejecución garantizada con red disponible y reintento tras reinicio (QA-14, AD-44) & 30\,\% & 5 & 4 & 2 & 4 \\
+Protocolo propio idempotente por identificador del cliente (QA-14, AD-48) & 25\,\% & 5 & 5 & 5 & 1 \\
+Inmediatez del envío al recuperar la red (QA-14) & 15\,\% & 4 & 3 & 5 & 4 \\
+Envío por el gateway con token OIDC (QA-11, AD-04) & 10\,\% & 5 & 5 & 5 & 1 \\
+Experiencia del equipo & 10\,\% & 5 & 2 & 3 & 3 \\
+Licencia y dependencia de un servicio externo & 10\,\% & 5 & 5 & 5 & 2 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,85} & 4,10 & 3,90 & 2,65 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item SyncAdapter pierde en ejecución garantizada (QA-14) y en experiencia del equipo, porque exige una cuenta del sistema y un proveedor de contenido.
+  \item El servicio en primer plano gana en inmediatez del envío, pero pierde en ejecución garantizada tras un reinicio (QA-14).
+  \item Firebase pierde en protocolo idempotente propio (QA-14) y en envío por el gateway (QA-11), porque sincroniza contra su propio servicio.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} El sistema operativo decide el instante de la ejecución de WorkManager.
+El envío puede demorar unos segundos después de recuperar la red.
+
+\paragraph{Riesgo.} Riesgo R-12 del ATAM: la variante \texttt{debug} admite tráfico sin TLS (L-07).
+Riesgo R-13 del ATAM: desde un teléfono físico el emisor del token exige cambiar la configuración de Keycloak (L-08).
+
+\paragraph{Dónde se ve.} Vista de implementación móvil: paquete \texttt{infraestructura/sync}.
+Vista física de la implementación: \texttt{DanosCampo.apk} en el Teléfono Android.
+
+\paragraph{Evidencia en el código.} QA-14 se verificó con 115 evaluaciones aplicadas, 5 en conflicto, 0 pérdidas, 0 sobrescrituras y 0 duplicados en 27,8\,s.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{danos/\br{}app/\br{}src/\br{}main/\br{}java/\br{}com/\br{}example/\br{}danos/\br{}infraestructura/\br{}sync/\br{}SincronizacionWorker.kt}
+  \item \texttt{danos/\br{}app/\br{}src/\br{}main/\br{}java/\br{}com/\br{}example/\br{}danos/\br{}infraestructura/\br{}sync/\br{}EnviadorDesastres.kt}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-64
+\subsection{AD-64. Biblioteca de resiliencia}
+\label{sec:tec-ad64}
+
+\paragraph{Contexto.} Esta decisión materializa el tiempo de espera, el reintento con espera creciente y el cortacircuitos de las fronteras (AD-05) y el cortacircuitos por adaptador (AD-37).
+La biblioteca atiende QA-04, que exige cortar la propagación del fallo en $\le$ 60\,s.
+También atiende QA-01, porque la caída de un sistema externo no debe degradar las demás funciones.
+
+\paragraph{Alternativas.} Se consideran Microsoft.Extensions.Http.Resilience, una implementación propia y Steeltoe.
+El \cref{tab:tec-ad64} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,90 y la segunda mejor, Implementación propia, obtiene 3,15.
+
+\begingroup\small
+\begin{longtable}{L{6.74cm} C{1.10cm} C{2.50cm} C{2.50cm} C{2.50cm}}
+\cabecera{5}{tab:tec-ad64}{Matriz de decisión ponderada de AD-64}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{MS Resilience (Polly v8)} & \hspace{0pt}\textbf{Implementación propia} & \hspace{0pt}\textbf{Steeltoe}}
+Tiempo de espera, reintento con variación aleatoria y cortacircuitos configurables (QA-01, AD-05) & 30\,\% & 5 & 3 & 2 \\
+Corte de la propagación en $\le$ 60\,s verificable (QA-04) & 20\,\% & 5 & 3 & 3 \\
+Integración con la fábrica de clientes HTTP de AD-50 & 15\,\% & 5 & 3 & 4 \\
+Estado del circuito seguro ante concurrencia (QA-04) & 15\,\% & 5 & 2 & 4 \\
+Experiencia del equipo & 10\,\% & 4 & 4 & 1 \\
+Licencia y mantenimiento & 10\,\% & 5 & 5 & 4 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,90} & 3,15 & 2,90 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item La implementación propia iguala en experiencia y licencia, pero pierde en estado del circuito seguro ante concurrencia (QA-04).
+  \item Steeltoe pierde en políticas configurables (QA-01) y en experiencia del equipo.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} Polly mide una proporción de fallos en una ventana, no un número de fallos consecutivos.
+La regla de AD-05 se expresa como 3 llamadas mínimas con 100\,\% de fallos en 30\,s.
+
+\paragraph{Riesgo.} Un reintento sobre una operación no idempotente duplicaría el efecto.
+\texttt{Resiliencia.cs} reintenta solo operaciones idempotentes.
+No corresponde a un riesgo del ATAM.
+
+\paragraph{Dónde se ve.} Vista de implementación: proyecto \texttt{Plataforma.Comun.Adaptadores} (\texttt{Resiliencia.cs}).
+Modelo de integración: cortacircuitos de cada adaptador.
+
+\paragraph{Evidencia en el código.} La configuración usa 3\,s por intento, 2 reintentos, ventana de 30\,s y apertura de 15\,s. Las 12 pruebas de \texttt{AdaptadorSe6.Integracion} y las 14 de \texttt{AdaptadorSe7.Integracion} verifican el cortacircuitos y el reintento sin pérdida (QA-01).
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}comun/\br{}Plataforma.Comun.Adaptadores/\br{}Resiliencia.cs}
+  \item \texttt{proyectoparte2/\br{}Directory.Packages.props}
+\end{itemize}
+\par}
+
+%---------------------------------------------------------------------- AD-65
+\subsection{AD-65. Empaquetado, ejecución y escalado}
+\label{sec:tec-ad65}
+
+\paragraph{Contexto.} Esta decisión materializa las réplicas adicionales del camino de lectura (AD-18), la réplica activa con sondeo de salud (AD-24) y la ejecución híbrida con adaptadores efímeros (AD-25).
+El empaquetado atiende QA-05, que exige escalar solo los componentes bajo presión sin modificar código.
+También atiende QA-02 por el reemplazo de réplicas y QA-01 por el escalado de los adaptadores según su cola.
+
+\paragraph{Alternativas.} Se consideran contenedores con Kubernetes, máquinas virtuales, Docker Swarm, Nomad y Knative.
+El \cref{tab:tec-ad65} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,60 y la segunda mejor, Knative, obtiene 3,85.
+
+\begingroup\small
+\begin{longtable}{L{3.93cm} C{1.10cm} C{1.95cm} C{1.95cm} C{1.95cm} C{1.95cm} C{1.95cm}}
+\cabecera{7}{tab:tec-ad65}{Matriz de decisión ponderada de AD-65}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{Docker + K8s (HPA, KEDA)} & \hspace{0pt}\textbf{Máquinas virtuales} & \hspace{0pt}\textbf{Docker Swarm} & \hspace{0pt}\textbf{Nomad} & \hspace{0pt}\textbf{Knative}}
+Escalado automático selectivo sin modificar código (QA-05, AD-18) & 25\,\% & 5 & 2 & 2 & 4 & 5 \\
+Escalado de 0 a N por largo de cola (QA-01, AD-25) & 15\,\% & 5 & 1 & 1 & 3 & 3 \\
+Sondeo de salud y reemplazo de réplicas (QA-02, AD-24) & 20\,\% & 5 & 3 & 4 & 4 & 5 \\
+Misma imagen en el computador y en el clúster (QA-09) & 15\,\% & 5 & 2 & 5 & 4 & 4 \\
+Experiencia del equipo & 10\,\% & 4 & 3 & 3 & 1 & 1 \\
+Costo de operación y licencia & 15\,\% & 3 & 2 & 5 & 3 & 3 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,60} & 2,15 & 3,25 & 3,40 & 3,85 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item Las máquinas virtuales pierden en escalado selectivo (QA-05) y en escalado por largo de cola (QA-01).
+  \item Docker Swarm gana en costo de operación, pero pierde en escalado automático (QA-05), que no ofrece.
+  \item Nomad pierde en escalado por cola y en licencia, porque cambió a BSL en 2023.
+  \item Knative iguala en escalado selectivo y sondeo de salud, pero pierde en escalado por largo de cola (QA-01), porque está orientado a HTTP.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} En Docker Compose los adaptadores quedan siempre encendidos y no hay escalado automático.
+El escalado de 0 a N solo existe en los manifiestos de Kubernetes (AD-25).
+
+\paragraph{Riesgo.} El despliegue en Kubernetes no se verificó de punta a punta (L-05).
+El escalado de 0 a N con KEDA no se midió (QA-01) y QA-05 no se midió con 10\,000 usuarios (L-03, L-04).
+
+\paragraph{Dónde se ve.} Vista física de la implementación: nodo Docker Engine con los servicios del archivo de composición y anotación de Kubernetes con HPA y KEDA.
+
+\paragraph{Evidencia en el código.} Los manifiestos declaran HPA de 2 a 5 réplicas y \texttt{ScaledObject} de KEDA de 0 a 4 réplicas para la salida de SE-6.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}despliegue/\br{}compose/\br{}docker-compose.yml}
+  \item \texttt{proyectoparte2/\br{}despliegue/\br{}k8s/\br{}base/\br{}20-servicios.yaml}
+  \item \texttt{proyectoparte2/\br{}despliegue/\br{}k8s/\br{}base/\br{}adaptador-se6.yaml}
+\end{itemize}
+\par}
+
+%------------------------------------------------------------------------------
+\subsection{Restricciones de las tecnologías elegidas}
+\label{sec:tec-restricciones}
+
+Las tecnologías elegidas imponen límites al entorno implementado.
+El \cref{tab:tec-restricciones} los relaciona con la decisión que los origina y con el escenario afectado.
+Ninguno modifica una decisión estructural.
+
+\begingroup\small
+\begin{longtable}{L{2.6cm} L{1.3cm} L{6.4cm} L{1.7cm} L{3.3cm}}
+\cabecera{5}{tab:tec-restricciones}{Restricciones que imponen las tecnologías elegidas}{\textbf{Restricción} &
+\textbf{Origen} & \textbf{Efecto} & \textbf{QA afectado} & \textbf{Qué haría falta}}
+Variante \texttt{debug} y Keycloak sin TLS (L-07) & AD-58, AD-61, AD-63 &
+La app de entrega admite \texttt{http://}. Keycloak corre sin TLS. El tráfico entre el teléfono, el gateway y el proveedor de identidad viaja sin cifrar. Corresponde al riesgo R-12 del ATAM. &
+QA-11, QA-12 & TLS en el borde y URL HTTPS en la variante \texttt{release} \\
+Emisor del token en \texttt{localhost} (L-08) & AD-57, AD-58 &
+El \texttt{iss} del token es \texttt{http://localhost:8180}. El emulador exige \texttt{adb reverse}. Un teléfono físico exige cambiar \texttt{KC\_HOSTNAME} e \texttt{Identidad\_\_Emisor} a la vez. Corresponde al riesgo R-13 del ATAM. &
+QA-11, QA-14 & Un nombre DNS común para Keycloak \\
+Imagen comunitaria de MinIO (DT-11) & AD-56 &
+El proyecto original dejó de publicar imágenes. El archivo de composición usa el fork \texttt{pgsty/minio}, cuya continuidad no está garantizada. &
+QA-02, QA-14 & Sustituir por otro almacén con API S3 sin cambiar el código \\
+Política de uso de las teselas de OpenStreetMap & AD-60 &
+Las teselas públicas no tienen acuerdo de servicio, exigen atribución y prohíben el uso intensivo. Durante una emergencia con 10\,000 usuarios la carga del mapa dependería de un tercero. &
+QA-05, QA-06 & Servidor de teselas propio o proveedor con acuerdo \\
+Keycloak en \texttt{start-dev} & AD-58 &
+El modo de desarrollo usa una base embebida, no exige TLS y no está pensado para producción. El realm se importa desde \texttt{realm-plataforma.json} en cada arranque. Es una sola instancia. &
+QA-02, QA-11 & Modo \texttt{start} con base PostgreSQL, TLS y dos instancias \\
+\end{longtable}
+\endgroup

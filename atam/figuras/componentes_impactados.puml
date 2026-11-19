@@ -1,0 +1,83 @@
+@startuml componentes_impactados
+' ATAM v1.1 - Componentes impactados por los escenarios ES-03, ES-05 y ES-06 (paso 8)
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam ArrowFontSize 10
+skinparam ArrowColor #333333
+skinparam componentStyle uml2
+skinparam PackageBorderColor #666666
+skinparam PackageFontSize 12
+skinparam ComponentBorderColor #444444
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam DatabaseBorderColor #444444
+skinparam DatabaseBackgroundColor #F1F1F1
+skinparam QueueBorderColor #444444
+skinparam QueueBackgroundColor #E7F3EC
+skinparam NodeBorderColor #444444
+skinparam NodeBackgroundColor #FFFFFF
+skinparam ArtifactBorderColor #444444
+skinparam ArtifactBackgroundColor #FBFBFB
+skinparam InterfaceBorderColor #444444
+skinparam InterfaceBackgroundColor #FFFFFF
+skinparam NoteBorderColor #888888
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteFontSize 10
+skinparam LegendBorderColor #888888
+skinparam LegendBackgroundColor #F7F7F7
+skinparam LegendFontSize 10
+skinparam StereotypeFontSize 10
+skinparam defaultFontSize 14
+skinparam ArrowFontSize 12
+skinparam LegendFontSize 12
+skinparam PackageFontSize 14
+skinparam StereotypeFontSize 12
+left to right direction
+skinparam nodesep 10
+skinparam ranksep 55
+skinparam defaultFontSize 13
+
+rectangle "Sistema externo\n(SE-n o noveno sistema)" <<sistema externo>> as SE #F3F3F3
+
+package "Integración" {
+  component "Adaptador de SE-n\n**ES-03**: punto posible de validación\n**ES-06**: único elemento nuevo si\nel contrato alcanza" <<adaptador>> as ADP #F8C9C9
+  interface "ContratoAdaptador" as ICA
+  rectangle "EventoCanónico\n**ES-06**: se extiende con\ncampos opcionales" <<esquema de datos>> as EVC #F8C9C9
+  queue "Bus de eventos\n**ES-03**: transporta el dato\nsin validar su contenido" <<intermediario>> as BUS #FBE3B5
+}
+
+package "Dominio" {
+  component "Consolidación\n**ES-03**: correlaciona el\nreporte inverosímil" <<microservicio>> as CO #FBE3B5
+  component "Gestión de Desastres\n**ES-03**: puede crear un desastre\no una severidad incorrectos" <<microservicio>> as GD #FBE3B5
+  component "Notificación\n**ES-03**: puede emitir\nuna alerta falsa" <<microservicio>> as NO #FBE3B5
+  component "Personas Afectadas\n**ES-05**: origen de los datos\npersonales por eliminar" <<microservicio>> as PA #CFE3F7
+  component "Auditoría\n**ES-05**: registro inmutable con\ndatos de la persona" <<microservicio>> as AU #CFE3F7
+  component "Los demás microservicios\n**ES-06**: no cambian si la\nextensión es aditiva" <<microservicio>> as OT #FFFFFF
+}
+
+package "Almacenes" {
+  database "BD Personas Afectadas\n**ES-05**: clave de cifrado\npor persona" as dPA #CFE3F7
+  database "Registro de auditoría\n**ES-05**: no admite borrado" as dAU #CFE3F7
+  database "BD Reconstrucción\n**ES-05**: historial de\nsolo inserción" as dRC #CFE3F7
+}
+
+SE --> ADP : datos
+ADP -- ICA
+ICA ..> EVC : <U+00AB>usa<U+00BB>
+ADP ..> BUS : EV-01
+BUS ..> CO
+CO ..> GD : EV-02
+GD ..> NO : EV-03
+BUS ..> OT
+BUS ..> AU
+PA --> dPA : <U+00AB>usa<U+00BB>
+AU --> dAU : <U+00AB>usa<U+00BB>
+PA ..> AU : eventos de cambio
+AU -[hidden]-> dRC
+
+legend bottom left
+  **Componentes impactados por escenario**
+  Rojo: ES-03 (validación) y ES-06 (contrato): elementos que se modificarían.   Naranja: ES-03: elementos por los que se propaga un dato inverosímil.
+  Azul: ES-05: elementos que almacenan datos personales en registros inmutables.   Blanco: elementos no impactados.
+endlegend
+@enduml

@@ -1,0 +1,74 @@
+@startuml contexto
+' Diagrama de contexto - Plataforma para la Gestion de Desastres y Reconstruccion
+' Entrega 1 (SRS). Nivel de contexto: la plataforma como una sola caja negra.
+' Agnostico de tecnologia (CON-8): no se nombra ningun producto ni proveedor.
+
+left to right direction
+
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam defaultFontSize 17
+skinparam ArrowColor #333333
+skinparam ArrowFontSize 15
+skinparam ArrowFontColor #222222
+skinparam nodesep 22
+skinparam ranksep 70
+skinparam rectangle {
+  BorderColor #333333
+  BackgroundColor #F4F4F4
+  FontSize 17
+}
+skinparam actor {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+  FontSize 17
+}
+skinparam package {
+  BorderColor #777777
+  BackgroundColor #FFFFFF
+  FontSize 19
+  FontStyle bold
+}
+
+package "Usuarios y organizaciones" {
+  actor "Organismo de respuesta\n(Bomberos, Policía, Defensa Civil,\nservicios médicos, Cruz Roja)" as ORG
+  actor "Autoridad local,\nregional o nacional" as AUT
+  actor "Evaluador de campo" as EVA
+  actor "Operador de la plataforma" as OPE
+  actor "Administrador de la plataforma" as ADM
+  actor "Ciudadano" as CIU
+  actor "Auditor / ente\nde control" as AUD
+}
+
+rectangle "**Plataforma para la Gestión de**\n**Desastres y Reconstrucción**\n\nIntegra información de sistemas\nheterogéneos y coordina las actividades\ndel ciclo completo de un desastre.\n\n//No reemplaza los sistemas existentes//\n//ni es dueña de sus datos (CON-1).//" as PLAT #D6E4F5
+
+package "Sistemas externos (organización y terceros)" {
+  rectangle "**SE-1** Alertas y monitoreo de\nfenómenos naturales" as SE1
+  rectangle "**SE-2** Sistemas de información\ngeográfica (GIS)" as SE2
+  rectangle "**SE-3** Sistemas hospitalarios" as SE3
+  rectangle "**SE-4** Sistemas de gestión\nde recursos" as SE4
+  rectangle "**SE-5** Identificación y atención\nde personas afectadas" as SE5
+  rectangle "**SE-6** Sistemas administrativos\ny financieros" as SE6
+  rectangle "**SE-7** Proyectos de\ninfraestructura" as SE7
+  rectangle "**SE-8** Comunicación y\nnotificación externas" as SE8
+}
+
+ORG --> PLAT : registra eventos,\nsolicita recursos,\natiende tareas
+AUT --> PLAT : clasifica, aprueba\nproyectos, consulta\nla situación
+EVA --> PLAT : evaluaciones de daño\ny evidencias\n(soporta sin conexión)
+OPE --> PLAT : confirma\nconsolidaciones\ndudosas
+ADM --> PLAT : administra catálogos\ny configuración
+CIU --> PLAT : consulta pública,\nsolicitudes de ayuda
+AUD --> PLAT : consulta bitácoras\nde auditoría
+
+SE1 --> PLAT : eventos detectados
+PLAT <--> SE2 : delimitaciones\ny zonas de riesgo
+PLAT <--> SE3 : capacidad y\npersonas atendidas
+PLAT <--> SE4 : disponibilidad\ny asignación
+PLAT <--> SE5 : personas afectadas\ny atención
+PLAT <--> SE6 : presupuesto\ny ejecución
+PLAT <--> SE7 : proyectos, avance\ny contratistas
+PLAT --> SE8 : alertas y\nnotificaciones
+
+@enduml
