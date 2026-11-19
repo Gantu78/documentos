@@ -159,7 +159,13 @@ RF-GD-02 incluye el registro del desastre en campo desde el cliente móvil (E-42
 Se aplican las enmiendas E-07 (RN-2), E-12 (atributos de la evaluación y RF-ED-01), E-14 (RF-ED-09),
 E-30 (nombre del desastre) y E-35 (perfil mínimo por nivel en RN-3).
 Se agrega la Matriz 5, con el estado de implementación de los requisitos y la medida obtenida de
-cada escenario de calidad. \\
+cada escenario de calidad.
+Cada escenario queda con una medida de respuesta principal y con una respuesta sin mecanismos de
+diseño.
+Se reclasifican las prioridades con un criterio que deja en Alta el \qty{35}{\percent} de los
+requisitos.
+Se usa la taxonomía de estilo, patrón y táctica, y se agregan los cuadros de series de
+identificadores, de límites, de enmiendas y de los cuatro mínimos. \\
 \bottomrule
 \end{tabular}
 
@@ -263,6 +269,9 @@ funcionalidad primaria, escenario de atributo de calidad, restricción o preocup
 arquitectónica \cite{cervantes}. \\
 Escenario QA & Escenario de atributo de calidad expresado en seis partes: fuente del estímulo,
 estímulo, artefacto, entorno, respuesta y medida de respuesta \cite{bass}. \\
+Estilo arquitectónico & Clase de arquitectura definida por decisiones estructurales coherentes, de
+alto nivel de abstracción. Agrupa patrones: por ejemplo, el estilo basado en servicios incluye el
+patrón microservicios \cite{bass}. \\
 Evaluación de daños & Registro estructurado del estado de un activo tras un desastre, con su nivel
 de daño, su ubicación, su evaluador y sus evidencias. \\
 Funcionalidad primaria & En ADD 3.0, funcionalidad necesaria para alcanzar los objetivos de negocio
@@ -271,7 +280,8 @@ GIS & Sistema de información geográfica (\emph{Geographic Information System})
 Medida de respuesta & Parte del escenario QA que fija el valor numérico contra el cual se verifica
 si el diseño satisface el escenario. \\
 Microservicio & Unidad de software que se despliega, se escala y falla de forma independiente, y que
-es dueña de su propio almacén de datos. Es el estilo que adopta el SAD. \\
+es dueña de su propio almacén de datos. Es un patrón del estilo basado en servicios, y es el que
+adopta el SAD. \\
 Nivel de clasificación & Grado de impacto y de atención requerida que se asigna a un desastre:
 de Nivel\_1 (Bajo) a Nivel\_4 (Crítico). \\
 Operación crítica & Operación de una de las cinco clases sujetas a trazabilidad: asignación de
@@ -279,6 +289,8 @@ recursos, modificación de presupuestos, cambios en proyectos, cambios en inform
 afectadas y cambios en niveles de emergencia. \\
 Organismo de respuesta & Entidad que participa en la atención de la emergencia: Bomberos, Policía,
 Defensa Civil, servicios médicos, Cruz Roja u otra. \\
+Patrón arquitectónico & Solución probada a un problema de diseño recurrente, con sus elementos, sus
+responsabilidades y sus relaciones \cite{bass}. \\
 p95 y p99 & Percentil 95 y percentil 99 de una distribución de latencias. El p95 es el valor por
 debajo del cual queda el \qty{95}{\percent} de las mediciones. \\
 Procedencia & Registro de la fuente de la que proviene cada dato y del nivel de confianza asociado. \\
@@ -292,6 +304,53 @@ eventos, consulta del estado de un desastre, generación de alertas y coordinaci
 SRS & \emph{Software Requirements Specification}. Este documento. \\
 Sistema externo & Sistema existente de la organización o de un tercero con el que la plataforma
 intercambia información sin reemplazarlo. \\
+Táctica & Decisión de diseño que influye en la respuesta de un atributo de calidad \cite{bass}. \\
+\end{longtable}
+
+El \cref{tab:series} explica las series de identificadores. El \cref{tab:limites} lista los límites
+de la implementación y el \cref{tab:enmiendas}, las enmiendas que este documento cita. Ambos provienen
+de la revisión de arquitectura del proyecto \cite{informe-medidas}.
+
+\begin{longtable}{L{2.4cm} L{13.4cm}}
+\cabecera{2}{tab:series}{Series de identificadores que usa este documento}{\textbf{Serie} & \textbf{Qué identifica}}
+\texttt{RF-XX-nn} & Requisito funcional del SRS. \texttt{XX} es el módulo: GD, ED, PA, RE, CO o RC. \\
+\texttt{RN-n} & Regla de negocio del SRS (RN-1 a RN-6). \\
+\texttt{QA-nn} & Escenario de atributo de calidad del SRS (QA-01 a QA-15). \\
+\texttt{CON-n} & Restricción del SRS (CON-1 a CON-8). \\
+\texttt{FP-nn} & Caso de uso de la funcionalidad primaria del SRS (FP-01 a FP-10). \\
+\texttt{EO-n} & Escenario de operación del enunciado (EO-1 a EO-5). \\
+\texttt{S-n} & Supuesto del SRS (S-1 a S-5). \\
+\texttt{D-n} & Dependencia del SRS (D-1 a D-3). \\
+\texttt{SE-n} & Familia de sistemas externos (SE-1 a SE-8). \\
+\texttt{AD-nn} & Decisión del SAD: AD-01 a AD-49 son estructurales y AD-50 a AD-65 son de tecnología. \\
+\texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-43). \\
+\texttt{EV-nn} & Evento del catálogo del SAD (EV-01 a EV-29). \\
+\texttt{L-nn} & Límite declarado de la implementación (L-01 a L-10). \\
+\texttt{R-nn} & Riesgo del ATAM (R-01 a R-14). \\
+\end{longtable}
+
+\begin{longtable}{L{1.4cm} L{14.4cm}}
+\cabecera{2}{tab:limites}{Límites declarados de la implementación}{\textbf{ID} & \textbf{Límite}}
+L-01 & Una sola región: no hay enrutador global ni réplica en otra ubicación (AD-26, AD-27, QA-03). \\
+L-02 & Los rechazos del punto de entrada y la alarma de la bandeja de revisión no se registran en Auditoría (QA-11, R-08). \\
+L-03 & No hay pruebas de carga en un clúster ni de caos (QA-05, QA-06 y la consulta de 10\,000 entradas de QA-13). \\
+L-04 & Las latencias se midieron con 20 clientes en un computador, no con 10\,000 usuarios. \\
+L-05 & El despliegue en el clúster local no se verificó de punta a punta, y el inicio de sesión exige reenviar puertos. \\
+L-06 & Fuera de la implementación: Consolidación, Notificación (SE-8, QA-08), Gestión de Recursos, Personas Afectadas (QA-12), Coordinación de Organismos, Portal público y adaptadores de SE-1, SE-3, SE-4, SE-5 y SE-8. \\
+L-07 & La aplicación móvil entregada es la variante de depuración, que admite conexiones sin cifrar, y el proveedor de identidad corre sin TLS. \\
+L-08 & El emisor de los tokens es una dirección local: el emulador necesita reenviar ese puerto y un teléfono físico exige cambiar la dirección en el proveedor y en quienes validan el token. \\
+L-09 & Pendientes menores: filtro de Auditoría por jurisdicción, validación condicional en la descarga, aviso de activo fusionado al cliente incremental, base única del adaptador de SE-2, índice del historial por municipio, recarga de las llaves del token y evaluaciones rechazadas en la consola. \\
+L-10 & La aplicación móvil adjunta solo fotografías como evidencia, y la evidencia no guarda un autor propio (RF-ED-03 parcial). \\
+\end{longtable}
+
+\begin{longtable}{L{1.4cm} L{14.4cm}}
+\cabecera{2}{tab:enmiendas}{Enmiendas citadas en este documento}{\textbf{ID} & \textbf{Enmienda}}
+E-07 & Gestión de Desastres consume EV-18 y EV-20: un desastre no se cierra con proyectos no finales (AD-47). \\
+E-12 & Municipio del activo, calculado en el servidor a partir de la ubicación (RF-ED-01). \\
+E-14 & Definición de fusionar evaluaciones duplicadas (RF-ED-09). \\
+E-30 & Campos adicionales de EV-03, EV-06, EV-10, EV-18, EV-19 y EV-20, entre ellos el nombre del desastre. \\
+E-35 & Rutas de configuración del ciclo de vida y perfil mínimo por nivel de severidad. \\
+E-42 & Registro del desastre en campo desde el cliente móvil, con identificador del cliente (RF-GD-02, AD-48). \\
 \end{longtable}
 
 \subsection{Fuentes del documento}
@@ -302,8 +361,11 @@ escalabilidad y rendimiento, y las restricciones provienen del enunciado del pro
 \cite{enunciado}. El formato de los escenarios de atributo de calidad y el modelo de calidad
 provienen de Bass, Clements y Kazman \cite{bass}. La clasificación de los \emph{drivers} y el
 concepto de funcionalidad primaria provienen de Cervantes y Kazman \cite{cervantes}. La
-correspondencia de los atributos con un estándar se hace contra ISO/IEC 25010 \cite{iso25010}. Las
-fuentes sobre Sahana Eden se clasifican en la \cref{sec:sahana-metodo}. Todas las referencias se
+correspondencia de los atributos con un estándar se hace contra ISO/IEC 25010 \cite{iso25010}. La
+redacción de los requisitos y su verificabilidad siguen ISO/IEC/IEEE 29148 \cite{iso29148}. El SAD,
+que parte de este documento, describe la arquitectura con ISO/IEC/IEEE 42010 \cite{iso42010}, las
+vistas y su documentación según Clements et al. \cite{clements}, el modelo 4+1 \cite{kruchten} y la
+arquitectura limpia \cite{martin}. Las fuentes sobre Sahana Eden se clasifican en la \cref{sec:sahana-metodo}. Todas las referencias se
 listan en la \cref{sec:referencias}.
 
 Los valores numéricos que no aparecen en el enunciado son propuestas del equipo de arquitectura.
@@ -591,18 +653,20 @@ cuando ocurre la operación a la que se refiere.
 La prioridad se asigna con los criterios siguientes:
 
 \begin{description}[leftmargin=1.6cm,labelwidth=1.3cm,labelsep=0.3cm]
-  \item[Alta] El requisito cumple al menos una de tres condiciones: pertenece a la funcionalidad
-        primaria (\cref{sec:primaria}); realiza uno de los escenarios de operación EO-1 a EO-4, que
-        ocurren durante la emergencia; o produce la información que exige un escenario de calidad
-        de importancia Alta (\cref{tab:priorizacion}).
-  \item[Media] El requisito es necesario para completar un módulo, pero no cumple ninguna de las
-        condiciones anteriores. Admite una versión posterior.
+  \item[Alta] El requisito realiza una funcionalidad primaria (\cref{tab:primaria}) o un escenario
+        calificado (A, A) en el árbol de utilidad: QA-02, QA-03, QA-09 o QA-14
+        (\cref{tab:utilidad}).
+  \item[Media] El requisito es necesario para completar un módulo, pero no cumple la condición
+        anterior. Admite una versión posterior.
   \item[Baja] El requisito mejora la presentación o la consulta de información que otro requisito
         ya ofrece.
 \end{description}
 
+Este criterio deja en Alta solo lo que sostiene un objetivo de negocio o uno de los cuatro escenarios
+de mayor riesgo: 23 de los 65 requisitos, es decir, el \qty{35}{\percent}.
+
 Cada descripción es comprobable: un tercero puede determinar, mediante la observación del sistema,
-si el requisito se cumple.
+si el requisito se cumple, como pide ISO/IEC/IEEE 29148 \cite{iso29148}.
 
 \subsection{Funcionalidad primaria en el sentido de ADD}
 \label{sec:primaria}
@@ -664,7 +728,7 @@ desastre.
 \textbf{Nombre} & \textbf{Descripción} & \textbf{Actor} & \textbf{Prio.}}
 RF-GD-01\prim & Registro automático de evento & El sistema deberá registrar un evento de desastre a
 partir de un mensaje recibido de un sistema externo de alerta o monitoreo (SE-1), y conservar la
-fuente del mensaje y su marca de tiempo de recepción & SE-1 & Alta \\
+fuente del mensaje y su marca de tiempo de recepción & SE-1 & AltaAlta \\
 RF-GD-02 & Registro manual de evento & El sistema deberá permitir que un usuario autorizado registre
 un evento de desastre con los atributos mínimos del \cref{tab:campos-desastre}. El registro podrá
 hacerse desde la consola o en campo desde el cliente móvil. En campo, el registro deberá admitirse
@@ -677,18 +741,18 @@ RF-GD-04 & Validación contra el catálogo de tipos & El sistema deberá validar
 contra el catálogo configurable de tipos de desastre (RN-1) y rechazar los tipos no definidos &
 Sin actor iniciador (aplica a RF-GD-01 y RF-GD-02) & Alta \\
 RF-GD-05 & Clasificación por nivel & El sistema deberá permitir asignar a cada evento uno de los
-cuatro niveles de clasificación definidos en RN-3 & Autoridad & Alta \\
+cuatro niveles de clasificación definidos en RN-3 & Autoridad & Media \\
 RF-GD-06\prim & Reclasificación de nivel & El sistema deberá permitir modificar el nivel de un evento
 en cualquier momento de su ciclo de vida. Cada reclasificación deberá producir una actualización del
 estado del evento, una notificación a los organismos suscritos y una entrada de auditoría con el
 valor anterior, el valor nuevo, el autor y la justificación & Autoridad & Alta \\
 RF-GD-07 & Transición de estado & El sistema deberá permitir avanzar un evento por su ciclo de vida,
 aceptar solo las transiciones válidas para su tipo según la máquina de estados configurable de RN-2
-y rechazar las demás & Organismo responsable, autoridad & Alta \\
+y rechazar las demás & Organismo responsable, autoridad & Media \\
 RF-GD-08 & Delimitación geográfica & El sistema deberá permitir definir el área asociada a un evento
 a partir de coordenadas, puntos, polígonos, municipios, barrios, zonas de riesgo o geometrías
 provistas por un sistema GIS (SE-2), o de una combinación de ellos & Organismo responsable,
-autoridad, SE-2 & Alta \\
+autoridad, SE-2 & Media \\
 RF-GD-09\prim & Versionado de la delimitación & El sistema deberá conservar cada versión de la
 delimitación con su marca de tiempo y su autor, de modo que sea posible reconstruir el área afectada
 tal como estaba definida en cualquier instante pasado del evento & Sin actor iniciador (aplica a
@@ -703,7 +767,7 @@ configurado (RN-6) & Operador de la plataforma & Alta \\
 RF-GD-12 & Asociación de organismos & El sistema deberá permitir asociar a un evento los organismos
 participantes, e indicar la responsabilidad de cada uno y cuál de ellos es el responsable asignado
 del evento. El sistema deberá proponer los organismos que el tipo y el nivel del evento definen por
-defecto (RN-1) & Autoridad & Alta \\
+defecto (RN-1) & Autoridad & Media \\
 RF-GD-13 & Visualización de participantes & El sistema deberá presentar, para un evento dado, los
 organismos que participan y la responsabilidad de cada uno & Todos los actores autorizados & Baja \\
 RF-GD-14 & Priorización de tareas del evento & El sistema deberá permitir asignar y modificar la
@@ -717,7 +781,7 @@ de un evento (nivel, estado del ciclo de vida, delimitación vigente, organismos
 resumen de daños) con la marca de tiempo del dato mostrado & Todos los actores autorizados & Alta \\
 RF-GD-17 & Consulta de la evolución del evento & El sistema deberá presentar la evolución de un
 evento en el tiempo: cambios de nivel, cambios de estado y cambios de delimitación, en orden
-cronológico & Autoridad, auditor & Media \\
+cronológico & Autoridad, auditor & Baja \\
 RF-GD-18 & Cierre del evento & El sistema deberá permitir cerrar un evento cuando su tipo admita la
 transición al estado Cerrado, y registrar el autor, la fecha y la justificación del cierre &
 Autoridad & Media \\
@@ -783,33 +847,33 @@ RF-ED-04 & Catálogo de tipos de activo & El sistema deberá administrar un cat�
 tipos de activo evaluables (vivienda, edificio público, hospital, escuela, puente, carretera,
 sistema de agua, red eléctrica, red de telecomunicaciones, instalación industrial y otra
 infraestructura crítica). La ampliación del catálogo no deberá requerir la modificación de
-componentes & Administrador de la plataforma & Alta \\
+componentes & Administrador de la plataforma & Media \\
 RF-ED-05 & Categorías de daño configurables & El sistema deberá permitir que el administrador
 configure, por tipo de activo, los criterios que llevan a cada categoría de daño (RN-5), y que el
 evaluador clasifique el daño de un activo con esas categorías & Administrador de la plataforma
-(configura); evaluador de campo (clasifica) & Alta \\
+(configura); evaluador de campo (clasifica) & Media \\
 RF-ED-06 & Asociación al desastre y registro preliminar & El sistema deberá asociar cada evaluación
 a un desastre registrado. Deberá admitir el registro de evaluaciones preliminares no asociadas
 cuando aún no exista información suficiente para identificar el evento, y permitir su asociación
-posterior & Evaluador de campo, operador de la plataforma & Alta \\
+posterior & Evaluador de campo, operador de la plataforma & Media \\
 RF-ED-07 & Actualización de una evaluación & El sistema deberá permitir actualizar una evaluación
 existente y conservar la versión anterior con su marca de tiempo y su autor & Evaluador de campo &
 Alta \\
 RF-ED-08 & Validación de evaluaciones & El sistema deberá permitir que un usuario autorizado marque
 una evaluación como validada, rechazada o pendiente, y registrar quién lo hizo y cuándo & Organismo
-responsable, autoridad & Alta \\
+responsable, autoridad & Media \\
 RF-ED-09 & Gestión de duplicidad & El sistema deberá detectar las evaluaciones que se refieran al
 mismo activo dentro de una ventana de tiempo configurable, marcarlas como posibles duplicados y
 permitir que un usuario autorizado las fusione o las rechace. Fusionar dos evaluaciones marcadas
 como posible duplicado significa elegir una como vigente y marcar la otra como duplicada de ella.
 La evaluación duplicada conserva todas sus versiones y sus evidencias. Sus evidencias quedan
 vinculadas también a la evaluación vigente. Ninguna versión ni evidencia se elimina (E-14) &
-Operador de la plataforma & Alta \\
+Operador de la plataforma & Media \\
 RF-ED-10 & Priorización y estimación de impacto & El sistema deberá calcular, a partir de las
 evaluaciones validadas de un desastre, un consolidado del impacto por zona y por tipo de activo que
-permita establecer prioridades de atención & Autoridad & Alta \\
+permita establecer prioridades de atención & Autoridad & Media \\
 RF-ED-11 & Visualización geográfica de daños & El sistema deberá presentar sobre un mapa las zonas
-afectadas y su nivel de daño consolidado & Autoridad, organismo de respuesta & Alta \\
+afectadas y su nivel de daño consolidado & Autoridad, organismo de respuesta & Media \\
 RF-ED-12\prim & Operación sin conexión & El sistema deberá permitir que un evaluador descargue
 previamente la información necesaria, registre evaluaciones y capture evidencias sin conectividad,
 y almacene esos registros localmente hasta recuperar la conexión & Evaluador de campo & Alta \\
@@ -822,10 +886,10 @@ No deberá descartar información de forma automática & Evaluador de campo, ope
 RF-ED-14 & Publicación de eventos hacia otros módulos & El sistema deberá publicar el resultado de
 una evaluación validada de modo que los módulos de recursos y de reconstrucción puedan consumirlo
 sin consultar directamente el almacén de evaluaciones & Sin actor iniciador (aplica a RF-ED-08) &
-Alta \\
+Media \\
 RF-ED-15 & Seguimiento de la evolución de los daños & El sistema deberá presentar, para un activo o
 una zona, la secuencia de evaluaciones registradas en el tiempo con su nivel de daño & Autoridad &
-Media \\
+Baja \\
 \end{longtable}
 
 El \cref{tab:campos-evaluacion} define la información mínima de registro de una evaluación de daños.
@@ -873,26 +937,26 @@ RF-PA-01\prim & Registro de personas afectadas & El sistema deberá registrar la
 por un desastre e integrar la información que aporten los sistemas de identificación y atención
 (SE-5), sin reemplazarlos & Organismo de respuesta, SE-5 & Alta \\
 RF-PA-02 & Registro de familias & El sistema deberá permitir agrupar personas afectadas en familias
-y mantener el vínculo entre ellas & Organismo de respuesta & Alta \\
+y mantener el vínculo entre ellas & Organismo de respuesta & Media \\
 RF-PA-03 & Registro de necesidades & El sistema deberá registrar las necesidades declaradas o
-identificadas de una persona o familia afectada & Organismo de respuesta & Alta \\
+identificadas de una persona o familia afectada & Organismo de respuesta & Media \\
 RF-PA-04 & Ubicación de la persona afectada & El sistema deberá registrar la ubicación actual de una
-persona o familia afectada y su historial de ubicaciones & Organismo de respuesta & Alta \\
+persona o familia afectada y su historial de ubicaciones & Organismo de respuesta & Media \\
 RF-PA-05 & Gestión de refugios & El sistema deberá registrar los refugios habilitados, su capacidad
 y su ocupación actual, y permitir asociar personas afectadas a un refugio & Organismo de respuesta,
-autoridad & Alta \\
+autoridad & Media \\
 RF-PA-06 & Registro de atención recibida & El sistema deberá registrar la atención recibida por una
-persona afectada, con el organismo que la prestó y la fecha & Organismo de respuesta & Alta \\
+persona afectada, con el organismo que la prestó y la fecha & Organismo de respuesta & Media \\
 RF-PA-07 & Solicitudes de ayuda & El sistema deberá registrar solicitudes de ayuda, asociarlas a
 una persona o familia y permitir el seguimiento de su estado hasta su cierre & Ciudadano, organismo
-de respuesta & Alta \\
+de respuesta & Media \\
 RF-PA-08\prim & Protección de datos personales & El sistema deberá restringir el acceso a los datos
 identificatorios de las personas afectadas a los roles con necesidad de conocer, y deberá presentar
 información agregada o seudonimizada a los demás & Sin actor iniciador (aplica a toda consulta del
 módulo) & Alta \\
 RF-PA-09 & Trazabilidad de cambios & El sistema deberá registrar toda creación, modificación,
 consulta y eliminación de información de personas afectadas, con quién la hizo, qué hizo, cuándo,
-sobre qué información y con qué resultado & Sin actor iniciador. Destinatario: auditor & Alta \\
+sobre qué información y con qué resultado & Sin actor iniciador. Destinatario: auditor & Media \\
 \end{longtable}
 
 \subsection{Módulo 4: Gestión de recursos}
@@ -904,11 +968,11 @@ sobre qué información y con qué resultado & Sin actor iniciador. Destinatario
 RF-RE-01 & Registro de recursos & El sistema deberá registrar recursos de las categorías siguientes:
 alimentos, agua, medicamentos, vehículos, maquinaria, equipos de rescate, personal, refugios y
 donaciones. Para cada recurso deberá registrar su cantidad, su ubicación y la organización que lo
-posee & Organismo de respuesta, administrador de la plataforma & Alta \\
+posee & Organismo de respuesta, administrador de la plataforma & Media \\
 RF-RE-02 & Visión consolidada de disponibilidad & El sistema deberá presentar una visión
 consolidada de los recursos disponibles que integre la información de los sistemas de gestión de
 recursos (SE-4), con la fuente y la marca de tiempo de cada dato & Autoridad, organismo de respuesta
-& Alta \\
+& Media \\
 RF-RE-03\prim & Solicitud de recursos & El sistema deberá permitir que un organismo autorizado
 solicite recursos con la cantidad, el destino y el desastre asociado, y deberá mantener el estado de
 la solicitud hasta su cierre & Organismo de respuesta & Alta \\
@@ -920,10 +984,10 @@ RF-RE-05 & Registro de donaciones & El sistema deberá registrar las donaciones 
 donante, el contenido, la fecha y el destino asignado & Organismo de respuesta & Media \\
 RF-RE-06 & Trazabilidad de la asignación & El sistema deberá registrar cada solicitud y cada
 asignación de recursos, con quién la hizo, qué hizo, cuándo, sobre qué recurso y con qué resultado &
-Sin actor iniciador. Destinatario: auditor & Alta \\
+Sin actor iniciador. Destinatario: auditor & Media \\
 RF-RE-07 & Publicación hacia sistemas externos & El sistema deberá comunicar a los sistemas de
 gestión de recursos (SE-4) las asignaciones aprobadas, y deberá conservarlas como pendientes si el
-sistema externo no está disponible & Sin actor iniciador. Destinatario: SE-4 & Alta \\
+sistema externo no está disponible & Sin actor iniciador. Destinatario: SE-4 & Media \\
 \end{longtable}
 
 \subsection{Módulo 5: Coordinación de organismos}
@@ -939,10 +1003,10 @@ el organismo o la persona responsable, la descripción y la fecha límite & Orga
 autoridad & Alta \\
 RF-CO-03 & Establecer prioridades & El sistema deberá permitir asignar y modificar la prioridad de
 una tarea, y presentar las tareas ordenadas por prioridad & Organismo de respuesta, autoridad &
-Alta \\
+Media \\
 RF-CO-04 & Compartir información & El sistema deberá permitir que un organismo publique información
 asociada a un desastre y que los demás organismos participantes la consulten, según las reglas de
-acceso vigentes & Organismo de respuesta, organismo de asistencia internacional & Alta \\
+acceso vigentes & Organismo de respuesta, organismo de asistencia internacional & Media \\
 RF-CO-05\prim & Registrar avances & El sistema deberá permitir registrar el avance de una tarea, con
 su autor y su marca de tiempo, hasta su cierre & Organismo de respuesta, organismo de asistencia
 internacional & Alta \\
@@ -951,7 +1015,7 @@ organismos participantes ante los eventos de coordinación configurados, como un
 nueva responsabilidad asignada & Sin actor iniciador. Destinatarios: organismos participantes &
 Media \\
 RF-CO-07 & Historial de actividades & El sistema deberá mantener y presentar el historial de
-actividades de coordinación de un desastre en orden cronológico & Autoridad, auditor & Alta \\
+actividades de coordinación de un desastre en orden cronológico & Autoridad, auditor & Baja \\
 \end{longtable}
 
 \subsection{Módulo 6: Reconstrucción}
@@ -965,11 +1029,11 @@ de recuperación o reconstrucción a partir de una o más evaluaciones de daño 
 el vínculo con las evaluaciones que lo originaron & Autoridad & Alta \\
 RF-RC-02 & Información del proyecto & El sistema deberá almacenar, para cada proyecto, presupuesto,
 fuente de financiación, responsable, contratista, cronograma, avance, costos, documentación,
-evidencias y estado del proyecto & Sin actor iniciador (aplica a RF-RC-01) & Alta \\
+evidencias y estado del proyecto & Sin actor iniciador (aplica a RF-RC-01) & Media \\
 RF-RC-03 & Asignar presupuesto y responsable & El sistema deberá permitir asignar y modificar el
-presupuesto, la fuente de financiación y el responsable de un proyecto & Autoridad & Alta \\
+presupuesto, la fuente de financiación y el responsable de un proyecto & Autoridad & Media \\
 RF-RC-04 & Registrar avance & El sistema deberá permitir registrar el avance de un proyecto con su
-marca de tiempo y su autor & Responsable de proyecto de reconstrucción & Alta \\
+marca de tiempo y su autor & Responsable de proyecto de reconstrucción & Media \\
 RF-RC-05 & Registrar costos & El sistema deberá permitir registrar los costos ejecutados de un
 proyecto y compararlos con el presupuesto asignado & Responsable de proyecto de reconstrucción &
 Media \\
@@ -979,7 +1043,7 @@ reconstrucción & Media \\
 RF-RC-07 & Auditoría de presupuesto y estado & El sistema deberá registrar todo cambio de
 presupuesto y todo cambio de estado de un proyecto, con el valor anterior, el valor nuevo, el autor,
 la justificación y la marca de tiempo. El registro no deberá poder modificarse ni eliminarse &
-Sin actor iniciador. Destinatario: auditor & Alta \\
+Sin actor iniciador. Destinatario: auditor & Media \\
 RF-RC-08\derivado & Creación de proyectos por lote & El sistema deberá permitir crear proyectos para
 un conjunto de activos evaluados en una sola operación, y conservar el vínculo de cada proyecto con
 su evaluación de origen. Se deriva del escenario EO-5, en el que la autoridad interviene un conjunto
@@ -987,7 +1051,7 @@ de activos (por ejemplo, 30 escuelas y 12 puentes) & Autoridad & Media \\
 RF-RC-09\derivado & Consulta consolidada del programa & El sistema deberá presentar el estado
 consolidado del conjunto de proyectos de un desastre: número de proyectos por estado, presupuesto
 asignado, costo ejecutado y avance agregado. Se deriva de la exigencia de dar seguimiento al avance
-de los proyectos, aplicada al conjunto de proyectos de un desastre & Autoridad, auditor & Media \\
+de los proyectos, aplicada al conjunto de proyectos de un desastre & Autoridad, auditor & Baja \\
 \end{longtable}
 
 \subsection{Resumen}
@@ -995,26 +1059,30 @@ de los proyectos, aplicada al conjunto de proyectos de un desastre & Autoridad, 
 \begin{table}[H]
 \centering
 \caption{Resumen de los requisitos funcionales por módulo}\label{tab:resumen}
-\begin{tabular}{lccl}
+\begin{tabular}{lcccccl}
 \toprule
-\textbf{Módulo} & \textbf{Requisitos} & \textbf{Primarios} & \textbf{Rango de identificadores} \\
+\textbf{Módulo} & \textbf{Requisitos} & \textbf{Primarios} & \textbf{Alta} & \textbf{Media} &
+\textbf{Baja} & \textbf{Rango de identificadores} \\
 \midrule
-Gestión de desastres          & 18 & 6 & RF-GD-01 a RF-GD-18 \\
-Evaluación de daños           & 15 & 3 & RF-ED-01 a RF-ED-15 \\
-Gestión de personas afectadas & 9  & 2 & RF-PA-01 a RF-PA-09 \\
-Gestión de recursos           & 7  & 2 & RF-RE-01 a RF-RE-07 \\
-Coordinación de organismos    & 7  & 3 & RF-CO-01 a RF-CO-07 \\
-Reconstrucción                & 9  & 1 & RF-RC-01 a RF-RC-09 \\
+Gestión de desastres          & 18 & 6 & 9 & 7 & 2 & RF-GD-01 a RF-GD-18 \\
+Evaluación de daños           & 15 & 3 & 6 & 8 & 1 & RF-ED-01 a RF-ED-15 \\
+Gestión de personas afectadas & 9  & 2 & 2 & 7 & 0 & RF-PA-01 a RF-PA-09 \\
+Gestión de recursos           & 7  & 2 & 2 & 5 & 0 & RF-RE-01 a RF-RE-07 \\
+Coordinación de organismos    & 7  & 3 & 3 & 3 & 1 & RF-CO-01 a RF-CO-07 \\
+Reconstrucción                & 9  & 1 & 1 & 7 & 1 & RF-RC-01 a RF-RC-09 \\
 \midrule
-Total                         & 65 & 17 & \\
+Total                         & 65 & 17 & 23 & 37 & 5 & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 De los 65 requisitos, 63 son exigencias directas del enunciado y 2 son derivados (RF-RC-08 y
 RF-RC-09). Los 17 requisitos primarios corresponden a los 10 casos de uso primarios del
-\cref{tab:primaria}. Respecto de la versión 1.0, la prioridad de RF-GD-13 pasa de Media a Baja y la
-de RF-RC-05 pasa de Alta a Media, por aplicación de los criterios de la \cref{sec:convenciones}.
+\cref{tab:primaria}. La versión 1.2 reclasifica los 65 requisitos con el criterio de la
+\cref{sec:convenciones}: 23 en Alta (\qty{35}{\percent}), 37 en Media (\qty{57}{\percent}) y 5 en
+Baja (\qty{8}{\percent}). Los 23 de prioridad Alta son los 17 primarios y seis requisitos que realizan
+escenarios (A, A): RF-GD-02, RF-GD-03 y RF-GD-04 (el registro de eventos, servicio crítico de QA-02) y
+RF-ED-02, RF-ED-03 y RF-ED-07 (la información, las evidencias y las versiones que QA-14 protege).
 
 %==============================================================================
 \newpage
@@ -1444,7 +1512,11 @@ de diseño. Dos atributos se atienden en un orden distinto del que sugiere su pu
 \subsection{Escenarios de atributo de calidad}
 \label{sec:escenarios}
 
-Los quince escenarios siguen el formato de seis partes \cite{bass}. Los valores siguientes provienen
+Los quince escenarios siguen el formato de seis partes \cite{bass}. La respuesta describe el
+comportamiento que se observa desde fuera y no los mecanismos, que corresponden al SAD. Cada escenario
+tiene una medida de respuesta principal, y los demás valores exigidos forman parte de la respuesta. En
+QA-03, el RTO y el RPO forman un solo objetivo de recuperación. En QA-06 a QA-08, la medida principal
+es el p95. Los valores siguientes provienen
 del enunciado \cite{enunciado}: la disponibilidad de \qty{99.95}{\percent}, el paso de \num{1000} a
 \num{10000} usuarios concurrentes, y los tiempos de \qty{2}{\second} para consultas frecuentes,
 \qty{3}{\second} para el registro de eventos y \qty{5}{\second} para las alertas críticas. Los
@@ -1458,28 +1530,25 @@ y quedan sujetos a la confirmación de la organización.
 \fichaqa{tab:qa01}{Escenario QA-01: disponibilidad ante el fallo de un sistema externo (EO-3)}
 \textbf{Atributo} & Disponibilidad (resiliencia frente al entorno) \\
 \textbf{Fuente del estímulo} & El sistema hospitalario externo (SE-3) \\
-\textbf{Estímulo} & Deja de responder: tres invocaciones consecutivas del adaptador de SE-3 agotan
-su tiempo de espera \\
+\textbf{Estímulo} & Deja de responder a las solicitudes de la plataforma \\
 \textbf{Artefacto} & El adaptador de SE-3, la cola de mensajes pendientes hacia ese sistema y el
 camino de consulta que presenta información de origen hospitalario \\
 \textbf{Entorno} & Emergencia activa de Nivel\_3, con \num{10000} usuarios concurrentes. Los demás
 sistemas externos operan con normalidad \\
-\textbf{Respuesta} & La plataforma marca SE-3 como indisponible y deja de invocarlo. Encola los
-mensajes dirigidos a él. Presenta el último dato hospitalario conocido, con su marca de tiempo y un
-indicador de que la fuente no responde desde un instante dado. Continúa operando el resto de sus
-funciones: registro de daños, gestión de recursos y coordinación de tareas. Cuando SE-3 vuelve a
-responder, la plataforma sincroniza la información pendiente en ambos sentidos \\
-\textbf{Medida de respuesta} &
-(a) Ninguna función que no dependa de SE-3 presenta indisponibilidad, y su latencia no se degrada
-más de un \qty{10}{\percent} respecto de su línea base;\newline
-(b) la indisponibilidad de SE-3 queda reflejada en el camino de consulta en $\le$ \qty{30}{\second}
-desde el tercer tiempo de espera agotado;\newline
-(c) al restablecerse SE-3, el \qty{100}{\percent} de los mensajes encolados dentro de la ventana de
-retención declarada (\qty{72}{\hour}) se procesa en $\le$ \qty{15}{\minute}, sin duplicados;\newline
-(d) 0 mensajes perdidos \\
+\textbf{Respuesta} & Las funciones que no dependen de SE-3 (registro de daños, gestión de recursos y
+coordinación de tareas) siguen disponibles, y su latencia no se degrada más de un
+\qty{10}{\percent} respecto de su línea base. La consulta presenta el último dato hospitalario
+conocido, con su marca de tiempo y la indicación de que la fuente no responde, en $\le$
+\qty{30}{\second} desde que SE-3 dejó de responder. La información dirigida a SE-3 queda pendiente
+y no se pierde. Cuando SE-3 vuelve a responder, la información pendiente se sincroniza en ambos
+sentidos: el \qty{100}{\percent} de lo pendiente dentro de la ventana de retención declarada
+(\qty{72}{\hour}) queda procesado en $\le$ \qty{15}{\minute}, sin duplicados \\
+\textbf{Medida de respuesta} & 0 funciones que no dependen de SE-3 quedan indisponibles mientras SE-3 no responde \\
+\textbf{Por qué esta medida} & Es lo que exigen EO-3 y CON-3: la caída de un sistema externo no detiene el resto de la
+plataforma \\
 \end{longtable}
 
-El umbral de \qty{10}{\percent} de degradación de latencia de la medida (a), que también se usa en
+El umbral de \qty{10}{\percent} de degradación de latencia de esta respuesta, que también se usa en
 QA-12 y en QA-14, es una propuesta del equipo frente a una línea base medida. Se elige porque es
 medible sobre esa línea base y porque una degradación mayor comprometería los objetivos de latencia
 de QA-06 a QA-08.
@@ -1498,16 +1567,14 @@ desastre, generación de alertas y coordinación de tareas \\
 \textbf{Entorno} & Operación normal y emergencia activa, con medición continua sobre un mes
 calendario. Se excluyen las ventanas de mantenimiento programadas y anunciadas con al menos
 \qty{72}{\hour} de antelación \\
-\textbf{Respuesta} & La plataforma detecta el fallo, deja de dirigir peticiones al componente
-afectado, las atiende con una réplica sana y continúa prestando el servicio crítico \\
-\textbf{Medida de respuesta} &
-Disponibilidad mensual de los servicios críticos $\ge$ \qty{99.95}{\percent}. Equivale a una
+\textbf{Respuesta} & El servicio crítico sigue atendiendo a sus usuarios. En $\le$ \qty{30}{\second} desde el
+fallo, las peticiones dejan de verse afectadas por el componente que falló \\
+\textbf{Medida de respuesta} & Disponibilidad mensual de los servicios críticos $\ge$ \qty{99.95}{\percent}. Equivale a una
 indisponibilidad acumulada $\le$ \qty{21.6}{\minute} en un mes de 30 días
 ($\num{43200} \times \num{0.0005}$) y $\le$ \qty{22.3}{\minute} en un mes de 31 días.\newline
 Medición: sondeo sintético externo cada \qty{30}{\second} desde al menos dos ubicaciones geográficas
 independientes. Un servicio se considera indisponible cuando dos sondeos consecutivos desde
-ubicaciones distintas fallan o exceden el objetivo de latencia de QA-06.\newline
-Detección y reencaminamiento: $\le$ \qty{30}{\second} desde el fallo \\
+ubicaciones distintas fallan o exceden el objetivo de latencia de QA-06 \\
 \end{longtable}
 
 \subsubsection{QA-03: Recuperación ante un fallo grave (RTO y RPO)}
@@ -1524,19 +1591,16 @@ ubicación primaria \\
 \textbf{Entorno} & Emergencia activa de Nivel\_4. La ubicación secundaria se mantiene actualizada
 mediante replicación asíncrona. En el instante del fallo puede tener menos información que la
 primaria \\
-\textbf{Respuesta} & El mecanismo de enrutamiento detecta la pérdida y conmuta el tráfico a la
-ubicación secundaria, que asume la operación. La conmutación queda registrada en la bitácora de
-auditoría con su marca de tiempo. Cuando la ubicación primaria se recupera, los datos divergentes
-se resincronizan con una regla determinista y las discrepancias se escalan a un operador \\
-\textbf{Medida de respuesta} &
-RTO $\le$ \qty{15}{\minute}, medido desde el último minuto de servicio en la ubicación primaria
+\textbf{Respuesta} & Los servicios críticos vuelven a atender desde la ubicación secundaria, sin que un
+operador tenga que intervenir. El cambio de ubicación queda registrado en la bitácora de auditoría
+con su marca de tiempo. Cuando la ubicación primaria se recupera, los datos de ambas ubicaciones
+quedan consistentes y las discrepancias llegan a un operador. El operador recibe una alarma si el
+p99 del retraso entre ubicaciones supera \qty{30}{\second}. Si se pierden ambas ubicaciones, el
+servicio se restaura desde una copia de respaldo en $\le$ \qty{4}{\hour}, con una pérdida de datos
+$\le$ \qty{24}{\hour}, lo que se verifica con un ensayo completo al menos una vez por trimestre \\
+\textbf{Medida de respuesta} & RTO $\le$ \qty{15}{\minute}, medido desde el último minuto de servicio en la ubicación primaria
 hasta que la secundaria responde el \qty{95}{\percent} de las peticiones de los servicios críticos
-dentro de los objetivos de latencia de QA-06 a QA-08.\newline
-RPO $\le$ \qty{60}{\second}. El retraso de replicación se mide de forma continua y se genera una
-alarma si su p99 supera \qty{30}{\second}.\newline
-Restauración desde copia de respaldo, si se pierden ambas ubicaciones: $\le$ \qty{4}{\hour} con un
-RPO $\le$ \qty{24}{\hour}, verificado con un ensayo de restauración completo al menos una vez por
-trimestre \\
+dentro de los objetivos de latencia de QA-06 a QA-08, con RPO $\le$ \qty{60}{\second} \\
 \end{longtable}
 
 La replicación asíncrona implica un RPO mayor que cero. En la conmutación se pierden las
@@ -1559,20 +1623,17 @@ las invocaciones que recibe durante \qty{60}{\second} consecutivos \\
 \textbf{Artefacto} & El componente afectado y todos los componentes que lo invocan \\
 \textbf{Entorno} & Emergencia activa con \num{10000} usuarios concurrentes. El resto de la
 plataforma opera con normalidad \\
-\textbf{Respuesta} & Los invocadores interrumpen el flujo hacia el componente afectado. Devuelven
-una respuesta degradada documentada en lugar de un error. El trabajo dirigido al componente queda
-encolado. Se notifica al operador. Los invocadores reintentan con espera creciente hasta comprobar
-el restablecimiento \\
-\textbf{Medida de respuesta} &
-(a) Ninguna función crítica que no dependa del componente afectado presenta indisponibilidad;\newline
-(b) la propagación del fallo se corta en $\le$ \qty{60}{\second} desde el inicio de los errores,
-medido como el instante en que los invocadores dejan de generar invocaciones nuevas hacia el
-componente;\newline
-(c) $\le$ \qty{1}{\percent} de las peticiones a funciones críticas devuelve error en los
-\qty{5}{\minute} posteriores al inicio del fallo;\newline
-(d) 0 eventos encolados perdidos;\newline
-(e) al restablecerse el componente, la cola pendiente se procesa en $\le$ \qty{10}{\minute} y sin
+\textbf{Respuesta} & Las funciones críticas que no dependen del componente afectado siguen disponibles. Las
+que dependen de él responden de forma degradada y documentada, en lugar de devolver un error. El
+fallo deja de propagarse en $\le$ \qty{60}{\second} desde el inicio de los errores, y $\le$
+\qty{1}{\percent} de las peticiones a funciones críticas devuelve error en los \qty{5}{\minute}
+posteriores. El operador recibe un aviso. El trabajo dirigido al componente se conserva, con 0
+eventos perdidos, y al restablecerse el componente se completa en $\le$ \qty{10}{\minute}, sin
 duplicados \\
+\textbf{Medida de respuesta} & 0 funciones críticas que no dependen del componente afectado quedan indisponibles durante el
+fallo \\
+\textbf{Por qué esta medida} & El enunciado define la resiliencia así: el fallo de un componente no produce un fallo
+general \\
 \end{longtable}
 
 \subsubsection{QA-05: Escalabilidad ante un aumento repentino de usuarios}
@@ -1588,28 +1649,22 @@ más en un intervalo de \qty{10}{\minute} \\
 zonas afectadas), que reciben el aumento de carga \\
 \textbf{Entorno} & Emergencia activa recién declarada, en el momento de máxima demanda de
 información \\
-\textbf{Respuesta} & Se incrementa la capacidad solo de los componentes bajo presión, sin escalar
-los componentes de escritura y sin modificar la aplicación. Las funciones críticas se mantienen
-dentro de sus objetivos. Si la demanda excede la capacidad aprovisionada, se degrada primero el
-acceso público y se preserva la consola de coordinación de los organismos \\
-\textbf{Medida de respuesta} &
-(a) Con \num{10000} usuarios concurrentes, la consulta frecuente se mantiene en p95 $<$
-\qty{2}{\second} y p99 $<$ \qty{4}{\second}, a más tardar \qty{5}{\minute} después de superado el
-umbral de disparo \\
-\textbf{Condiciones de verificación} &
-(b) El incremento de capacidad se completa en $\le$ \qty{5}{\minute} desde que se supera el umbral
-de disparo;\newline
-(c) el incremento requiere 0 componentes modificados y 0 líneas de código modificadas: solo cambian
-parámetros de despliegue;\newline
-(d) los componentes de escritura no incrementan su capacidad más allá de un \qty{20}{\percent} de
-su línea base;\newline
-(e) bajo degradación, el \qty{100}{\percent} de las peticiones de la consola de coordinación se
-atiende dentro del objetivo de latencia \\
+\textbf{Respuesta} & Se incrementa la capacidad solo de los componentes bajo presión. El incremento se completa
+en $\le$ \qty{5}{\minute} desde que se supera el umbral de disparo, con 0 componentes y 0 líneas de
+código modificados: solo cambian parámetros de despliegue. Los componentes de escritura no aumentan
+su capacidad más de un \qty{20}{\percent} sobre su línea base. La consulta frecuente mantiene un p99
+$<$ \qty{4}{\second}. Si la demanda excede la capacidad aprovisionada, se degrada primero el acceso
+público, y el \qty{100}{\percent} de las peticiones de la consola de coordinación se atiende dentro
+del objetivo de latencia \\
+\textbf{Medida de respuesta} & Con \num{10000} usuarios concurrentes, la consulta frecuente se mantiene en p95 $<$
+\qty{2}{\second}, a más tardar \qty{5}{\minute} después de superado el umbral de disparo \\
+\textbf{Por qué esta medida} & Mide lo que el usuario percibe bajo la carga máxima y usa el objetivo de \qty{2}{\second} del
+enunciado \\
 \end{longtable}
 
-La versión 1.1 declara una única medida de respuesta para este escenario, la medida (a). Las
-condiciones (b) a (e) conservan su letra y precisan cómo se verifica que la medida se alcanza de la
-forma que exige el enunciado: sin rediseñar la aplicación y sin escalar toda la plataforma.
+Las exigencias de plazo, de código y de capacidad están en la respuesta, porque describen cómo se
+alcanza la medida de la forma que pide el enunciado: sin rediseñar la aplicación y sin escalar toda
+la plataforma.
 
 El objetivo de escalabilidad es un aumento de un orden de magnitud: de \num{1000} usuarios
 concurrentes en operación normal a \num{10000} o más durante una emergencia. La medida se verifica
@@ -1707,26 +1762,22 @@ integrados \\
 y el formato interno común al que se traduce \\
 \textbf{Entorno} & La plataforma en operación. El adaptador se desarrolla fuera de línea y se
 despliega sin detener el servicio \\
-\textbf{Respuesta} & Se construye un adaptador que cumple el contrato existente y traduce entre el
-formato del sistema nuevo y el formato interno. El sistema nuevo intercambia información
-correctamente con la plataforma. Ningún otro componente de la plataforma cambia \\
-\textbf{Medida de respuesta} &
-(a) 0 componentes existentes modificados;\newline
-(b) esfuerzo de incorporación $\le$ 15 días-persona;\newline
-(c) \qty{0}{\minute} de indisponibilidad de los servicios críticos durante la incorporación;\newline
-(d) los objetivos de QA-06 a QA-08 se siguen cumpliendo después de la incorporación \\
+\textbf{Respuesta} & El sistema nuevo intercambia información correctamente con la plataforma. La incorporación
+toma $\le$ 15 días-persona y no interrumpe los servicios críticos: \qty{0}{\minute} de
+indisponibilidad. Los objetivos de QA-06 a QA-08 se siguen cumpliendo después de la incorporación \\
+\textbf{Medida de respuesta} & 0 componentes existentes modificados \\
+\textbf{Por qué esta medida} & Es la medida de integrabilidad del modelo adoptado \cite{bass}: muestra que un sistema
+heterogéneo nuevo se integra sin tocar lo que ya funciona (CON-2) \\
 \end{longtable}
 
-Las medidas (a) y (b) son las de un escenario de integrabilidad: componentes modificados y esfuerzo
-\cite{bass}. La medida (c) verifica que la incorporación no interrumpe el servicio. La medida (d)
-verifica el efecto de la incorporación sobre las demás medidas de respuesta. El valor de 15
-días-persona es una propuesta del equipo.
+Los componentes modificados y el esfuerzo son el vocabulario de un escenario de integrabilidad
+\cite{bass}. El valor de 15 días-persona es una propuesta del equipo.
 
 El escenario se clasifica como interoperabilidad porque su estímulo es el intercambio de información
 con un sistema externo, que es el atributo que nombra el enunciado. La respuesta también puede
 leerse como extensibilidad, porque la plataforma se amplía con un adaptador sin modificar lo
 existente. En el modelo de calidad adoptado, esa propiedad se especifica como integrabilidad y se
-mide con el vocabulario de la modificabilidad, que es el de las medidas (a) y (b). La
+mide con el vocabulario de la modificabilidad: componentes modificados y esfuerzo. La
 extensibilidad del dominio, sin sistemas externos, se especifica en QA-10.
 
 \subsubsection{QA-10: Modificabilidad al incorporar un tipo de desastre nuevo}
@@ -1741,19 +1792,16 @@ tipo de activo (RN-5) \\
 \textbf{Artefacto} & El catálogo de tipos y los componentes que lo consultan: gestión de desastres y
 evaluación de daños \\
 \textbf{Entorno} & Plataforma en operación normal, sin emergencia activa del tipo nuevo \\
-\textbf{Respuesta} & El tipo nuevo queda disponible para registrar eventos con su ciclo de vida y
-sus criterios. Los eventos de los tipos existentes no se ven afectados. No se modifica ni se
-redespliega ningún componente \\
-\textbf{Medida de respuesta} &
-(a) 0 componentes modificados, 0 líneas de código modificadas y 0 redespliegues;\newline
-(b) el tipo nuevo está disponible para registrar eventos en $\le$ \qty{1}{\hour} desde que el
-administrador completa su definición;\newline
-(c) \qty{0}{\minute} de indisponibilidad de cualquier servicio;\newline
-(d) 0 eventos preexistentes alterados, verificado por conciliación del estado de los eventos antes y
-después de la incorporación \\
+\textbf{Respuesta} & El tipo nuevo queda disponible para registrar eventos con su ciclo de vida y sus criterios
+en $\le$ \qty{1}{\hour} desde que el administrador completa su definición, sin escribir código. Ningún
+servicio deja de estar disponible: \qty{0}{\minute} de indisponibilidad. Los eventos de los tipos
+existentes no se alteran, lo que se verifica por conciliación de su estado antes y después \\
+\textbf{Medida de respuesta} & 0 componentes modificados o redesplegados para incorporar el tipo nuevo \\
+\textbf{Por qué esta medida} & Expresa la exigencia de RN-1: un tipo nuevo es contenido que se administra y no un cambio del
+software \\
 \end{longtable}
 
-El plazo de \qty{1}{\hour} de la medida (b) es una propuesta del equipo. Es el tiempo máximo entre el
+El plazo de \qty{1}{\hour} de la respuesta es una propuesta del equipo. Es el tiempo máximo entre el
 momento en que el administrador guarda la definición y el momento en que todos los componentes que
 consultan el catálogo aceptan eventos del tipo nuevo. La medida verifica que la definición se
 propaga sin intervención del equipo de desarrollo.
@@ -1772,17 +1820,15 @@ evento \\
 plataforma \\
 \textbf{Entorno} & Emergencia activa. La plataforma está en operación y el usuario superó la
 autenticación \\
-\textbf{Respuesta} & La plataforma rechaza la operación y no modifica ningún dato. Devuelve un error
-de autorización que no revela información del evento distinta de la que el usuario está autorizado a
-ver. Registra el intento en la bitácora de auditoría \\
-\textbf{Medida de respuesta} &
-(a) El \qty{100}{\percent} de los intentos de modificación por parte de un organismo no responsable
-se rechaza: 0 falsos negativos sobre un banco de prueba de al menos 200 casos que cubra todas las
-combinaciones de rol, organización y operación;\newline
-(b) 0 datos modificados en los casos rechazados;\newline
-(c) el intento queda registrado en $\le$ \qty{5}{\second}, con la identidad del solicitante, la
-organización, el recurso, la operación intentada y el resultado;\newline
-(d) 0 atributos del evento presentes en el mensaje de error \\
+\textbf{Respuesta} & La plataforma rechaza la operación, con 0 datos modificados. El error de autorización no
+incluye ningún atributo del evento. El intento queda registrado en la bitácora de auditoría en $\le$
+\qty{5}{\second}, con la identidad del solicitante, la organización, el recurso, la operación
+intentada y el resultado \\
+\textbf{Medida de respuesta} & \qty{100}{\percent} de los intentos de modificación por parte de un organismo no responsable se
+rechaza, sobre un banco de prueba de al menos 200 casos que cubra todas las combinaciones de rol,
+organización y operación \\
+\textbf{Por qué esta medida} & Es la garantía que pide el control de acceso por organización: ningún organismo ajeno modifica
+un evento \\
 \end{longtable}
 
 \subsubsection{QA-12: Seguridad en la protección de datos personales de las personas afectadas}
@@ -1798,21 +1844,18 @@ la plataforma \\
 \textbf{Artefacto} & El almacén del módulo de gestión de personas afectadas, sus copias de respaldo
 y todos los puntos de acceso que exponen esa información \\
 \textbf{Entorno} & Plataforma en operación normal o en emergencia activa \\
-\textbf{Respuesta} & Los campos clasificados como identificatorios están cifrados en reposo y solo
-se descifran para los roles con necesidad de conocer acreditada. A los demás roles la plataforma
-devuelve información agregada o seudonimizada. Todo acceso a datos identificatorios queda
-registrado \\
-\textbf{Medida de respuesta} &
-(a) El \qty{100}{\percent} de los campos de la lista cerrada de campos identificatorios, publicada
-en la especificación de datos del módulo, resulta ilegible sin la clave. Se verifica por inspección
-directa del medio de almacenamiento y de una copia de respaldo;\newline
-(b) 0 campos identificatorios en las respuestas dirigidas a roles sin necesidad de conocer,
-verificado sobre el \qty{100}{\percent} de los puntos de acceso del módulo;\newline
-(c) el \qty{100}{\percent} de los accesos a datos identificatorios queda registrado con identidad,
-campo consultado, propósito declarado y marca de tiempo, y está disponible en $\le$
-\qty{5}{\second};\newline
-(d) el cifrado no degrada la latencia de QA-06 más de un \qty{10}{\percent} (el origen de este
-umbral se explica en la \cref{sec:qa01}) \\
+\textbf{Respuesta} & Quien lee el medio de almacenamiento o una copia de respaldo no obtiene datos
+identificatorios legibles. Un rol sin necesidad de conocer recibe información agregada o
+seudonimizada: 0 campos identificatorios en sus respuestas, en el \qty{100}{\percent} de los puntos
+de acceso del módulo. Todo acceso a datos identificatorios queda registrado con identidad, campo
+consultado, propósito declarado y marca de tiempo, y está disponible en $\le$ \qty{5}{\second}. La
+latencia de QA-06 no se degrada más de un \qty{10}{\percent} (el origen de este umbral se explica en
+la \cref{sec:qa01}) \\
+\textbf{Medida de respuesta} & \qty{100}{\percent} de los campos de la lista cerrada de campos identificatorios, publicada en la
+especificación de datos del módulo, resulta ilegible sin la clave. Se verifica por inspección directa
+del medio de almacenamiento y de una copia de respaldo \\
+\textbf{Por qué esta medida} & Cubre el caso de mayor impacto: el acceso directo a los datos, sin pasar por los controles de la
+aplicación \\
 \end{longtable}
 
 \subsubsection{QA-13: Trazabilidad de las operaciones críticas}
@@ -1828,20 +1871,16 @@ determinado \\
 \textbf{Artefacto} & La bitácora de auditoría de la plataforma \\
 \textbf{Entorno} & Operación normal, con la emergencia cerrada. La consulta puede hacerse hasta
 cinco años después de los hechos \\
-\textbf{Respuesta} & La plataforma devuelve, para cada operación del período, quién la ejecutó, qué
-hizo, cuándo, sobre qué información y con qué resultado, con el valor anterior y el valor posterior
-de lo modificado \\
-\textbf{Medida de respuesta} &
-(a) El \qty{100}{\percent} de las operaciones de las cinco clases produce una entrada de auditoría:
-0 operaciones aplicadas sin registro. Se verifica por conciliación entre el número de versiones de
-cada entidad y el número de entradas de auditoría, que deben coincidir;\newline
-(b) 0 entradas modificables o eliminables una vez escritas, verificado por la ausencia de
-operaciones de actualización y de borrado en la interfaz del almacén de auditoría;\newline
-(c) una entrada está disponible para consulta en $\le$ \qty{5}{\second} desde el hecho que la
-origina;\newline
-(d) la consulta de un rastro de hasta \num{10000} entradas responde en p95 $<$
-\qty{10}{\second};\newline
-(e) retención $\ge$ 5 años \\
+\textbf{Respuesta} & La plataforma devuelve, para cada operación del período, quién la ejecutó, qué hizo, cuándo,
+sobre qué información y con qué resultado, con el valor anterior y el valor posterior de lo
+modificado. Ninguna entrada se puede modificar ni eliminar una vez escrita. Una entrada está
+disponible para consulta en $\le$ \qty{5}{\second} desde el hecho que la origina. La consulta de un
+rastro de hasta \num{10000} entradas responde en p95 $<$ \qty{10}{\second}. Las entradas se conservan
+al menos 5 años \\
+\textbf{Medida de respuesta} & \qty{100}{\percent} de las operaciones de las cinco clases produce una entrada de auditoría. Se
+verifica por conciliación entre el número de versiones de cada entidad y el número de entradas de
+auditoría, que deben coincidir \\
+\textbf{Por qué esta medida} & Un rastro solo sirve a un ente de control si está completo \\
 \end{longtable}
 
 \subsubsection{QA-14: Integridad de la sincronización sin conexión}
@@ -1856,24 +1895,23 @@ actualizó en la plataforma durante ese intervalo \\
 \textbf{Artefacto} & El componente de sincronización y el almacén de evaluaciones de daño \\
 \textbf{Entorno} & Emergencia activa, con cientos de equipos de campo que sincronizan
 simultáneamente y \num{10000} usuarios concurrentes que consultan \\
-\textbf{Respuesta} & La plataforma acepta el lote y aplica las 115 evaluaciones sin conflicto.
-Detecta los 5 conflictos mediante una regla determinista. Conserva ambas versiones de cada caso en
-conflicto, marca la evaluación como \enquote{en conflicto} y la encola para que un usuario
-autorizado la resuelva. No descarta ninguna versión de forma automática \\
-\textbf{Medida de respuesta} &
-(a) 0 evaluaciones perdidas y 0 sobrescrituras silenciosas sobre el \qty{100}{\percent} de los casos
-de conflicto;\newline
-(b) el \qty{100}{\percent} de los conflictos es detectado por la regla determinista: 0 falsos
-negativos sobre un banco de prueba de al menos 100 casos;\newline
-(c) reenvío idempotente: reenviar el mismo lote produce 0 registros duplicados;\newline
-(d) el lote de 120 evaluaciones con sus evidencias queda aplicado o marcado en $\le$
-\qty{10}{\minute} en el p95;\newline
-(e) la recepción concurrente de reportes de campo no degrada la latencia de las funciones críticas
-de coordinación más de un \qty{10}{\percent} respecto de su línea base (\cref{sec:qa01}) \\
+\textbf{Respuesta} & La plataforma acepta el lote y aplica las 115 evaluaciones sin conflicto. Identifica los 5
+conflictos con un resultado que no depende de los relojes de los dispositivos: el
+\qty{100}{\percent} de los conflictos se detecta, con 0 falsos negativos sobre un banco de prueba de
+al menos 100 casos. Conserva ambas versiones de cada caso, marca la evaluación como \enquote{en
+conflicto} y la deja pendiente de la decisión de un usuario autorizado. Reenviar el mismo lote produce
+0 registros duplicados. El lote, con sus evidencias, queda aplicado o marcado en $\le$
+\qty{10}{\minute} en el p95. La recepción concurrente de reportes de campo no degrada la latencia de
+las funciones críticas de coordinación más de un \qty{10}{\percent} respecto de su línea base
+(\cref{sec:qa01}) \\
+\textbf{Medida de respuesta} & 0 evaluaciones perdidas o sobrescritas en silencio, sobre el \qty{100}{\percent} de los casos de
+conflicto \\
+\textbf{Por qué esta medida} & La integridad de lo registrado sin conexión es lo que el escenario protege: ninguna evaluación de
+campo se pierde \\
 \end{longtable}
 
 El enunciado exige que el procesamiento de los reportes de campo no afecte significativamente las
-funciones críticas de coordinación \cite{enunciado}. La medida (e) hace verificable esa exigencia
+funciones críticas de coordinación \cite{enunciado}. La respuesta hace verificable esa exigencia
 con un límite de \qty{10}{\percent} de degradación de latencia respecto de una línea base medida
 previamente.
 
@@ -1889,19 +1927,16 @@ escuelas y 12 puentes) y cambia el estado de 3 de ellos \\
 \textbf{Artefacto} & El módulo de reconstrucción y la bitácora de auditoría \\
 \textbf{Entorno} & Fase de reconstrucción, en operación normal, semanas o meses después de cerrada
 la emergencia \\
-\textbf{Respuesta} & La plataforma aplica los cambios y conserva para cada uno el valor anterior y
-el valor nuevo. Registra el autor, la marca de tiempo, la justificación y el resultado. El registro
-resultante no puede modificarse ni eliminarse \\
-\textbf{Medida de respuesta} &
-(a) El \qty{100}{\percent} de los cambios de presupuesto y de estado produce una entrada con valor
-anterior y valor nuevo;\newline
-(b) 0 cambios aplicados sin registro. Se verifica al comparar el número de versiones de cada
-proyecto con el número de entradas de auditoría asociadas, que deben coincidir;\newline
-(c) la entrada está disponible para consulta en $\le$ \qty{5}{\second} desde el cambio;\newline
-(d) el estado de un proyecto en cualquier fecha pasada se reconstruye con una única consulta, con
-\qty{100}{\percent} de exactitud sobre un banco de prueba de al menos 50 casos;\newline
-(e) el vínculo entre cada proyecto y la evaluación de daños que lo originó (RF-RC-01) se conserva
-en el \qty{100}{\percent} de los proyectos \\
+\textbf{Respuesta} & La plataforma aplica los cambios y conserva para cada uno el valor anterior y el valor
+nuevo, con el autor, la marca de tiempo, la justificación y el resultado. Ningún cambio queda sin
+registro: el número de versiones de cada proyecto coincide con el número de entradas de auditoría.
+El registro no se puede modificar ni eliminar, y está disponible para consulta en $\le$
+\qty{5}{\second}. El estado de un proyecto en cualquier fecha pasada se reconstruye con una única
+consulta, con \qty{100}{\percent} de exactitud sobre al menos 50 casos. Cada proyecto conserva el
+vínculo con la evaluación que lo originó (RF-RC-01) \\
+\textbf{Medida de respuesta} & \qty{100}{\percent} de los cambios de presupuesto y de estado produce una entrada con valor anterior
+y valor nuevo \\
+\textbf{Por qué esta medida} & Es lo que necesita quien audita el uso del presupuesto público: reconstruir cada cambio \\
 \end{longtable}
 
 \subsection{Árbol de utilidad preliminar}
@@ -1917,7 +1952,7 @@ del ATAM y una de las entradas de ADD 3.0. La raíz del árbol es la utilidad de
 y la prioridad $P$}{\textbf{Atributo} & \textbf{Refinamiento} & \textbf{Escenario} &
 \textbf{(I, D)} & \textbf{P}}
 Disponibilidad & Tolerancia al fallo de una fuente externa & QA-01. Un sistema externo deja de
-responder. La plataforma sigue operando y sincroniza lo pendiente cuando el sistema vuelve &
+responder: 0 funciones que no dependen de él quedan indisponibles &
 (A, M) & 6 \\
  & Continuidad del servicio crítico & QA-02. Disponibilidad mensual $\ge$ \qty{99.95}{\percent}
 ($\le$ \qty{21.6}{\minute} al mes) de los servicios críticos & (A, A) & 9 \\
@@ -1925,12 +1960,11 @@ responder. La plataforma sigue operando y sincroniza lo pendiente cuando el sist
 Recuperación ante fallos & Recuperación ante la pérdida de la ubicación primaria & QA-03.
 Conmutación con RTO $\le$ \qty{15}{\minute} y RPO $\le$ \qty{60}{\second} & (A, A) & 9 \\
 \midrule
-Resiliencia & Contención del fallo interno & QA-04. Un componente interno falla. El fallo no se
-propaga y no se pierden eventos & (A, M) & 6 \\
+Resiliencia & Contención del fallo interno & QA-04. Un componente interno falla: 0 funciones
+críticas que no dependen de él quedan indisponibles & (A, M) & 6 \\
 \midrule
 Escalabilidad & Elasticidad selectiva del camino de lectura & QA-05. De \num{1000} a \num{10000}
-usuarios concurrentes en \qty{10}{\minute}, con escalado solo de los componentes bajo presión y sin
-modificar código & (A, M) & 6 \\
+usuarios concurrentes en \qty{10}{\minute}, con la consulta frecuente en p95 $<$ \qty{2}{\second} & (A, M) & 6 \\
 \midrule
 Rendimiento & Latencia de consulta & QA-06. Consulta frecuente con p95 $<$ \qty{2}{\second} bajo
 \num{10000} usuarios concurrentes & (M, M) & 4 \\
@@ -1939,23 +1973,23 @@ Rendimiento & Latencia de consulta & QA-06. Consulta frecuente con p95 $<$ \qty{
 (A, M) & 6 \\
 \midrule
 Interoperabilidad & Incorporación de una fuente nueva & QA-09. Integrar un sistema externo nuevo
-con 0 componentes existentes modificados y $\le$ 15 días-persona & (A, A) & 9 \\
+con 0 componentes existentes modificados & (A, A) & 9 \\
 \midrule
 Modificabilidad & Variabilidad del dominio & QA-10. Incorporar un tipo de desastre nuevo con 0
-componentes modificados y 0 redespliegues & (M, B) & 2 \\
+componentes modificados o redesplegados & (M, B) & 2 \\
 \midrule
-Seguridad & Autorización por organización & QA-11. Un organismo no responsable no puede modificar un
-desastre ajeno: \qty{100}{\percent} de rechazos & (A, M) & 6 \\
- & Protección de datos personales & QA-12. Datos identificatorios de personas afectadas ilegibles
-sin clave y no expuestos a roles sin necesidad de conocer & (A, M) & 6 \\
+Seguridad & Autorización por organización & QA-11. Un organismo no responsable intenta modificar un
+desastre ajeno: \qty{100}{\percent} de rechazos sobre al menos 200 casos & (A, M) & 6 \\
+ & Protección de datos personales & QA-12. Lectura directa de los datos de personas afectadas:
+\qty{100}{\percent} de los campos identificatorios ilegibles sin la clave & (A, M) & 6 \\
 \midrule
-Trazabilidad & Auditoría de las operaciones críticas & QA-13. Rastro completo de las cinco clases de
-operación crítica, inmutable y con retención $\ge$ 5 años & (A, B) & 3 \\
- & Auditoría de la reconstrucción & QA-15. Todo cambio de presupuesto y de estado de un proyecto
-queda registrado con valor anterior y valor nuevo & (A, B) & 3 \\
+Trazabilidad & Auditoría de las operaciones críticas & QA-13. Rastro de las cinco clases de
+operación crítica: \qty{100}{\percent} de las operaciones con entrada de auditoría & (A, B) & 3 \\
+ & Auditoría de la reconstrucción & QA-15. Cambios de presupuesto y de estado de un proyecto:
+\qty{100}{\percent} con entrada de valor anterior y valor nuevo & (A, B) & 3 \\
 \midrule
 Integridad de datos & Sincronización diferida desde campo & QA-14. Sincronización de 120
-evaluaciones con 5 conflictos: 0 pérdidas, 0 sobrescrituras silenciosas y 0 duplicados & (A, A) &
+evaluaciones con 5 conflictos: 0 evaluaciones perdidas o sobrescritas en silencio & (A, A) &
 9 \\
 \end{longtable}
 
@@ -2334,58 +2368,61 @@ plataforma especificada en este documento debe:
 
 Estas seis exigencias recaen sobre la estructura del sistema. Por eso la propuesta cambia la unidad
 de despliegue, la unidad de fallo y la unidad de escalado, y trata la integración como un punto de
-variación explícito.
+variación explícito. La arquitectura resultante es heterogénea: combina el estilo basado en servicios
+(patrón microservicios), el estilo basado en eventos (publicación y suscripción), las capas
+(arquitectura limpia \cite{martin}) y la separación de lectura y escritura \cite{sad}.
 
 \subsubsection{Comparación y justificación por escenario}
 
 Cada fila del \cref{tab:comparativa} cita el escenario, el requisito o la restricción que justifica
-la diferencia, como exige CON-7.
+la diferencia, como exige CON-7. La columna Tipo indica si la propuesta es un patrón, con su estilo,
+o una táctica, con su atributo y su rama en Bass, Clements y Kazman \cite{bass}.
 
-\begin{longtable}{L{3.0cm} L{3.7cm} L{5.2cm} L{3.3cm}}
-\cabecera{4}{tab:comparativa}{Comparación entre Sahana Eden y la propuesta, con la justificación de
-cada diferencia}{\textbf{Aspecto} & \textbf{Sahana Eden} & \textbf{Propuesta} & \textbf{Justificación}}
+\begin{longtable}{L{2.3cm} L{2.9cm} L{4.2cm} L{2.9cm} L{3.0cm}}
+\cabecera{5}{tab:comparativa}{Comparación entre Sahana Eden y la propuesta, con la justificación de
+cada diferencia}{\textbf{Aspecto} & \textbf{Sahana Eden} & \textbf{Propuesta} & \textbf{Justificación} & \textbf{Tipo}}
 Unidad de despliegue & Aplicación web servida como una unidad \cite{eden-basics} & Microservicios
 que se despliegan, se escalan y se sustituyen de forma independiente. El SAD adopta y justifica
-este estilo & QA-05: escalar solo los componentes bajo presión, con 0 líneas de código modificadas \\
+este patrón del estilo basado en servicios & QA-05: escalar solo los componentes bajo presión, con 0 líneas de código modificadas & Patrón microservicios (estilo basado en servicios) \\
 Propiedad de los datos & Esquema propio: Sahana es el registro maestro \cite{eden-basics} & La
 plataforma no es dueña de los datos. Cada dato conserva su procedencia y su marca de tiempo (RN-6) &
-CON-1 y QA-01: un dato de una fuente indisponible se presenta con su antigüedad \\
+CON-1 y QA-01: un dato de una fuente indisponible se presenta con su antigüedad & Táctica de seguridad, rama recuperarse de ataques: auditoría \\
 Almacenamiento & Esquema único compartido por todos los módulos \cite{eden-basics} & Almacén propio
 por microservicio. Ningún microservicio accede al almacén de otro & QA-04: el fallo de un componente
-no se propaga \\
+no se propaga & Patrón base de datos por servicio (estilo basado en servicios) \\
 Comunicación entre módulos & Por el esquema compartido \cite{eden-basics} & Canal de eventos con
 retención y entrega al menos una vez, e invocación síncrona donde la latencia lo exige (CON-5) &
-QA-01 y QA-04: un consumidor que se recupera procesa lo que se le dirigió \\
+QA-01 y QA-04: un consumidor que se recupera procesa lo que se le dirigió & Patrón publicación y suscripción (estilo basado en eventos) \\
 Integración externa & Interfaz de tipo REST y XSLT configurable por recurso y por formato
 \cite{eden-xslt,desosa2018} & Se conserva el principio y se aísla en un adaptador por sistema. Todos
 los adaptadores cumplen un contrato común y traducen a un formato interno único & QA-09: incorporar
-un sistema nuevo con 0 componentes existentes modificados \\
+un sistema nuevo con 0 componentes existentes modificados & Patrón adaptador. Táctica de integrabilidad, rama limitar dependencias: usar un intermediario \\
 Formatos soportados & Transformación no disponible para PDF, CSV y XLS \cite{eden-xslt} & El
 contrato del adaptador no restringe el formato externo. La traducción es responsabilidad del
-adaptador & QA-09: los sistemas futuros no se conocen \\
+adaptador & QA-09: los sistemas futuros no se conocen & Táctica de integrabilidad, rama adaptar: ajustar la interfaz \\
 Tipos de evento & Configurables por plantillas \cite{eden-wiki} & Catálogo administrado en
 ejecución, con ciclo de vida y criterios de nivel configurables por tipo (RN-1, RN-2, RN-3) & QA-10:
-incorporar un tipo nuevo con 0 redespliegues \\
+incorporar un tipo nuevo con 0 redespliegues & Táctica de modificabilidad, rama diferir el enlace \\
 Delimitación geográfica & Visualización de datos con ubicación \cite{sahana-eden-legacy} &
 Delimitación versionada. Cada cambio se conserva y el área de cualquier instante pasado puede
 reconstruirse (RN-4) & RF-GD-09 y FP-03: conservar la evolución espacial del evento. QA-13: rastro
-de los cambios \\
+de los cambios & Táctica de seguridad, rama recuperarse de ataques: auditoría \\
 Trabajo de campo & Evaluaciones por formulario web o archivo de hoja de cálculo
 \cite{sahana-eden-legacy} & Réplica local en el cliente, sincronización diferida y regla
 determinista de conflictos que conserva todas las versiones & QA-14: 0 pérdidas, 0 sobrescrituras
-silenciosas y 0 duplicados \\
+silenciosas y 0 duplicados & Táctica de disponibilidad, rama recuperarse de fallos: resincronización de estado \\
 Auditoría & La API S3 cubre \emph{accounting} y \emph{logging} \cite{desosa2018} & Bitácora
 inmutable, alimentada por los eventos que los microservicios publican, con retención $\ge$ 5 años &
-QA-13 y QA-15: rastro de las cinco clases de operación crítica \\
+QA-13 y QA-15: rastro de las cinco clases de operación crítica & Táctica de seguridad, rama recuperarse de ataques: auditoría \\
 Control de acceso & Autenticación y autorización en la API S3 \cite{desosa2018} & Autorización en
 dos niveles: reglas generales de rol en el punto de entrada y regla del organismo responsable dentro
-del microservicio de dominio & QA-11: un organismo no responsable no modifica un desastre ajeno \\
+del microservicio de dominio & QA-11: un organismo no responsable no modifica un desastre ajeno & Táctica de seguridad, rama resistir ataques: autenticar y autorizar actores \\
 Disponibilidad y recuperación & Sin objetivos publicados en las fuentes consultadas & Redundancia
 por microservicio y distribución geográfica con conmutación, con RTO y RPO declarados & QA-02 y
-QA-03: \qty{99.95}{\percent}, RTO $\le$ \qty{15}{\minute} y RPO $\le$ \qty{60}{\second} \\
+QA-03: \qty{99.95}{\percent}, RTO $\le$ \qty{15}{\minute} y RPO $\le$ \qty{60}{\second} & Táctica de disponibilidad, rama recuperarse de fallos: repuesto redundante \\
 Degradación bajo carga & No documentada en las fuentes consultadas & Priorización explícita: si es
 necesario degradar, se degrada el acceso público y se preserva la consola de coordinación & QA-05 y
-CON-6: mantener disponibles las funciones críticas \\
+CON-6: mantener disponibles las funciones críticas & Táctica de disponibilidad, rama recuperarse de fallos: degradación \\
 \end{longtable}
 
 \subsubsection{Elementos que se toman de Sahana Eden}
@@ -2481,23 +2518,21 @@ Rendimiento & Consultas en menos de \qty{2}{\second}, registro de eventos en men
 \qty{2}{\second}, $<$ \qty{3}{\second} y $<$ \qty{5}{\second}, respectivamente \\
 Resiliencia & El fallo de un componente no produce un fallo general. Se contemplan \emph{timeouts},
 reintentos, \emph{circuit breakers}, colas, procesamiento asíncrono, degradación controlada y
-recuperación automática & QA-04 (y QA-01 en la frontera externa) & Propagación cortada en $\le$
-\qty{60}{\second} y 0 eventos perdidos \\
+recuperación automática & QA-04 (y QA-01 en la frontera externa) & 0 funciones críticas ajenas al
+componente quedan indisponibles \\
 Recuperación ante fallos & Recuperar la plataforma después de un fallo grave & QA-03 & RTO $\le$
 \qty{15}{\minute} y RPO $\le$ \qty{60}{\second} \\
 Interoperabilidad & Integrarse con múltiples sistemas externos mediante mecanismos estandarizados,
-con el menor acoplamiento posible & QA-09 & 0 componentes existentes modificados y $\le$ 15
-días-persona \\
+con el menor acoplamiento posible & QA-09 & 0 componentes existentes modificados \\
 Seguridad & Autenticación, autorización, roles, cifrado, auditoría, gestión de sesiones, protección
 de datos personales y control de acceso por organización & QA-11, QA-12 (auditoría en QA-13) &
 \qty{100}{\percent} de los intentos no autorizados rechazados y \qty{100}{\percent} de los campos
 identificatorios cifrados \\
 Trazabilidad & Quién, qué, cuándo, sobre qué información y con qué resultado, en las cinco clases
-de operación crítica & QA-13, QA-15 & \qty{100}{\percent} de las operaciones registradas, 0 entradas
-modificables y retención $\ge$ 5 años \\
+de operación crítica & QA-13, QA-15 & \qty{100}{\percent} de las operaciones registradas \\
 Modificabilidad & Incorporar tipos de desastre, organismos e integraciones sin modificar
 significativamente los componentes existentes & QA-10 (tipos), QA-09 (integraciones), RF-GD-12 y
-RF-CO-01 (organismos) & 0 componentes modificados y 0 redespliegues \\
+RF-CO-01 (organismos) & 0 componentes modificados o redesplegados \\
 \end{longtable}
 
 El enunciado nombra cinco clases de operación crítica. El \cref{tab:traza-cinco} verifica que cada
@@ -2578,12 +2613,31 @@ Esta matriz informa qué parte de la especificación realiza la implementación 
 medida obtuvo cada escenario de calidad. La fuente es el informe de medidas del repositorio de la
 plataforma \cite{informe-medidas}. El estado de cada requisito se verificó contra el catálogo de
 rutas del punto de entrada y contra el código de cada servicio. Los límites L-01 a L-10 son los que
-declara ese informe.
+declara ese informe (\cref{tab:limites}).
 
-La implementación cubre cuatro partes del alcance: el registro y la caracterización de un desastre,
-también desde el cliente móvil; la evaluación de daños; el mapa y la visualización; y la
-reconstrucción. Los módulos de personas afectadas, recursos y coordinación de organismos quedan como
-diseño en el SAD 1.2 \cite{sad} (límite L-06).
+La implementación cubre los cuatro mínimos de la entrega, que el \cref{tab:minimos} relaciona con sus
+requisitos y sus escenarios. Los módulos de personas afectadas, recursos y coordinación de organismos
+quedan como diseño en el SAD 1.2 \cite{sad} (límite L-06).
+
+\begin{longtable}{L{3.5cm} L{3.8cm} L{2.8cm} L{5.1cm}}
+\cabecera{4}{tab:minimos}{Mínimos de la entrega 2: requisitos, escenarios y estado}{\textbf{Mínimo} &
+\textbf{Requisitos} & \textbf{Escenarios} & \textbf{Estado}}
+Móvil: recolección y caracterización de los daños en campo, sin conexión, incluidas las evaluaciones
+preliminares sin desastre & RF-ED-01, 02, 03, 06, 07, 12 y 13 & QA-14 & Implementados, salvo RF-ED-03,
+que es parcial (L-10). QA-14 es parcial \\
+Reconstrucción física & RF-RC-01 a RF-RC-09 & QA-15, QA-13 y QA-01 & Los 9 requisitos implementados.
+QA-15 y QA-13 se cumplen. QA-01 es parcial \\
+Mapa y visualización de desastres & RF-ED-11, apoyado en RF-GD-16, RF-ED-10 y RF-ED-15 & QA-06 y QA-05 &
+Implementados. QA-06 se cumple en el perfil local (L-04). QA-05 no se midió (L-03, L-04) \\
+Evaluación de daños & RF-ED-01 a RF-ED-15 & QA-14 y QA-10 & 14 implementados y RF-ED-03 parcial. QA-14
+es parcial. QA-10 se cumple \\
+\end{longtable}
+
+El mínimo Móvil se interpreta como la recolección y la caracterización de los daños que el enunciado
+ubica en la evaluación de daños (§4.2) \cite{enunciado}. El registro del desastre pertenece a Gestión
+de desastres, aunque también puede hacerse desde el cliente móvil (RF-GD-02, E-42). Este documento no
+tiene un requisito de \enquote{mapa de desastres} distinto de RF-ED-11: el mapa de zonas afectadas se
+especifica en RF-ED-11, y la delimitación vigente de cada desastre se presenta con RF-GD-16.
 
 \subsubsection{Estado de los requisitos funcionales}
 
@@ -2594,10 +2648,11 @@ falta. Un requisito no implementado no tiene ruta ni código en la implementaci�
 \begin{longtable}{L{2.6cm} L{4.6cm} L{4.6cm} L{3.8cm}}
 \cabecera{4}{tab:impl-rf}{Estado de implementación de los requisitos funcionales por
 módulo}{\textbf{Módulo} & \textbf{Implementados} & \textbf{Parciales} & \textbf{No implementados}}
-Gestión de desastres (18) & 11: RF-GD-02, 03, 04, 05, 07, 08, 09, 13, 16, 17 y 18. RF-GD-02, 03,
-05 y 08 también desde el cliente móvil (E-42) & 2: RF-GD-06, sin la notificación a los organismos
-suscritos (RF-GD-15 no implementado). RF-GD-12: el servicio asigna los organismos y propone los de
-RN-1, pero la consola no ofrece la pantalla de asignación & 5: RF-GD-01, 10, 11, 14 y 15. No hay
+Gestión de desastres (18) & 9: RF-GD-02, 03, 04, 05, 08, 09, 13, 16 y 17. RF-GD-02, 03, 05 y 08
+también desde el cliente móvil (E-42) & 4: RF-GD-06, sin la notificación a los organismos suscritos
+(RF-GD-15 no implementado). RF-GD-12: el servicio asigna los organismos y propone los de RN-1, pero
+la consola no ofrece la pantalla de asignación. RF-GD-07 y RF-GD-18: falta verificar los proyectos
+abiertos en toda transición a Cerrado (RN-2, E-07) & 5: RF-GD-01, 10, 11, 14 y 15. No hay
 adaptador de SE-1 ni servicios de consolidación y notificación (L-06) \\
 Evaluación de daños (15) & 14: RF-ED-01, 02 y 04 a 15. RF-ED-01, 07, 12 y 13 desde el cliente
 móvil & 1: RF-ED-03. El cliente adjunta solo fotografías, y la evidencia no guarda un autor propio
@@ -2607,18 +2662,20 @@ Recursos (7) & Ninguno & Ninguno & 7: RF-RE-01 a RF-RE-07 (L-06) \\
 Coordinación de organismos (7) & Ninguno & Ninguno & 7: RF-CO-01 a RF-CO-07 (L-06) \\
 Reconstrucción (9) & 9: RF-RC-01 a RF-RC-09 & Ninguno & Ninguno \\
 \midrule
-Total (65) & 34 & 3 & 28 \\
+Total (65) & 32 & 5 & 28 \\
 \end{longtable}
 
 En RF-GD-16, el estado del evento proviene del modelo de lectura de desastres, y el resumen de daños
-proviene del consolidado de daños (RF-ED-10). En RF-GD-18, la implementación verifica los
-proyectos abiertos en la transición de En reconstrucción a Cerrado. La extensión de esa verificación
-a toda transición a Cerrado, que exige RN-2 (E-07), queda pendiente.
+proviene del consolidado de daños (RF-ED-10). En RF-GD-07 y RF-GD-18, la implementación verifica
+los proyectos abiertos en la transición de En reconstrucción a Cerrado. La extensión de esa
+verificación a toda transición a Cerrado, que exige RN-2 (E-07), queda pendiente. Por eso los dos
+requisitos son parciales.
 
 \subsubsection{Medida obtenida por escenario de calidad}
 
 El \cref{tab:impl-qa} compara la medida exigida por cada ficha de la \cref{sec:calidad} con la
-medida obtenida. Las fichas no cambian. Las corridas se hicieron en un solo computador, a través del
+medida obtenida. Cada fila usa la medida de respuesta de la ficha, y la observación indica lo que
+no se verificó de su respuesta. Las corridas se hicieron en un solo computador, a través del
 punto de entrada y con tokens reales del proveedor de identidad. Por eso las latencias corresponden
 a un perfil local y no reemplazan la prueba con \num{10000} usuarios (L-04). La columna de
 observación declara cada desvío entre el método de la ficha y el método aplicado.
@@ -2627,21 +2684,19 @@ observación declara cada desvío entre el método de la ficha y el método apli
 \cabecera{5}{tab:impl-qa}{Medida exigida y medida obtenida por escenario de
 calidad}{\textbf{QA} & \textbf{Medida exigida} & \textbf{Medida obtenida} & \textbf{¿Cumple?} &
 \textbf{Observación}}
-QA-01 & Funciones ajenas al sistema caído sin degradación; caída reflejada en $\le$ 30\,s;
-100\,\% de lo encolado procesado al volver; 0 mensajes perdidos & Pasan las pruebas de
-integración de los adaptadores de SE-6 (12) y SE-7 (14): cortacircuitos, estado de integración
-publicado y reintento sin pérdida & Sí, en pruebas de integración & Medido sobre SE-6 y SE-7,
-porque el adaptador de SE-3 no está implementado (L-06). El escalado de 0 a N no se verificó en el
-clúster (L-05) \\
+QA-01 & 0 funciones ajenas al sistema caído indisponibles & Pasan las pruebas de integración de los
+adaptadores de SE-6 (12) y SE-7 (14): cortacircuitos, estado de integración publicado y reintento sin
+pérdida & Parcial & Se midió con SE-6 y SE-7, no con SE-3, porque el adaptador de SE-3 no está
+implementado (L-06). El escalado de 0 a N no se verificó en el clúster (L-05) \\
 QA-02 & Disponibilidad mensual $\ge$ 99,95\,\% & No medida & No verificado & Exige operación
 durante un mes y dos regiones (L-01) \\
-QA-03 & RTO $\le$ 15\,min y RPO $\le$ 60\,s & No medida & No verificado & Una sola región (L-01) \\
-QA-04 & Propagación cortada en $\le$ 60\,s; 0 eventos encolados perdidos & Pasan 71 pruebas con la
-base de datos y el intermediario de mensajería reales: consumidor detenido sin pérdida, mensaje
-envenenado apartado y cola llena sin descarte & Sí, en pruebas de integración & Sin prueba de caos
-(L-03) \\
-QA-05 & p95 $<$ 2\,s y p99 $<$ 4\,s con \num{10000} usuarios & No medida & No verificado & Sin
-prueba de carga en un clúster (L-03, L-04) \\
+QA-03 & RTO $\le$ 15\,min con RPO $\le$ 60\,s & No medida & No verificado & Una sola región (L-01) \\
+QA-04 & 0 funciones críticas ajenas al componente indisponibles & Pasan 71 pruebas con la base de datos
+y el intermediario de mensajería reales: consumidor detenido sin pérdida, mensaje envenenado apartado
+y cola llena sin descarte & Sí, en pruebas de integración & Sin prueba de caos (L-03). La tasa de
+errores y el plazo de \qty{60}{\second} de la respuesta no se midieron \\
+QA-05 & p95 $<$ 2\,s con \num{10000} usuarios & No medida & No verificado & Sin prueba de carga en un
+clúster (L-03, L-04) \\
 QA-06 & p95 $<$ 2\,s y p99 $<$ 4\,s; antigüedad del dato $\le$ 2\,s en el p95; marca de tiempo en
 el 100\,\% & Consolidado: p95 34\,ms, p99 47\,ms. Mapa de desastres: p95 142\,ms, p99 159\,ms.
 Mapa de daños: p95 1\,628\,ms, p99 1\,935\,ms. Marca de tiempo en el 100\,\%. Antigüedad: p95
@@ -2652,32 +2707,32 @@ QA-07 & p95 $<$ 3\,s y p99 $<$ 6\,s; 0 confirmaciones sin persistencia & p95 1\,
 por minuto. La prueba envió los 100 registros en ráfaga, con 20 clientes \\
 QA-08 & p95 $<$ 5\,s y p99 $<$ 10\,s hasta el acuse del canal externo & No medida & No verificado &
 Notificación y SE-8 fuera de la implementación (L-06) \\
-QA-09 & 0 componentes modificados y $\le$ 15 días-persona & No medida & No verificado & No se
-incorporó un sistema externo nuevo durante la entrega (L-06) \\
-QA-10 & 0 componentes modificados y 0 redespliegues para un tipo nuevo & Pasan las pruebas de
+QA-09 & 0 componentes existentes modificados & No medida & No verificado & No se incorporó un sistema
+externo nuevo durante la entrega (L-06) \\
+QA-10 & 0 componentes modificados o redesplegados para un tipo nuevo & Pasan las pruebas de
 integración: el tipo de desastre y el tipo de activo nuevos se crean por la interfaz y se usan en
 el registro siguiente & Sí & Verificado en Gestión de desastres y en Evaluación de daños \\
-QA-11 & 100\,\% de intentos no autorizados rechazados sobre $\ge$ 200 casos; 0 datos
-modificados; intento registrado en $\le$ 5\,s & 218 de 218 intentos rechazados (100\,\%); 0 falsos
-negativos; 0 datos modificados & Sí en (a) y (b). No en (c) & Banco de 218 casos sobre las 12 rutas
-con regla de dominio. El registro del intento en Auditoría no está implementado (L-02) \\
+QA-11 & 100\,\% de intentos no autorizados rechazados sobre $\ge$ 200 casos & 218 de 218 intentos
+rechazados (100\,\%); 0 falsos negativos; 0 datos modificados & Sí en la medida & Banco de 218 casos
+sobre las 12 rutas con regla de dominio. El registro del intento en Auditoría, que pide la respuesta,
+no está implementado (L-02) \\
 QA-12 & 100\,\% de los campos identificatorios ilegibles sin la clave & No medida & No verificado &
 Módulo de personas afectadas fuera de la implementación (L-06) \\
-QA-13 & 100\,\% de las operaciones con entrada de auditoría; 0 entradas modificables & Pasan 53
-pruebas de integración de Auditoría & Sí en (a) y (b) & La medida (d), rastro de \num{10000}
-entradas, no se corrió (L-03) \\
-QA-14 & 0 pérdidas y 0 sobrescrituras; 100\,\% de conflictos detectados; reenvío sin duplicados;
-120 evaluaciones en $\le$ 10\,min & 115 aplicadas y 5 en conflicto; 0 pérdidas, 0 sobrescrituras,
-0 duplicados; 120 de 120 fotografías; 27,8\,s. Desde el cliente móvil: 7 de 7 pruebas de contrato
-& Sí & En (b), el banco tiene 5 conflictos por corrida, no 100 casos; la regla tiene además 7
-pruebas unitarias y 21 de sincronización. En (d), una sola corrida, sin p95 \\
-QA-15 & 100\,\% de los cambios con valor anterior y nuevo; 0 cambios sin registro & Pasan las
-pruebas de integración de Auditoría y de Reconstrucción & Sí & Verificado con pruebas de
-integración, sin carga \\
+QA-13 & 100\,\% de las operaciones con entrada de auditoría & Pasan 53 pruebas de integración de
+Auditoría, que verifican también que las entradas no se modifican & Sí en la medida & La consulta de
+\num{10000} entradas que pide la respuesta no se corrió (L-03) \\
+QA-14 & 0 evaluaciones perdidas o sobrescritas en silencio & 115 aplicadas y 5 en conflicto; 0
+pérdidas, 0 sobrescrituras, 0 duplicados; 120 de 120 fotografías; 27,8\,s. Desde el cliente móvil: 7
+de 7 pruebas de contrato & Parcial & La medida se cumple. La detección se verificó con 5 conflictos
+por corrida, no con los 100 casos de la ficha; la regla tiene además 7 pruebas unitarias y 21 de
+sincronización. El tiempo del lote viene de una sola corrida, sin p95, y la degradación de
+\qty{10}{\percent} no se midió (L-03) \\
+QA-15 & 100\,\% de los cambios con valor anterior y nuevo & Pasan las pruebas de integración de
+Auditoría y de Reconstrucción & Sí & Verificado con pruebas de integración, sin carga \\
 \end{longtable}
 
-De los 15 escenarios, 9 tienen evidencia de cumplimiento, total o en las medidas indicadas. Los 6
-restantes (QA-02, QA-03, QA-05, QA-08, QA-09 y QA-12) no se midieron, porque dependen de partes que
+De los 15 escenarios, 9 tienen evidencia: 7 cumplen su medida, dos de ellos solo en el perfil local
+(QA-06 y QA-07), y 2 son parciales (QA-01 y QA-14). Los 6 restantes (QA-02, QA-03, QA-05, QA-08, QA-09 y QA-12) no se midieron, porque dependen de partes que
 quedan como diseño (L-01, L-03, L-04 y L-06).
 
 %==============================================================================
@@ -2685,7 +2740,7 @@ quedan como diseño (L-01, L-03, L-04 y L-06).
 \section{Referencias}
 \label{sec:referencias}
 
-Las referencias \cite{enunciado,bass,cervantes,iso25010} son las fuentes generales del documento
+Las referencias \cite{enunciado,bass,cervantes,iso25010,iso29148,iso42010,clements,kruchten,martin} son las fuentes generales del documento
 (\cref{sec:fuentes}). Las referencias \cite{sad,atam} son los documentos de arquitectura y de
 evaluación del proyecto, y \cite{informe-medidas} es la fuente de la Matriz 5. Las demás sustentan
 el análisis de Sahana Eden (\cref{sec:sahana}).
@@ -2711,6 +2766,26 @@ edición. Addison-Wesley, 2024.
 ISO/IEC 25010:2011. \textit{Systems and software engineering. Systems and software Quality
 Requirements and Evaluation (SQuaRE). System and software quality models}. International
 Organization for Standardization, 2011.
+
+\bibitem{iso29148}
+ISO/IEC/IEEE 29148:2018. \textit{Systems and software engineering. Life cycle processes.
+Requirements engineering}. International Organization for Standardization, 2018.
+
+\bibitem{iso42010}
+ISO/IEC/IEEE 42010:2011. \textit{Systems and software engineering. Architecture description}.
+International Organization for Standardization, 2011.
+
+\bibitem{clements}
+P. Clements, F. Bachmann, L. Bass, D. Garlan, J. Ivers, R. Little, P. Merson, R. Nord y J. Stafford.
+\textit{Documenting Software Architectures: Views and Beyond}. 2.ª edición. Addison-Wesley, 2011.
+
+\bibitem{kruchten}
+P. Kruchten. \textit{Architectural Blueprints: The \enquote{4+1} View Model of Software
+Architecture}. IEEE Software, 12(6), 1995.
+
+\bibitem{martin}
+R. C. Martin. \textit{Clean Architecture: A Craftsman's Guide to Software Structure and Design}.
+Prentice Hall, 2017.
 
 \bibitem{sad}
 S. Gantiva, D. Guiza y J. Rubiano. \textit{Documento de Arquitectura de Software (SAD). Plataforma
