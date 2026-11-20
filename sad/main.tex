@@ -122,7 +122,7 @@
 \vspace{1.2cm}
 {\large 18 de noviembre de 2026\par}
 \vfill
-{\small Versión 1.3\par}
+{\small Versión 1.2\par}
 \end{titlepage}
 
 \section*{Control de cambios}
@@ -163,9 +163,8 @@ El Anexo A pasa a describir la implementación de FP-06.
 Se declara la arquitectura con la taxonomía de estilo, patrón y táctica, y las medidas citadas pasan a
 ser las medidas únicas del SRS 1.2.
 Se agregan el tablero de daños en la capa de presentación (E-41), los actores de la vista de casos de
-uso, CU-5 y los cuadros de series de identificadores, de límites y de enmiendas. \\
-1.3 & 19 de noviembre de 2026 & Se incorpora CON-9 del SRS 1.3: la solución final incluye Jakarta EE
-y .NET (E-44).
+uso, CU-5 y los cuadros de series de identificadores, de límites y de enmiendas.
+Se incorpora CON-9 del SRS 1.2: la solución final incluye Jakarta EE y .NET (E-44).
 Se agrega la decisión de tecnología AD-66: el adaptador de SE-8 se implementa en Jakarta EE 11 sobre
 WildFly 42. AD-50 aclara que el núcleo sigue en .NET.
 SE-8 pasa a implementado en el alcance, en las vistas lógica, de procesos, física de la
@@ -1078,7 +1077,7 @@ Incorporar un microservicio & Se agrega un paquete con las cuatro capas, su alma
 bus y sus rutas en el API Gateway & Los microservicios existentes. Los eventos que el microservicio
 nuevo consume ya se publican & QA-10 y QA-05 (CON-4) \\
 \midrule
-Evidencia: se incorporó SE-8 (19 de noviembre de 2026) & El proyecto Maven
+Evidencia: se incorporó SE-8 & El proyecto Maven
 \texttt{adaptador-\br{}se8-\br{}jee} (76 archivos) y el simulador \texttt{sim-se8} (6). Dos enlaces de
 \texttt{q.salida.se8} en \texttt{definiciones.\br{}json} y su generador, tres servicios en el compose,
 un manifiesto de Kubernetes y una prueba de humo & Los seis microservicios, los proyectos

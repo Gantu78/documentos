@@ -1,5 +1,5 @@
 @startuml vista_implementacion
-' SAD v1.3 - Vista de implementación: diagrama de paquetes UML del monorepo proyectoparte2 (AD-08, AD-45, AD-50, AD-51, AD-53, AD-64)
+' SAD v1.2 - Vista de implementación: diagrama de paquetes UML del monorepo proyectoparte2 (AD-08, AD-45, AD-50, AD-51, AD-53, AD-64)
 skinparam shadowing false
 skinparam defaultFontName "DejaVu Sans"
 skinparam defaultFontSize 12

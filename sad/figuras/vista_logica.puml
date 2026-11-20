@@ -1,5 +1,5 @@
 @startuml vista_logica
-' SAD v1.3 - Vista lógica: diagrama de componentes UML del diseño completo (AD-01, AD-02, AD-04, AD-08, AD-09, AD-15, AD-21, AD-45, AD-46, AD-49)
+' SAD v1.2 - Vista lógica: diagrama de componentes UML del diseño completo (AD-01, AD-02, AD-04, AD-08, AD-09, AD-15, AD-21, AD-45, AD-46, AD-49)
 skinparam shadowing false
 skinparam defaultFontName "DejaVu Sans"
 skinparam defaultFontSize 12

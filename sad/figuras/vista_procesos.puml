@@ -1,5 +1,5 @@
 @startuml vista_procesos
-' SAD v1.3 - Vista de procesos: procesos, hilos, réplicas, exchanges y colas reales (AD-02, AD-18, AD-24, AD-25, AD-45, AD-46, AD-47, AD-54)
+' SAD v1.2 - Vista de procesos: procesos, hilos, réplicas, exchanges y colas reales (AD-02, AD-18, AD-24, AD-25, AD-45, AD-46, AD-47, AD-54)
 skinparam shadowing false
 skinparam defaultFontName "DejaVu Sans"
 skinparam defaultFontSize 12

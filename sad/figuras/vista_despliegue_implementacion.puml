@@ -1,5 +1,5 @@
 @startuml vista_despliegue_implementacion
-' SAD v1.3 - Vista física de la implementación: despliegue UML del docker-compose real y del teléfono (AD-50 a AD-65, L-01)
+' SAD v1.2 - Vista física de la implementación: despliegue UML del docker-compose real y del teléfono (AD-50 a AD-65, L-01)
 skinparam shadowing false
 skinparam defaultFontName "DejaVu Sans"
 skinparam defaultFontSize 12
