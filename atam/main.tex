@@ -1555,9 +1555,8 @@ medida en la implementación de la entrega 2, que no forma parte del análisis d
 \cite{revision}. Las corridas se hicieron con Docker Compose en un solo computador, a través del
 gateway y con tokens reales de Keycloak. Las latencias corresponden a ese perfil local y no
 reemplazan la prueba con \num{10000} usuarios (L-04). La suite de .NET tiene \num{1008} pruebas en
-19 proyectos. El 19 de noviembre de 2026 pasan \num{1007}: una prueba del tablero de daños depende
-de la fecha y falla desde que esa fecha supera el umbral de 24 horas, también antes de SE-8. El
-adaptador de SE-8 tiene 52 pruebas unitarias y 7 de integración en verde. La app tiene 81 pruebas unitarias y 16 instrumentadas en verde, 7 de
+19 proyectos, todas en verde (la prueba del tablero de daños que dependía de la fecha usa ahora un
+reloj fijo). El adaptador de SE-8 tiene 52 pruebas unitarias y 7 de integración en verde. La app tiene 81 pruebas unitarias y 16 instrumentadas en verde, 7 de
 ellas de contrato contra el gateway y Keycloak.
 
 \begin{longtable}{L{1.2cm} L{3.4cm} L{4.0cm} L{2.0cm} L{4.5cm}}

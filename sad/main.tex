@@ -2712,10 +2712,9 @@ El \cref{tab:verificacion} resume las medidas obtenidas en la implementación \c
 corridas se hicieron con el compose en un solo computador, a través del \texttt{gateway} y con
 tokens reales de \texttt{keycloak}. Las latencias corresponden a un perfil local de 20 clientes y no
 reemplazan la prueba con \num{10000} usuarios (L-03, L-04). La suite de .NET tiene 1\,008
-pruebas en 19 proyectos. El 19 de noviembre de 2026 pasan 1\,007: la prueba
-\texttt{Sin\_\br{}conflictos\_\br{}de\_\br{}mas\_\br{}no\_\br{}hay\_\br{}alarma} de Consulta de Daños fija el
-conflicto más antiguo en una fecha y falla desde que esa fecha supera el umbral de 24 horas. Falla
-también en el commit anterior a SE-8. El adaptador de SE-8 tiene 52 pruebas unitarias (JUnit 5 y
+pruebas en 19 proyectos, todas en verde. La prueba
+\texttt{Sin\_\br{}conflictos\_\br{}de\_\br{}mas\_\br{}no\_\br{}hay\_\br{}alarma} de Consulta de Daños dependía de
+la fecha del día; ahora usa un reloj fijo y no cambia el código del servicio. El adaptador de SE-8 tiene 52 pruebas unitarias (JUnit 5 y
 Mockito) y 7 de integración (Testcontainers con RabbitMQ y PostgreSQL), todas en verde. El cliente móvil tiene 81 pruebas unitarias y 16
 instrumentadas en verde, 7 de ellas de contrato contra el \texttt{gateway} y \texttt{keycloak}.
 
