@@ -10,7 +10,8 @@ CON-8 exigía independencia tecnológica en la primera entrega.
 Esta sección sustituye esa condición para la segunda entrega.
 El Anexo~\ref{sec:anexo-a} deja de ser una excepción a CON-8 y describe la implementación de FP-06 con las tecnologías elegidas aquí.
 
-Las decisiones se numeran de AD-50 a AD-65.
+Las decisiones se numeran de AD-50 a AD-66.
+AD-66 responde a CON-9, que se agregó después de AD-50 a AD-65.
 Ninguna modifica una decisión estructural.
 Cada una materializa uno o varios mecanismos de AD-01 a AD-49, y su justificación parte de los escenarios QA-nn que ese mecanismo debe cumplir (CON-7).
 
@@ -65,6 +66,7 @@ AD-62 & Persistencia móvil & Room 2.8.5 sobre SQLite, migraciones explícitas 1
 AD-63 & Sincronización móvil & WorkManager 2.12.0, Retrofit 3.0.0, OkHttp 5.4.0 y kotlinx.serialization 1.9.0 & AD-31, AD-44, AD-48 & QA-11, QA-14 \\
 AD-64 & Resiliencia & Microsoft.Extensions.Http.Resilience 10.11.0 (Polly v8) & AD-05, AD-37 & QA-01, QA-04 \\
 AD-65 & Despliegue & Contenedores Docker (\texttt{mcr.microsoft.com/\br{}dotnet/\br{}aspnet:10.0}), Docker Compose para un computador y Kubernetes con HPA y KEDA para escalar & AD-18, AD-24, AD-25 & QA-01, QA-02, QA-05 \\
+AD-66 & Adaptador de SE-8 & Jakarta EE 11 sobre WildFly 42.0.0.Final (Java 21): Jakarta Messaging con el cliente JMS de RabbitMQ 3.9.1, EJB, Jakarta Persistence, Jakarta REST y MicroProfile Config & AD-03, AD-05, AD-09, AD-25, AD-45 & QA-08, QA-09, CON-9 \\
 \end{longtable}
 \endgroup
 
@@ -105,6 +107,7 @@ Licencia y costo & 10\,\% & 5 & 5 & 5 & 5 \\
 
 \paragraph{Compromiso aceptado.} Una sola pila reduce el costo de mantener \texttt{comun} (AD-09) y acepta que todos los microservicios dependen del ciclo de soporte de .NET.
 La heterogeneidad que exige CON-2 queda confinada en los adaptadores (AD-03).
+El núcleo sigue en .NET aun con CON-9: Jakarta EE se confina a la frontera según AD-03 y AD-66.
 
 \paragraph{Riesgo.} El fin del soporte de .NET 10 obligaría a migrar todos los microservicios a la vez.
 El archivo \texttt{global.json} fija el SDK con avance solo de la versión de características, lo que acota este riesgo.
@@ -113,7 +116,7 @@ No corresponde a un riesgo del ATAM.
 \paragraph{Dónde se ve.} Vista de implementación: proyectos \texttt{*.Api}, \texttt{*.Aplicacion}, \texttt{*.Dominio} e \texttt{*.Infraestructura} de cada microservicio.
 Vista física de la implementación: artefactos \texttt{plataforma/<servicio>:local} sobre \texttt{mcr.microsoft.com/\br{}dotnet/\br{}aspnet:10.0}.
 
-\paragraph{Evidencia en el código.} La suite de .NET suma 1\,008 pruebas en 19 proyectos en verde. QA-07 se midió con p95 de 1\,334\,ms en el perfil local (L-04).
+\paragraph{Evidencia en el código.} La suite de .NET suma 1\,008 pruebas en 19 proyectos. El 19 de noviembre de 2026 pasan 1\,007: una prueba del tablero de daños depende de la fecha (\cref{sec:verificacion}). QA-07 se midió con p95 de 1\,334\,ms en el perfil local (L-04).
 Archivos de evidencia:
 {\raggedright
 \begin{itemize}
@@ -896,6 +899,73 @@ Archivos de evidencia:
 \end{itemize}
 \par}
 
+%---------------------------------------------------------------------- AD-66
+\subsection{AD-66. Plataforma del adaptador de SE-8}
+\label{sec:tec-ad66}
+
+\paragraph{Contexto.} CON-9, agregada el 19 de noviembre de 2026, exige que la solución final incluya Jakarta EE y .NET (E-44).
+AD-03 ubica la heterogeneidad tecnológica (CON-2) en los adaptadores, no en los microservicios: un adaptador es el único punto de la arquitectura donde una pila distinta no toca el núcleo.
+El adaptador de SE-8 estaba diseñado y no implementado (L-06).
+QA-08 le exige una instancia encendida (AD-25), estado de entrega por alerta y \enquote{entregada} solo con acuse.
+QA-09 pide que incorporar un sistema externo modifique 0 componentes existentes.
+Esta decisión elige la plataforma de ese adaptador.
+
+\paragraph{Alternativas.} Se consideran Jakarta EE 11 sobre WildFly 42.0.0.Final (imagen \texttt{quay.io/\br{}wildfly/\br{}wildfly:\br{}42.0.0.Final-\br{}jdk21}, Java 21), Spring Boot 3 sobre Java 21 y .NET 10 con \texttt{Plataforma.\br{}Comun.\br{}Adaptadores}, como los adaptadores de SE-6 y SE-7.
+El \cref{tab:tec-ad66} presenta la matriz de decisión ponderada.
+La alternativa elegida obtiene 4,35 y la segunda mejor, .NET 10, obtiene 4,00.
+
+\begingroup\small
+\begin{longtable}{L{6.0cm} C{1.10cm} C{2.6cm} C{2.6cm} C{2.6cm}}
+\cabecera{5}{tab:tec-ad66}{Matriz de decisión ponderada de AD-66}{\textbf{Criterio (driver)} & \textbf{Peso} & \hspace{0pt}\textbf{Jakarta EE 11 (WildFly 42)} & \hspace{0pt}\textbf{Spring Boot 3} & \hspace{0pt}\textbf{.NET 10}}
+Cumplimiento de CON-9 & 25\,\% & 5 & 2 & 1 \\
+Adaptador nuevo sin modificar componentes existentes (QA-09, AD-03) & 20\,\% & 5 & 5 & 5 \\
+Cortacircuitos del Cuadro 10 con aviso de apertura para EV-23 (QA-01, QA-08, AD-05, AD-37) & 15\,\% & 3 & 4 & 5 \\
+Consumo transaccional: ack después del commit y DLQ a la quinta entrega (AD-02, AD-45) & 15\,\% & 4 & 4 & 5 \\
+Instancia siempre encendida: memoria y arranque (QA-08, AD-25) & 10\,\% & 4 & 4 & 5 \\
+Experiencia del equipo (especificaciones vistas en el curso) & 10\,\% & 4 & 3 & 5 \\
+Licencia y costo & 5\,\% & 5 & 5 & 5 \\
+\midrule
+\textbf{Total ponderado} & 100\,\% & \textbf{4,35} & 3,65 & 4,00 \\
+\end{longtable}
+\endgroup
+
+\paragraph{Alternativas descartadas.}
+\begin{itemize}
+  \item .NET 10 gana en resiliencia, mensajería y arranque, porque reutiliza \texttt{Plataforma.\br{}Comun.\br{}Adaptadores} y \texttt{ConsumidorIdempotente}. Pierde en el criterio que origina la decisión: no cumple CON-9.
+  \item Spring Boot 3 corre sobre Java y usa algunas API de Jakarta, pero no es la plataforma Jakarta EE: cumple CON-9 solo en parte. Tiene un cortacircuitos con ventana de tiempo (Resilience4j) y es una tercera pila de marco que el equipo no vio en el curso.
+\end{itemize}
+
+\paragraph{Compromiso aceptado.} El adaptador usa las especificaciones estándar: Jakarta Messaging, EJB (\texttt{@Stateless}, \texttt{@Singleton}, Timer Service), Jakarta Persistence, Jakarta REST, CDI, Jakarta Concurrency y MicroProfile Config.
+Dos piezas son propias y no vienen del estándar:
+\begin{itemize}
+  \item \textbf{Cortacircuitos propio en lugar de MicroProfile Fault Tolerance.} El \texttt{@CircuitBreaker} de MicroProfile mide una ventana de N llamadas, no la ventana de \qty{30}{\second} del Cuadro 10, y no avisa cuando el circuito se abre o se cierra. Ese aviso hace falta para publicar EV-23 por la bandeja (E-15). La clase \texttt{Cortacircuitos} aplica la regla de Polly (al menos 3 llamadas en \qty{30}{\second} con \qty{100}{\percent} de fallo, \qty{15}{\second} abierto y una sola llamada de prueba) y es segura ante concurrencia. Tiene 9 pruebas unitarias propias, una de ellas con 200 hilos.
+  \item \textbf{EJB \texttt{@Singleton @Startup} en lugar de MDB.} Un MDB necesita un resource adapter JCA para el proveedor de mensajería, y RabbitMQ no tiene uno mantenido. El consumo usa igual la API estándar de Jakarta Messaging 3.1 (\texttt{Connection}, \texttt{Session} transaccional, \texttt{MessageConsumer}) con el cliente JMS de RabbitMQ en modo AMQP sobre la cola existente. El hilo lo da un \texttt{ManagedExecutorService}. Con \texttt{nackOnRollback}, \texttt{rollback()} manda el mensaje a la DLQ y cerrar la sesión lo reencola.
+\end{itemize}
+Se acepta además una segunda pila que mantener en la frontera. Esa pila duplica en Java la lectura del sobre y la parte del catálogo que usa el adaptador. Los esquemas JSON siguen siendo una sola fuente: el WAR los copia de \texttt{Plataforma.\br{}Comun.\br{}Eventos} al compilar.
+
+\paragraph{Riesgo.} Un cambio del sobre canónico o de las claves de ruteo obliga a cambiar dos implementaciones. Lo detecta la validación contra los mismos esquemas, en las pruebas y al consumir. Corresponde al riesgo R-15 del ATAM.
+Mientras Notificación no exista, el adaptador recibe EV-03 y EV-04 como sustituto temporal (L-11).
+
+\paragraph{Dónde se ve.} Vista lógica: componente Adaptador de SE-8 [\texttt{adaptador-se8}] «implementado».
+Vista de procesos: proceso \texttt{adaptador-se8} ×1, siempre encendido.
+Vista física de la implementación: entorno de ejecución WildFly 42 dentro del contenedor \texttt{adaptador-se8} (\cref{fig:vista-despliegue-impl}, \cref{tab:nodos-impl}).
+Vista de implementación: paquete \texttt{adaptador-\br{}se8-\br{}jee} (\cref{fig:vista-implementacion}).
+Modelo de integración: fila de SE-8 del \cref{tab:integracion}.
+
+\paragraph{Evidencia en el código.} 52 pruebas unitarias y 7 de integración en verde. Las de integración usan Testcontainers con la topología real del bus (cola quorum con \texttt{delivery-limit} 5) y la base del migrador. Demuestran el ack después del commit JPA, la DLQ a la quinta entrega fallida, el duplicado sin segundo envío y el circuito con EV-23.
+La prueba \texttt{prueba-se8.sh} mide contra el compose: \qty{1,8}{\second} del registro a la alerta entregada con acuse, circuito abierto a los \qty{25,6}{\second} de la caída, y cola en 0 a los \qty{12,9}{\second} de la vuelta, con las 20 alertas entregadas una sola vez.
+El \cref{tab:que-se-modifica} registra los 0 componentes existentes modificados.
+Archivos de evidencia:
+{\raggedright
+\begin{itemize}
+  \item \texttt{proyectoparte2/\br{}adaptadores/\br{}adaptador-se8-jee/\br{}adaptador/\br{}src/\br{}main/\br{}java/\br{}plataforma/\br{}adaptador/\br{}se8/\br{}jee/\br{}AdaptadorSe8.java}
+  \item \texttt{proyectoparte2/\br{}adaptadores/\br{}adaptador-se8-jee/\br{}adaptador/\br{}src/\br{}main/\br{}java/\br{}plataforma/\br{}adaptador/\br{}se8/\br{}consumo/\br{}BucleConsumo.java}
+  \item \texttt{proyectoparte2/\br{}adaptadores/\br{}adaptador-se8-jee/\br{}adaptador/\br{}src/\br{}main/\br{}java/\br{}plataforma/\br{}adaptador/\br{}se8/\br{}resiliencia/\br{}Cortacircuitos.java}
+  \item \texttt{proyectoparte2/\br{}adaptadores/\br{}adaptador-se8-jee/\br{}Dockerfile}
+  \item \texttt{proyectoparte2/\br{}pruebas/\br{}humo/\br{}prueba-se8.sh}
+\end{itemize}
+\par}
+
 %------------------------------------------------------------------------------
 \subsection{Restricciones de las tecnologías elegidas}
 \label{sec:tec-restricciones}
@@ -923,5 +993,11 @@ QA-05, QA-06 & Servidor de teselas propio o proveedor con acuerdo \\
 Keycloak en \texttt{start-dev} & AD-58 &
 El modo de desarrollo usa una base embebida, no exige TLS y no está pensado para producción. El realm se importa desde \texttt{realm-plataforma.json} en cada arranque. Es una sola instancia. &
 QA-02, QA-11 & Modo \texttt{start} con base PostgreSQL, TLS y dos instancias \\
+Sustituto temporal de Notificación (L-11) & AD-66 &
+EV-03 y EV-04 llegan a \texttt{q.salida.se8} por dos enlaces temporales, y el adaptador alerta a un único destino de difusión. No hay suscripciones ni resolución por ámbito, y el estado de entrega se consulta en el adaptador. &
+QA-08 & Implementar Notificación (AD-13), quitar los enlaces y poner \texttt{Sustituto\_\_Activo=false} \\
+Dos pilas en la frontera & AD-66 &
+El adaptador de SE-8 duplica en Java la lectura del sobre y la parte del catálogo que usa. Un cambio del contrato se hace en .NET y en Java. Corresponde al riesgo R-15 del ATAM. &
+QA-09, QA-10 & Mantener los esquemas JSON como única fuente y validarlos en las pruebas de las dos pilas \\
 \end{longtable}
 \endgroup

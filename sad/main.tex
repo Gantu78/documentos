@@ -122,7 +122,7 @@
 \vspace{1.2cm}
 {\large 18 de noviembre de 2026\par}
 \vfill
-{\small Versión 1.2\par}
+{\small Versión 1.3\par}
 \end{titlepage}
 
 \section*{Control de cambios}
@@ -164,6 +164,16 @@ Se declara la arquitectura con la taxonomía de estilo, patrón y táctica, y la
 ser las medidas únicas del SRS 1.2.
 Se agregan el tablero de daños en la capa de presentación (E-41), los actores de la vista de casos de
 uso, CU-5 y los cuadros de series de identificadores, de límites y de enmiendas. \\
+1.3 & 19 de noviembre de 2026 & Se incorpora CON-9 del SRS 1.3: la solución final incluye Jakarta EE
+y .NET (E-44).
+Se agrega la decisión de tecnología AD-66: el adaptador de SE-8 se implementa en Jakarta EE 11 sobre
+WildFly 42. AD-50 aclara que el núcleo sigue en .NET.
+SE-8 pasa a implementado en el alcance, en las vistas lógica, de procesos, física de la
+implementación y de implementación (Figuras 1, 2, 4 y 5), en el modelo de integración, en los
+catálogos de eventos y colas y en la correspondencia con el código.
+El \cref{tab:que-se-modifica} agrega la evidencia de QA-09: SE-8 se incorporó con 0 componentes
+existentes modificados.
+Se agrega el límite L-11 (sustituto temporal de Notificación) y las medidas de la prueba de SE-8. \\
 \bottomrule
 \end{tabular}
 
@@ -212,7 +222,7 @@ Quedan fuera del alcance:
 \begin{itemize}
   \item La selección de un proveedor de nube. La entrega 2 selecciona las tecnologías, los lenguajes
         y los productos de la implementación, y las justifica con atributos de calidad en la
-        \cref{sec:tecnologia} (AD-50 a AD-65). Las decisiones estructurales de la
+        \cref{sec:tecnologia} (AD-50 a AD-66). Las decisiones estructurales de la
         \cref{sec:decisiones} siguen expresadas en propiedades y mecanismos, como réplica activa,
         cola con reintento o modelo de lectura separado (CON-8).
   \item El subsistema de donaciones económicas, que se documenta por separado \cite{donaciones}.
@@ -275,6 +285,9 @@ Almacén de evidencias y documentos & \texttt{archivos} & \texttt{EvaluacionDano
 Adaptadores de SE-2, SE-6 y SE-7 & \texttt{adaptador-se2}, \texttt{adaptador-se6} ×2,
 \texttt{adaptador-\br{}se7-\br{}salida} ×2, \texttt{adaptador-\br{}se7-\br{}entrada}. Simuladores \texttt{sim-se6} y
 \texttt{sim-se7} & \texttt{adaptadores}, \texttt{simuladores} \\
+Adaptador de SE-8 & \texttt{adaptador-se8} ×1 (WildFly 42, Jakarta EE 11, AD-66),
+\texttt{adaptador-\br{}se8-\br{}migrador} y el simulador \texttt{sim-se8} &
+\texttt{adaptadores/\br{}adaptador-\br{}se8-\br{}jee}, \texttt{simuladores/\br{}sim-se8} \\
 Consola de coordinación & \texttt{web} & \texttt{consola} \\
 Cliente móvil & \texttt{DanosCampo.\br{}apk} (\texttt{co.\br{}plataforma.\br{}danos} 2.1.0) con la base
 \texttt{danos.db} & Repositorio \texttt{danos}, módulo \texttt{app} \\
@@ -282,7 +295,8 @@ Cliente móvil & \texttt{DanosCampo.\br{}apk} (\texttt{co.\br{}plataforma.\br{}d
 
 Quedan solo como diseño los elementos del límite L-06: Consolidación, Notificación, Gestión de
 Recursos, Personas Afectadas, Coordinación de Organismos, el Portal público y los adaptadores de
-SE-1, SE-3, SE-4, SE-5 y SE-8. Tampoco se implementan la segunda región, el enrutador global ni la
+SE-1, SE-3, SE-4 y SE-5. El adaptador de SE-8 está implementado en Jakarta EE (CON-9, AD-66). Como
+Notificación no existe, recibe EV-03 y EV-04 como sustituto temporal (L-11). Tampoco se implementan la segunda región, el enrutador global ni la
 conmutación (L-01, AD-26, AD-27). Estos elementos conservan su diseño completo en las vistas y en los
 catálogos. Sus rutas y sus colas aparecen marcadas como diseño.
 
@@ -395,11 +409,11 @@ la implementación \cite{revision} y el \cref{tab:enmiendas}, las enmiendas que 
 \texttt{SE-n} & Familia de sistemas externos (SE-1 a SE-8). \\
 \texttt{CU-n} & Caso de uso especificado en el SAD, con tabla y secuencia. \\
 \texttt{CU-nn} & Caso de uso del módulo de Reconstrucción (CU-01 a CU-12). \\
-\texttt{AD-nn} & Decisión del SAD: AD-01 a AD-49 son estructurales y AD-50 a AD-65 son de tecnología. \\
+\texttt{AD-nn} & Decisión del SAD: AD-01 a AD-49 son estructurales y AD-50 a AD-66 son de tecnología. \\
 \texttt{DT-nn} & Decisión de tecnología de la revisión de arquitectura (DT-01 a DT-20). \\
-\texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-43). \\
+\texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-44). \\
 \texttt{EV-nn} & Evento del catálogo del SAD (EV-01 a EV-29). \\
-\texttt{L-nn} & Límite declarado de la implementación (L-01 a L-10). \\
+\texttt{L-nn} & Límite declarado de la implementación (L-01 a L-11). \\
 \texttt{R-nn} & Riesgo del ATAM (R-01 a R-14). \\
 \end{longtable}
 
@@ -410,11 +424,12 @@ L-02 & Los rechazos del punto de entrada y la alarma de la bandeja de revisión 
 L-03 & No hay pruebas de carga en un clúster ni de caos (QA-05, QA-06 y la consulta de 10\,000 entradas de QA-13). \\
 L-04 & Las latencias se midieron con 20 clientes en un computador, no con 10\,000 usuarios. \\
 L-05 & El despliegue en el clúster local no se verificó de punta a punta, y el inicio de sesión exige reenviar puertos. \\
-L-06 & Fuera de la implementación: Consolidación, Notificación (SE-8, QA-08), Gestión de Recursos, Personas Afectadas (QA-12), Coordinación de Organismos, Portal público y adaptadores de SE-1, SE-3, SE-4, SE-5 y SE-8. \\
+L-06 & Fuera de la implementación: Consolidación, Notificación (QA-08), Gestión de Recursos, Personas Afectadas (QA-12), Coordinación de Organismos, Portal público y adaptadores de SE-1, SE-3, SE-4 y SE-5. \\
 L-07 & La aplicación móvil entregada es la variante de depuración, que admite conexiones sin cifrar, y el proveedor de identidad corre sin TLS. \\
 L-08 & El emisor de los tokens es una dirección local: el emulador necesita reenviar ese puerto y un teléfono físico exige cambiar la dirección en el proveedor y en quienes validan el token. \\
 L-09 & Pendientes menores: filtro de Auditoría por jurisdicción, validación condicional en la descarga, aviso de activo fusionado al cliente incremental, base única del adaptador de SE-2, índice del historial por municipio, recarga de las llaves del token y evaluaciones rechazadas en la consola. \\
 L-10 & La aplicación móvil adjunta solo fotografías como evidencia, y la evidencia no guarda un autor propio (RF-ED-03 parcial). \\
+L-11 & Sustituto temporal de Notificación: dos enlaces (\texttt{ev03.\#} y \texttt{ev04.\#}) llevan EV-03 y EV-04 a \texttt{q.salida.se8}, y el adaptador de SE-8, con \texttt{Sustituto\_\_Activo=true}, alerta a un único destino de difusión. No hay suscripciones ni resolución por ámbito (RF-GD-06, RF-GD-15 parciales) y el estado de entrega se consulta en el adaptador. Se retira quitando los dos enlaces y apagando la variable. \\
 \end{longtable}
 
 \begin{longtable}{L{1.4cm} L{14.4cm}}
@@ -457,6 +472,7 @@ E-40 & Evolución por zona en Consulta de Daños (RF-ED-15). \\
 E-41 & Tablero de daños en páginas Razor: segundo adaptador de entrada de Consulta de Daños, excepción a la consola única. \\
 E-42 & Registro del desastre en campo desde el cliente móvil, con identificador del cliente (RF-GD-02, AD-48). \\
 E-43 & El Proveedor de identidad aparece en las vistas lógica y física (AD-49). \\
+E-44 & CON-9: la solución final incluye Jakarta EE y .NET. El adaptador de SE-8 se implementa en Jakarta EE (AD-66), con el sustituto temporal de Notificación (L-11). \\
 \end{longtable}
 
 %==============================================================================
@@ -475,8 +491,9 @@ numérica \cite{bass}, relacionados con ISO/IEC 25010 \cite{iso25010}. Las cuatr
 de \qty{99.95}{\percent} de los servicios críticos), QA-03 (RTO $\le$ \qty{15}{\minute} y RPO $\le$
 \qty{60}{\second}), QA-09 (incorporación de un sistema externo) y QA-14 (integridad de la
 sincronización sin conexión). \\
-Restricciones & Ocho restricciones, CON-1 a CON-8. Todas se cumplen. CON-8 rige la entrega 1 y en
-la entrega 2 la sustituye la \cref{sec:tecnologia}. \\
+Restricciones & Nueve restricciones, CON-1 a CON-9. Todas se cumplen. CON-8 rige la entrega 1 y en
+la entrega 2 la sustituye la \cref{sec:tecnologia}. CON-9 se cumple en la frontera: el adaptador de
+SE-8 corre en Jakarta EE y el núcleo en .NET (AD-03, AD-50, AD-66). \\
 \end{longtable}
 
 Cuatro restricciones determinan la estructura:
@@ -499,7 +516,7 @@ CON-8 conserva su identificador con un enunciado nuevo. En la entrega 1 exigía 
 independiente de la tecnología, sin nombrar productos. El enunciado del proyecto (§8) indica que la
 tecnología se tendría en cuenta para la segunda entrega. Por eso, en la entrega 2, CON-8 queda como
 restricción de la entrega 1 y la sustituye la \cref{sec:tecnologia}, que selecciona cada tecnología
-con atributos de calidad y alternativas comparadas (AD-50 a AD-65). Las decisiones estructurales
+con atributos de calidad y alternativas comparadas (AD-50 a AD-66). Las decisiones estructurales
 AD-01 a AD-49 no nombran productos, de modo que una tecnología puede cambiarse sin modificarlas.
 
 %==============================================================================
@@ -568,6 +585,10 @@ diagrama materializa las decisiones siguientes:
         un esquema de datos. Ninguno de los dos es un elemento ejecutable. Los adaptadores
         implementan la interfaz \texttt{ContratoAdaptador}, el bus la usa para entregar y recibir
         mensajes, y la interfaz se expresa en términos del esquema \texttt{EventoCanónico}.
+  \item AD-66. El adaptador de SE-8 es «implementado» [\texttt{adaptador-se8}]. Implementa la
+        misma interfaz en Java (\texttt{ContratoAdaptador}, equivalente a \texttt{IContratoAdaptador})
+        y valida el mismo esquema \texttt{EventoCanónico}. Su almacén es la base propia
+        \texttt{adaptador\_\br{}se8}. Es el único componente en Jakarta EE (CON-9).
   \item AD-49. El Proveedor de identidad es un componente con los estereotipos «externo» e
         «implementado» [\texttt{keycloak}]. La Consola de coordinación y el
         Cliente móvil obtienen el token con OpenID Connect y PKCE. El API Gateway valida el token
@@ -649,7 +670,7 @@ Infraestructura (paquete Integración) & \texttt{ContratoAdaptador} y \texttt{Ev
 los adaptadores y esquema de datos de los mensajes (AD-09). \\
 Infraestructura (paquete Integración) & Adaptadores & Uno por sistema externo. Traducen entre el
 formato externo y el evento canónico. Cada uno tiene cortacircuitos, cola de salida y marca de avance
-(AD-03, AD-05, AD-14, AD-36). \\
+(AD-03, AD-05, AD-14, AD-36). El de SE-8 está en Java sobre Jakarta EE (AD-66) y los demás en .NET \\
 \end{longtable}
 
 AD-08 define cuatro capas. El paquete Integración de la \cref{fig:vista-logica} no es una quinta capa:
@@ -671,7 +692,10 @@ CON-5. El bus tiene una cola por consumidor. El diagrama materializa las decisio
   \item AD-18. Los procesos de consulta tienen entre 2 y N réplicas, y N crece con la carga. Los
         procesos de escritura no crecen con la carga de consulta (QA-05).
   \item AD-25. Los adaptadores son procesos efímeros, que se crean cuando llega un evento. El
-        adaptador de SE-8 mantiene una instancia encendida para cumplir QA-08.
+        proceso \texttt{adaptador-se8} ×1 está siempre encendido para cumplir QA-08: una réplica fija
+        en compose y KEDA con mínimo 1 en Kubernetes. Es un proceso de WildFly con cuatro hilos:
+        el consumidor JMS, el relevo de la bandeja (\texttt{@Schedule}), el reenvío por falta de
+        acuse y el que atiende el aviso de acuse por HTTP.
   \item AD-02. Cada consumidor tiene una cola acotada. El fallo de un consumidor no detiene al
         productor (QA-04). Las colas llevan los nombres de la topología declarada en
         \texttt{despliegue/\br{}bus/\br{}definiciones.\br{}json}: \texttt{q.\br{}reconstruccion},
@@ -713,7 +737,8 @@ EV-23 & AD-05, AD-37, AD-64 & Disponibilidad, prevenir fallos: retirar de servic
 Tiempo de espera y reintento & En cada adaptador y en las llamadas del API Gateway a los
 microservicios & En los adaptadores implementados: tiempo de espera de \qty{3}{\second} por intento
 y \qty{20}{\second} por operación, y dos reintentos con espera exponencial desde
-\qty{0,5}{\second}. Solo se reintentan operaciones idempotentes & AD-05, AD-64 & Disponibilidad, detectar fallos (tiempo de espera) y recuperarse de fallos (reintento) \\
+\qty{0,5}{\second}. Solo se reintentan operaciones idempotentes. El adaptador de SE-8 aplica los
+mismos valores con su ejecutor propio (AD-66) & AD-05, AD-64, AD-66 & Disponibilidad, detectar fallos (tiempo de espera) y recuperarse de fallos (reintento) \\
 Cola acotada & En cada cola \texttt{q.*} del bus & Límite de \num{100000} mensajes y
 \qty{256}{\mega\byte}. Al llenarse, la cola rechaza la publicación y el evento permanece en la bandeja del
 productor. Ningún evento se descarta (E-23) & AD-02, AD-54 & Rendimiento, gestionar recursos: acotar las colas \\
@@ -721,6 +746,10 @@ Cola de salida & En el bus, una por adaptador & Acumula los mensajes dirigidos a
 externo no disponible y los entrega cuando el circuito se cierra & AD-36 & Disponibilidad, recuperarse de fallos: reintento diferido \\
 Marca de avance & En cada adaptador & Al cerrarse el circuito, el adaptador pide el rango pendiente
 desde el último dato recibido & AD-14, AD-37 & Disponibilidad, recuperarse de fallos: resincronización de estado \\
+Reenvío por falta de acuse & En el adaptador de SE-8 & Es distinto del reintento de la llamada: SE-8
+sí recibió la alerta, pero no la acusó. Una alerta sin acuse en \qty{5}{\second} vuelve a pendiente
+y se reenvía con la misma referencia. Al quinto envío queda fallida. Con EV-28, el reintento lo
+decide Notificación (AD-13) & AD-13, AD-66 & Disponibilidad, recuperarse de fallos: reintento \\
 Degradación controlada & En el API Gateway y en los microservicios de consulta & El API Gateway
 reduce primero el portal público. La consulta devuelve el último dato conocido con su marca de
 tiempo & AD-16, AD-19 & Disponibilidad, recuperarse de fallos: degradación \\
@@ -812,8 +841,10 @@ repositorio \texttt{danos} (regla del diagrama que corresponde al código). Tien
   \item El computador (Windows 11), con dos entornos de ejecución. En Docker Engine con Docker
         Compose se despliega un contenedor por servicio del compose, con su nombre exacto y su
         multiplicidad, agrupados en entrada e identidad, microservicios, adaptadores y simuladores,
-        datos y mensajería, y migradores (AD-24, AD-65). En el navegador se ejecuta la Consola de
-        coordinación servida por \texttt{web} (AD-59).
+        datos y mensajería, y migradores (AD-24, AD-65). Dentro del contenedor
+        \texttt{adaptador-se8} hay un entorno de ejecución más: el servidor Jakarta EE WildFly
+        42.0.0.Final sobre Java 21, con el artefacto \texttt{adaptador-se8.war} (AD-66). En el
+        navegador se ejecuta la Consola de coordinación servida por \texttt{web} (AD-59).
   \item El teléfono Android del evaluador, con el entorno de ejecución de Android. En él se
         despliegan \texttt{DanosCampo.\br{}apk} y la base \texttt{danos.db} (AD-31, AD-61, AD-62).
 \end{itemize}
@@ -825,8 +856,10 @@ AMQP en \texttt{bus1}, \texttt{bus2} y \texttt{bus3} y usan SQL contra \texttt{d
 \emph{streaming} a \texttt{db-replica} (AD-52, AD-54). Una nota indica el despliegue equivalente en
 Kubernetes (\texttt{despliegue/\br{}k8s}). En esos manifiestos, un HPA escala \texttt{consulta},
 \texttt{consulta-\br{}danos} y \texttt{consulta-\br{}programa}, y KEDA escala por longitud de cola
-\texttt{adaptador-se6} y \texttt{adaptador-se7-salida}, y enciende \texttt{adaptador-se7-entrada} con
-un disparador de horario (AD-18, AD-25, AD-65). Esta vista no tiene segunda región (L-01). El \cref{tab:nodos-impl} lista los
+\texttt{adaptador-se6} y \texttt{adaptador-se7-salida}, enciende \texttt{adaptador-se7-entrada} con
+un disparador de horario y mantiene \texttt{adaptador-se8} entre 1 y 2 réplicas (AD-18, AD-25, AD-65).
+El simulador \texttt{sim-se8} avisa el acuse por \texttt{POST /v1/acuses}, una ruta solo de la red
+interna del compose: el \texttt{gateway} no la enruta. Esta vista no tiene segunda región (L-01). El \cref{tab:nodos-impl} lista los
 artefactos.
 
 \begin{landscape}
@@ -869,14 +902,22 @@ EV-21 (AD-03) \\
 & 2 y 1 & Adaptador de SE-7, salida por cola y entrada con marca de avance (AD-14, AD-36) \\
 \texttt{sim-se6}, \texttt{sim-se7} & \texttt{plataforma/\br{}sim-\br{}se6:\br{}local},
 \texttt{plataforma/\br{}sim-\br{}se7:\br{}local} & 1 & Simuladores de los sistemas externos SE-6 y SE-7 \\
+\texttt{adaptador-se8} & \texttt{plataforma/\br{}adaptador-\br{}se8:\br{}local}: entorno de ejecución WildFly
+42.0.0.Final (Jakarta EE 11, Java 21) con \texttt{adaptador-se8.war} & 1 & Adaptador de SE-8, siempre
+encendido (AD-03, AD-25, AD-66) \\
+\texttt{adaptador-\br{}se8-\br{}migrador} & \texttt{plataforma/\br{}adaptador-\br{}se8-\br{}migrador:\br{}local}
+(Java 21, Flyway) & 1 & Crea la base \texttt{adaptador\_\br{}se8} y su rol de mínimo privilegio y termina
+(AD-53, AD-66) \\
+\texttt{sim-se8} & \texttt{plataforma/\br{}sim-\br{}se8:\br{}local} & 1 & Simulador de SE-8: recibe alertas y
+avisa el acuse \\
 \texttt{*-migrador} & La imagen de cada microservicio & 1 & Aplica las migraciones y termina
 (AD-53) \\
 \texttt{bus1}, \texttt{bus2}, \texttt{bus3} & \texttt{rabbitmq:\br{}4.\br{}4.\br{}0-\br{}management} con
 \texttt{definiciones.\br{}json} & 3 & Bus de eventos (AD-02, AD-54) \\
 \texttt{db} & \texttt{postgis/\br{}postgis:\br{}18-\br{}3.\br{}6} & 1 & Almacenes: bases \texttt{gestion\_\br{}desastres},
 \texttt{evaluacion\_\br{}danos}, \texttt{reconstruccion}, \texttt{programa}, \texttt{consulta},
-\texttt{consulta\_\br{}danos}, \texttt{auditoria}, \texttt{adaptador\_\br{}se2} y \texttt{adaptadores} (AD-01,
-AD-52) \\
+\texttt{consulta\_\br{}danos}, \texttt{auditoria}, \texttt{adaptador\_\br{}se2}, \texttt{adaptadores} y
+\texttt{adaptador\_\br{}se8} (AD-01, AD-52) \\
 \texttt{db-replica} & \texttt{postgis/\br{}postgis:\br{}18-\br{}3.\br{}6} en espera activa & 1 & Réplica de datos
 (AD-24, AD-52) \\
 \texttt{cache} & \texttt{redis:\br{}8.\br{}8.\br{}4-\br{}alpine} & 1 & Caché de geometrías (AD-17, AD-55) \\
@@ -900,7 +941,8 @@ La vista de implementación se presenta en dos diagramas de paquetes UML con los
 código. La \cref{fig:vista-implementacion} muestra la solución \texttt{Plataforma.\br{}sln} del
 repositorio \texttt{proyectoparte2}: los proyectos del microservicio tipo
 (\texttt{servicios/evaluacion-danos}, con sus clases principales), los proyectos comunes
-\texttt{Plataforma.\br{}Comun.\br{}*}, los adaptadores y el gateway. La \cref{fig:vista-implementacion-movil}
+\texttt{Plataforma.\br{}Comun.\br{}*}, los adaptadores y el gateway, más el proyecto Maven
+\texttt{adaptador-\br{}se8-\br{}jee} con sus paquetes Java. La \cref{fig:vista-implementacion-movil}
 muestra los paquetes del módulo \texttt{app} del repositorio \texttt{danos}. Los diagramas
 materializan las decisiones siguientes:
 
@@ -916,8 +958,16 @@ materializan las decisiones siguientes:
   \item AD-03 y AD-09. Hay un proyecto por adaptador implementado (\texttt{AdaptadorSe2},
         \texttt{AdaptadorSe6} y \texttt{AdaptadorSe7}). Cada uno implementa la interfaz
         \texttt{IContratoAdaptador} de \texttt{Plataforma.\br{}Comun.\br{}Adaptadores} y usa el sobre
-        canónico de \texttt{Plataforma.\br{}Comun.\br{}Eventos}. Los adaptadores de SE-1, SE-3, SE-4, SE-5 y
-        SE-8 aparecen con el estereotipo «diseño» (L-06).
+        canónico de \texttt{Plataforma.\br{}Comun.\br{}Eventos}. Los adaptadores de SE-1, SE-3, SE-4 y
+        SE-5 aparecen con el estereotipo «diseño» (L-06).
+  \item AD-66. El adaptador de SE-8 es el paquete Java \texttt{adaptador-\br{}se8-\br{}jee} (Maven, Java
+        21, un WAR). Sus clases principales son \texttt{AdaptadorSe8} (EJB \texttt{@Stateless} que
+        implementa \texttt{ContratoAdaptador}), \texttt{ManejadorSe8} (unidades de trabajo
+        \texttt{REQUIRES\_NEW}), \texttt{ConsumidorSe8} y \texttt{BucleConsumo} (Jakarta Messaging),
+        \texttt{Temporizadores} (Timer Service), \texttt{Entrega} (Jakarta Persistence) y
+        \texttt{RecursoAcuses} (Jakarta REST). No referencia ningún proyecto .NET: comparte el
+        contrato por los esquemas JSON de \texttt{Plataforma.\br{}Comun.\br{}Eventos}, que se copian al
+        WAR al compilar.
   \item AD-45. \texttt{Plataforma.\br{}Comun.\br{}Mensajeria} contiene \texttt{EscritorBandeja},
         \texttt{RelevoBandeja} y \texttt{ConsumidorIdempotente}, que usan todos los productores y
         consumidores.
@@ -991,6 +1041,11 @@ implementados, cada uno con \texttt{Api}, \texttt{Aplicacion}, \texttt{Dominio} 
 Consulta del Programa está dentro de \texttt{Reconstruccion.\br{}*} (AD-42). \\
 \texttt{AdaptadorSe2}, \texttt{AdaptadorSe6}, \texttt{AdaptadorSe7} & Cliente del sistema externo,
 traductor al evento canónico, cortacircuitos y marca de avance (AD-03, AD-14, AD-36). \\
+\texttt{adaptador-\br{}se8-\br{}jee} (Java) & Paquetes \texttt{contrato} (\texttt{ContratoAdaptador},
+\texttt{Sobre}, \texttt{ValidadorContrato}), \texttt{traduccion}, \texttt{resiliencia}
+(\texttt{Cortacircuitos}, \texttt{EjecutorResiliente}), \texttt{cliente}, \texttt{persistencia},
+\texttt{consumo}, \texttt{nucleo}, \texttt{jee} (EJB y CDI) y \texttt{api}, y el módulo
+\texttt{migrador} con Flyway (AD-03, AD-14, AD-36, AD-45, AD-66). \\
 \texttt{Plataforma.\br{}Gateway} & Catálogo \texttt{rutas.json}, validación del token (nivel 1) y
 priorización por clase de tráfico (AD-04, AD-19). \\
 \texttt{danos/app}, paquete \texttt{com.\br{}example.\br{}danos} & \texttt{presentacion} (\texttt{ingreso},
@@ -1022,7 +1077,24 @@ ni redespliegue & QA-10: 0 componentes modificados o redesplegados \\
 Incorporar un microservicio & Se agrega un paquete con las cuatro capas, su almacén, su cola en el
 bus y sus rutas en el API Gateway & Los microservicios existentes. Los eventos que el microservicio
 nuevo consume ya se publican & QA-10 y QA-05 (CON-4) \\
+\midrule
+Evidencia: se incorporó SE-8 (19 de noviembre de 2026) & El proyecto Maven
+\texttt{adaptador-\br{}se8-\br{}jee} (76 archivos) y el simulador \texttt{sim-se8} (6). Dos enlaces de
+\texttt{q.salida.se8} en \texttt{definiciones.\br{}json} y su generador, tres servicios en el compose,
+un manifiesto de Kubernetes y una prueba de humo & Los seis microservicios, los proyectos
+\texttt{Plataforma.\br{}Comun.\br{}*}, el gateway, la consola y los adaptadores de SE-2, SE-6 y SE-7:
+0 líneas cambiadas & QA-09: medida cumplida, 0 componentes existentes modificados \\
 \end{longtable}
+
+El \texttt{git diff --stat} del commit que incorporó SE-8 muestra 89 archivos con 7\,131 líneas
+agregadas y 1 borrada. De ellos, 84 son nuevos: el adaptador (76), el simulador (6), el manifiesto
+\texttt{adaptador-\br{}se8.\br{}yaml} y la prueba \texttt{prueba-se8.sh}. Los 5 modificados son de
+despliegue y solo agregan líneas, salvo una: \texttt{definiciones.\br{}json} (+16),
+\texttt{generar\_\br{}definiciones.py} (+3 $-$1, la lista de enlaces de \texttt{q.salida.se8}),
+\texttt{docker-\br{}compose.\br{}yml} (+69), \texttt{aplicar.sh} (+7) y \texttt{kustomization.\br{}yaml} (+1). Ningún
+archivo de \texttt{servicios/}, \texttt{comun/}, \texttt{gateway/}, \texttt{consola/} ni de los
+adaptadores existentes aparece en el diff. La medida vale aunque el adaptador nuevo esté en otra pila
+(Jakarta EE): el contrato común es el esquema del evento canónico, no una biblioteca .NET (AD-09).
 
 \subsection{Vista de casos de uso}
 \label{sec:vista-casos-uso}
@@ -1536,6 +1608,10 @@ AD-64 & Resiliencia con Polly & I, INT & \texttt{Plataforma.\br{}Comun.\br{}Adap
 (\texttt{Resiliencia.\br{}cs}). Cortacircuitos de la integración \\
 AD-65 & Contenedores, Compose y Kubernetes & FI & Nodo Docker Engine y anotación de Kubernetes con
 HPA y KEDA \\
+AD-66 & Adaptador de SE-8 en Jakarta EE sobre WildFly & L, P, FI, I, INT & Componente
+[\texttt{adaptador-se8}], proceso \texttt{adaptador-se8} ×1, entorno de ejecución WildFly en el
+contenedor \texttt{adaptador-se8}, paquete \texttt{adaptador-\br{}se8-\br{}jee} y fila de SE-8 del
+\cref{tab:integracion} \\
 \end{longtable}
 
 \subsection{Correspondencia entre el SAD y el código}
@@ -1596,8 +1672,11 @@ Adaptador de SE-6 & \texttt{adaptador-se6} ×2, \texttt{sim-se6} & \texttt{Adapt
 Adaptador de SE-7 & \texttt{adaptador-\br{}se7-\br{}salida} ×2, \texttt{adaptador-\br{}se7-\br{}entrada},
 \texttt{sim-se7} & \texttt{AdaptadorSe7} & Cola \texttt{q.salida.se7}. Produce EV-23 y EV-24 &
 «implementado» \\
-Notificación y adaptador de SE-8 & Ninguno & Ninguno & Colas \texttt{q.\br{}notificacion} y
-\texttt{q.salida.se8} declaradas. EV-07, EV-28 y EV-29 en el catálogo & «diseño» (L-06) \\
+Adaptador de SE-8 & \texttt{adaptador-se8}, \texttt{adaptador-\br{}se8-\br{}migrador}, \texttt{sim-se8}
+& \texttt{adaptadores/\br{}adaptador-\br{}se8-\br{}jee} (Java, AD-66) & Cola \texttt{q.salida.se8}. Produce
+EV-23 y EV-29. API interna \texttt{/v1/acuses}, \texttt{/v1/entregas} & «implementado» \\
+Notificación & Ninguno & Ninguno & Cola \texttt{q.\br{}notificacion} declarada. EV-07 en el catálogo.
+Sustituida en parte por los enlaces de L-11 & «diseño» (L-06) \\
 Consolidación, Gestión de Recursos, Personas Afectadas, Coordinación de Organismos, Portal público
 & Ninguno & Ninguno & Rutas del \cref{tab:apis-diseno} & «diseño» (L-06) \\
 Adaptadores de SE-1, SE-3, SE-4 y SE-5 & Ninguno & Ninguno & Ninguna & «diseño» (L-06) \\
@@ -1641,7 +1720,8 @@ indisponibilidad. El \cref{tab:integracion} registra esas diferencias. Los proto
 como patrones de comunicación, porque los sistemas externos reales no están disponibles. En la
 implementación, los adaptadores de SE-6 y SE-7 se comunican por HTTP con JSON con los simuladores
 \texttt{sim-se6} y \texttt{sim-se7}, y el de SE-2 carga las divisiones administrativas de un
-archivo GeoJSON (L-06). \enquote{Recepción por notificación}
+archivo GeoJSON (L-06). El de SE-8, en Jakarta EE (AD-66), se comunica por HTTP con JSON con
+\texttt{sim-se8}. \enquote{Recepción por notificación}
 indica que el sistema externo envía cuando ocurre un hecho. \enquote{Consulta periódica} indica que
 el adaptador pregunta a intervalos. \enquote{API síncrona} indica una petición con respuesta
 inmediata.
@@ -1684,10 +1764,16 @@ SE-7 Proyectos & Consulta periódica. Recepción por notificación de los avance
 contratistas, en formato canónico & Bidireccional, asíncrono. Salida de proyectos creados. Entrada
 de avance y contratista & Cortacircuitos, cola de salida y marca de avance. Un proyecto creado en
 la plataforma queda registrado aunque SE-7 no esté disponible \\
-SE-8 Notificación & Envío por API síncrona a cada canal. Recepción por notificación de los acuses &
-Alerta canónica, traducida al formato de cada canal & Bidireccional, asíncrono. Un adaptador de
-salida por canal & Cada notificación conserva su estado de entrega y se reintenta. El fallo de un
-canal no impide la entrega por otro (QA-08) \\
+SE-8 Notificación «implementado» & Envío por API: \texttt{PUT /v1/alertas/\{referencia\}}, idempotente
+por referencia. Recepción por notificación de los acuses: \texttt{POST /v1/acuses}, una ruta solo de la
+red interna que el gateway no enruta. Conciliación periódica con \texttt{GET /v1/acuses?desde=} desde
+la marca de avance & Alerta de SE-8 (referencia, medio, destinatario, prioridad). Se traduce desde
+EV-28 y, como sustituto temporal de Notificación, desde EV-03 y EV-04 (L-11) & Bidireccional,
+asíncrono. Salida desde \texttt{q.salida.se8}. Entrada de acuses, que producen EV-29 solo para EV-28 &
+Resiliencia del \cref{tab:tacticas-procesos}. Con SE-8 caído se abre el circuito, se publica EV-23 y
+los mensajes esperan en la cola, sin ir a la DLQ. Cada alerta conserva su estado de entrega:
+pendiente, enviada, entregada (solo con acuse, QA-08) o fallida. Sin acuse en \qty{5}{\second} se
+reenvía con la misma referencia \\
 \end{longtable}
 
 En seis de las ocho integraciones la plataforma no es la fuente de los datos y replica información
@@ -1943,11 +2029,12 @@ EV-02 & Reporte consolidado & Consolidación «diseño» & Gestión de Desastres
 \texttt{ventanaTemporal}, \texttt{procedencias}, \texttt{nivelConfianza},
 \texttt{requiereConfirmacion} \\
 EV-03 & Desastre creado & Gestión de Desastres & Notificación, Consulta, Evaluación de Daños,
-Reconstrucción & \texttt{idDesastre}, \texttt{tipo}, \texttt{nombre}, \texttt{descripcion},
+Reconstrucción. Adaptador de SE-8 como sustituto (L-11) & \texttt{idDesastre}, \texttt{tipo}, \texttt{nombre}, \texttt{descripcion},
 \texttt{severidad}, \texttt{zonaVersion}, \texttt{estado}, \texttt{instanteInicio},
 \texttt{ubicacion}, \texttt{organismoRegistra}, \texttt{responsable}, \texttt{origen},
 \texttt{versionDesastre} (E-30) \\
-EV-04 & Severidad cambiada & Gestión de Desastres & Notificación, Consulta & \texttt{idDesastre},
+EV-04 & Severidad cambiada & Gestión de Desastres & Notificación, Consulta. Adaptador de SE-8 como
+sustituto (L-11) & \texttt{idDesastre},
 \texttt{severidadAnterior}, \texttt{severidadNueva}, \texttt{version}, \texttt{autor},
 \texttt{motivo} \\
 EV-05 & Zona actualizada & Gestión de Desastres & Consulta (invalida la caché de geometrías),
@@ -2008,7 +2095,7 @@ Daños, Gestión de Desastres, Reconstrucción & \texttt{capa}, \texttt{versionC
 EV-22 & Conflicto o duplicado resuelto & Evaluación de Daños & Consulta de Daños &
 \texttt{idConflicto}, \texttt{decision}, \texttt{idEvaluacionVigente}, \texttt{versionVigente},
 \texttt{decididoPor}, \texttt{justificacion}, \texttt{evaluacion} (E-05) \\
-EV-23 & Estado de integración cambiado & Adaptadores con cortacircuitos (implementados: SE-6 y SE-7) & Consulta, Consulta
+EV-23 & Estado de integración cambiado & Adaptadores con cortacircuitos (implementados: SE-6, SE-7 y SE-8) & Consulta, Consulta
 del Programa, Consulta de Daños & \texttt{sistemaExterno}, \texttt{estadoAnterior},
 \texttt{estadoNuevo} (\texttt{CERRADO}, \texttt{ABIERTO}, \texttt{SEMIABIERTO}), \texttt{instante},
 \texttt{mensajesEnCola} (E-15) \\
@@ -2022,11 +2109,12 @@ EV-26 & Evaluación actualizada en el servidor & Evaluación de Daños & Consult
 EV-27 & Organismos del desastre cambiados & Gestión de Desastres & Evaluación de Daños, Consulta &
 \texttt{idDesastre}, \texttt{organismoResponsable}, \texttt{participantes}, \texttt{version},
 \texttt{autor} (E-25) \\
-EV-28 & Envío de notificación solicitado & Notificación «diseño» & Adaptador de SE-8 «diseño» &
+EV-28 & Envío de notificación solicitado & Notificación «diseño» & Adaptador de SE-8 «implementado» &
 \texttt{idNotificacion}, \texttt{intento}, \texttt{idEventoOrigen}, \texttt{idDesastre},
 \texttt{organismo}, \texttt{canal}, \texttt{destino}, \texttt{asunto}, \texttt{mensaje},
 \texttt{severidad} (E-37) \\
-EV-29 & Acuse de notificación & Adaptador de SE-8 «diseño» & Notificación «diseño» &
+EV-29 & Acuse de notificación & Adaptador de SE-8 «implementado», solo para las alertas de EV-28 &
+Notificación «diseño» &
 \texttt{idNotificacion}, \texttt{intento}, \texttt{resultado} (\texttt{ENTREGADA} o
 \texttt{FALLIDA}), \texttt{motivo}, \texttt{instante}, \texttt{claveOrigen} (E-37) \\
 \end{longtable}
@@ -2078,7 +2166,8 @@ EV-25, EV-26 & «implementado» \\
 \texttt{q.salida.se7} & \texttt{adaptador-\br{}se7-\br{}salida} & EV-18, EV-20 & «implementado» \\
 \texttt{q.\br{}notificacion} & Notificación & EV-03, EV-04, EV-29 & Declarada para el diseño
 (L-06) \\
-\texttt{q.salida.se8} & Adaptador de SE-8 & EV-28 & Declarada para el diseño (L-06) \\
+\texttt{q.salida.se8} & \texttt{adaptador-se8} & EV-28. EV-03 y EV-04 como sustituto temporal de
+Notificación (L-11) & «implementado» \\
 \texttt{q.sin-ruta} & Operador (alarma) & Eventos sin cola de destino & «implementado» \\
 \end{longtable}
 \endgroup
@@ -2125,7 +2214,7 @@ El formato responde a CON-7. La columna de drivers cita el escenario \texttt{QA-
 primario \texttt{FP-nn}, la regla \texttt{RN-n} o la restricción \texttt{CON-n} que respalda la
 decisión. La última columna indica la justificación, la alternativa descartada y el costo aceptado.
 Las decisiones estructurales se numeran de AD-01 a AD-49. Las decisiones de tecnología, AD-50 a
-AD-65, están en la \cref{sec:tecnologia}.
+AD-66, están en la \cref{sec:tecnologia}.
 
 Cuatro decisiones reutilizan un mecanismo ya decidido: AD-30, AD-34, AD-37 y AD-42. Se conservan
 como decisiones porque la reutilización también se decidió frente a alternativas.
@@ -2448,6 +2537,7 @@ CON-6 & AD-16, AD-19, AD-31, AD-32, AD-46, AD-48 \\
 CON-7 & Define el formato del \cref{tab:decisiones} \\
 CON-8 & Entrega 1: AD-08, AD-25, AD-26. Entrega 2: sustituida por AD-50 a AD-65
 (\cref{sec:tecnologia}) \\
+CON-9 & AD-03, AD-50, AD-66 \\
 \end{longtable}
 
 %==============================================================================
@@ -2622,7 +2712,11 @@ El \cref{tab:verificacion} resume las medidas obtenidas en la implementación \c
 corridas se hicieron con el compose en un solo computador, a través del \texttt{gateway} y con
 tokens reales de \texttt{keycloak}. Las latencias corresponden a un perfil local de 20 clientes y no
 reemplazan la prueba con \num{10000} usuarios (L-03, L-04). La suite de .NET tiene 1\,008
-pruebas en 19 proyectos, todas en verde. El cliente móvil tiene 81 pruebas unitarias y 16
+pruebas en 19 proyectos. El 19 de noviembre de 2026 pasan 1\,007: la prueba
+\texttt{Sin\_\br{}conflictos\_\br{}de\_\br{}mas\_\br{}no\_\br{}hay\_\br{}alarma} de Consulta de Daños fija el
+conflicto más antiguo en una fecha y falla desde que esa fecha supera el umbral de 24 horas. Falla
+también en el commit anterior a SE-8. El adaptador de SE-8 tiene 52 pruebas unitarias (JUnit 5 y
+Mockito) y 7 de integración (Testcontainers con RabbitMQ y PostgreSQL), todas en verde. El cliente móvil tiene 81 pruebas unitarias y 16
 instrumentadas en verde, 7 de ellas de contrato contra el \texttt{gateway} y \texttt{keycloak}.
 
 \begin{longtable}{L{1.9cm} L{9.1cm} L{4.8cm}}
@@ -2648,7 +2742,18 @@ y en QA-13 no se corrió la consulta de \num{10000} entradas (L-03) & AD-02, AD-
 AD-45 \\
 QA-01 & Parcial. Verificado con pruebas de integración de los adaptadores de SE-6 y SE-7 contra sus
 simuladores, no con SE-3, que no se implementó (L-06) & AD-05, AD-64 \\
-QA-02, QA-03, QA-05, QA-08, QA-09, QA-12 & No medidos. Requieren dos regiones, carga de
+QA-09 & Medida cumplida: SE-8 se incorporó con 0 componentes existentes modificados
+(\cref{tab:que-se-modifica}). La prueba \texttt{prueba-se8.sh} pasa contra el compose: una alerta queda
+enviada sin acuse y entregada solo con él, un duplicado no produce un segundo envío y Consulta
+muestra SE-8 abierto y cerrado sin cambios en su código & AD-03, AD-09, AD-66 \\
+QA-08 & Parcial. Del registro del desastre a la alerta entregada con acuse: \qty{1,8}{\second} en una
+muestra. Sin acuse, la alerta sigue enviada y se reenvía a los \qty{5}{\second}; con el acuse pasa a
+entregada. Con SE-8 caído y 20 alertas: circuito abierto \qty{25,6}{\second} después de la caída (la
+ventana de \qty{30}{\second} todavía tenía éxitos anteriores), 20 mensajes en la cola y 0 en la DLQ.
+Al volver SE-8: cola en 0 en \qty{12,9}{\second}, las 20 entregadas en \qty{13,6}{\second}, cada una
+una sola vez. Sin percentiles; Notificación no está implementada (L-06, L-11) & AD-05, AD-25, AD-36,
+AD-37, AD-66 \\
+QA-02, QA-03, QA-05, QA-12 & No medidos. Requieren dos regiones, carga de
 \num{10000} usuarios o elementos de diseño sin implementar (L-01, L-04, L-06) & -- \\
 \end{longtable}
 

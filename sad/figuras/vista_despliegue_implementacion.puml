@@ -1,5 +1,5 @@
 @startuml vista_despliegue_implementacion
-' SAD v1.2 - Vista física de la implementación: despliegue UML del docker-compose real y del teléfono (AD-50 a AD-65, L-01)
+' SAD v1.3 - Vista física de la implementación: despliegue UML del docker-compose real y del teléfono (AD-50 a AD-65, L-01)
 skinparam shadowing false
 skinparam defaultFontName "DejaVu Sans"
 skinparam defaultFontSize 12
@@ -175,13 +175,30 @@ node "Computador (Windows 11)" <<device>> as PC {
     «artifact» plataforma/sim-se7:local
     ]
 
+    node A8 <<executionEnvironment>> [
+    **adaptador-se8**  [1, siempre encendido]
+    ----
+    «executionEnvironment» WildFly 42.0.0.Final
+    Jakarta EE 11 sobre Java 21 (AD-66)
+    ----
+    «artifact» adaptador-se8.war
+    imagen plataforma/adaptador-se8:local
+    ]
+
+    node S8 <<executionEnvironment>> [
+    **sim-se8**  [1]
+    ----
+    «artifact» plataforma/sim-se8:local
+    ]
+
   }
   package "Datos y mensajería" as PD {
     node DB <<executionEnvironment>> [
     **db**
     ----
     «artifact» postgis/postgis:18-3.6
-    (9 bases, una por servicio)
+    (10 bases, una por servicio;
+    adaptador_se8 para SE-8)
     ]
 
     node DBR <<executionEnvironment>> [
@@ -276,6 +293,13 @@ node "Computador (Windows 11)" <<device>> as PC {
     «artifact» plataforma/adaptador-se7:local
     ]
 
+    node MG10 <<executionEnvironment>> [
+    **adaptador-se8-migrador**
+    ----
+    «artifact» plataforma/adaptador-se8-migrador:local
+    (Java 21, Flyway)
+    ]
+
   }
   }
 }
@@ -295,6 +319,7 @@ CD -- CA : <<RESP>> :6379
 A6 -- S6 : <<HTTP>>
 A7S -- S7 : <<HTTP>>
 A7E -- S7 : <<HTTP>>
+A8 -- S8 : <<HTTP>> PUT /v1/alertas\nPOST /v1/acuses (red interna)
 DB -right- DBR : <<replicación\nde streaming>>
 B1 -right- B2 : <<clúster>>
 B2 -right- B3 : <<clúster>>
@@ -316,6 +341,9 @@ MG3 -[hidden]down- MG6
 MG4 -[hidden]down- MG7
 MG5 -[hidden]down- MG8
 MG6 -[hidden]down- MG9
+MG9 -[hidden]down- MG10
+S7 -[hidden]down- A8
+A8 -[hidden]down- S8
 B1 -[hidden]down- DB
 B3 -[hidden]down- AR
 
@@ -323,6 +351,6 @@ B3 -[hidden]down- AR
 legend bottom left
   **Notación** (diagrama de despliegue UML). «device»: equipo físico. «executionEnvironment»: entorno de ejecución; dentro de Docker, un contenedor por servicio de docker-compose.yml con su nombre exacto.
   «artifact»: imagen o archivo desplegado; en cada contenedor se lista la imagen en el compartimento del nodo. [n]: réplicas (deploy.replicas). Línea: ruta de comunicación con protocolo y puerto. Puertos publicados en el computador: 8080 y 8081 (gateway), 8180 (keycloak), 15672 (bus1), 9001 (archivos).
-  **Kubernetes** (despliegue/k8s, AD-65): los mismos artefactos se despliegan como Deployments; HPA escala consulta y consulta-danos (2 a 6) y consulta-programa (2 a 5) por CPU; KEDA escala adaptador-se6 y adaptador-se7-salida de 0 a 4 por el largo de q.salida.se6 y q.salida.se7, y enciende adaptador-se7-entrada con un disparador cron.
+  **Kubernetes** (despliegue/k8s, AD-65): los mismos artefactos se despliegan como Deployments; HPA escala consulta y consulta-danos (2 a 6) y consulta-programa (2 a 5) por CPU; KEDA escala adaptador-se6 y adaptador-se7-salida de 0 a 4 por el largo de q.salida.se6 y q.salida.se7, y enciende adaptador-se7-entrada con un disparador cron. KEDA mantiene adaptador-se8 entre 1 y 2 réplicas (mínimo 1 por QA-08, AD-25).
 endlegend
 @enduml

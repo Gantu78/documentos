@@ -132,7 +132,7 @@
 \vspace{1.2cm}
 {\large 18 de noviembre de 2026\par}
 \vfill
-{\small Versión 1.2\par}
+{\small Versión 1.3\par}
 \end{titlepage}
 
 \section*{Control de cambios}
@@ -166,6 +166,12 @@ Se reclasifican las prioridades con un criterio que deja en Alta el \qty{35}{\pe
 requisitos.
 Se usa la taxonomía de estilo, patrón y táctica, y se agregan los cuadros de series de
 identificadores, de límites, de enmiendas y de los cuatro mínimos. \\
+1.3 & 19 de noviembre de 2026 & Se agrega CON-9: la solución final debe incluir Jakarta EE y .NET
+(restricción nueva del profesor, E-44). La cumple el adaptador de SE-8 en Jakarta EE (AD-66 del
+SAD 1.3).
+Se actualizan la Matriz 4 y la Matriz 5: QA-09 queda verificado con el adaptador de SE-8 y QA-08
+queda parcial.
+Se agrega el límite L-11 (sustituto temporal de Notificación) y se ajusta L-06. \\
 \bottomrule
 \end{tabular}
 
@@ -316,7 +322,7 @@ de la revisión de arquitectura del proyecto \cite{informe-medidas}.
 \texttt{RF-XX-nn} & Requisito funcional del SRS. \texttt{XX} es el módulo: GD, ED, PA, RE, CO o RC. \\
 \texttt{RN-n} & Regla de negocio del SRS (RN-1 a RN-6). \\
 \texttt{QA-nn} & Escenario de atributo de calidad del SRS (QA-01 a QA-15). \\
-\texttt{CON-n} & Restricción del SRS (CON-1 a CON-8). \\
+\texttt{CON-n} & Restricción del SRS (CON-1 a CON-9). \\
 \texttt{FP-nn} & Caso de uso de la funcionalidad primaria del SRS (FP-01 a FP-10). \\
 \texttt{EO-n} & Escenario de operación del enunciado (EO-1 a EO-5). \\
 \texttt{S-n} & Supuesto del SRS (S-1 a S-5). \\
@@ -325,7 +331,7 @@ de la revisión de arquitectura del proyecto \cite{informe-medidas}.
 \texttt{AD-nn} & Decisión del SAD: AD-01 a AD-49 son estructurales y AD-50 a AD-65 son de tecnología. \\
 \texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-43). \\
 \texttt{EV-nn} & Evento del catálogo del SAD (EV-01 a EV-29). \\
-\texttt{L-nn} & Límite declarado de la implementación (L-01 a L-10). \\
+\texttt{L-nn} & Límite declarado de la implementación (L-01 a L-11). \\
 \texttt{R-nn} & Riesgo del ATAM (R-01 a R-14). \\
 \end{longtable}
 
@@ -336,11 +342,12 @@ L-02 & Los rechazos del punto de entrada y la alarma de la bandeja de revisión 
 L-03 & No hay pruebas de carga en un clúster ni de caos (QA-05, QA-06 y la consulta de 10\,000 entradas de QA-13). \\
 L-04 & Las latencias se midieron con 20 clientes en un computador, no con 10\,000 usuarios. \\
 L-05 & El despliegue en el clúster local no se verificó de punta a punta, y el inicio de sesión exige reenviar puertos. \\
-L-06 & Fuera de la implementación: Consolidación, Notificación (SE-8, QA-08), Gestión de Recursos, Personas Afectadas (QA-12), Coordinación de Organismos, Portal público y adaptadores de SE-1, SE-3, SE-4, SE-5 y SE-8. \\
+L-06 & Fuera de la implementación: Consolidación, Notificación (QA-08), Gestión de Recursos, Personas Afectadas (QA-12), Coordinación de Organismos, Portal público y adaptadores de SE-1, SE-3, SE-4 y SE-5. El adaptador de SE-8 sí está implementado (AD-66). \\
 L-07 & La aplicación móvil entregada es la variante de depuración, que admite conexiones sin cifrar, y el proveedor de identidad corre sin TLS. \\
 L-08 & El emisor de los tokens es una dirección local: el emulador necesita reenviar ese puerto y un teléfono físico exige cambiar la dirección en el proveedor y en quienes validan el token. \\
 L-09 & Pendientes menores: filtro de Auditoría por jurisdicción, validación condicional en la descarga, aviso de activo fusionado al cliente incremental, base única del adaptador de SE-2, índice del historial por municipio, recarga de las llaves del token y evaluaciones rechazadas en la consola. \\
 L-10 & La aplicación móvil adjunta solo fotografías como evidencia, y la evidencia no guarda un autor propio (RF-ED-03 parcial). \\
+L-11 & Sin Notificación, el adaptador de SE-8 recibe EV-03 y EV-04 por dos enlaces temporales de \texttt{q.salida.se8} y alerta a un único destino de difusión. No hay suscripciones ni resolución por ámbito (RF-GD-06, RF-GD-15 parciales). El estado de entrega se consulta en el adaptador, no en Notificación. \\
 \end{longtable}
 
 \begin{longtable}{L{1.4cm} L{14.4cm}}
@@ -2058,6 +2065,10 @@ expresa en propiedades y mecanismos, sin nombrar productos (\cref{sec:agnostico}
 la sustituye la sección de decisiones de tecnología del SAD 1.2 (AD-50 a AD-65), que elige cada
 producto y lo justifica con los escenarios QA \cite{sad,enunciado}. Los requisitos de este documento
 siguen sin nombrar productos \\
+CON-9 & La solución final debe incluir Jakarta EE y .NET & Restricción agregada por el profesor el
+19 de noviembre de 2026 (E-44). Se cumple en la frontera: el adaptador de SE-8 corre en Jakarta EE y
+el núcleo sigue en .NET (AD-03, AD-50 y AD-66 del SAD 1.3). No cambia ningún requisito funcional ni
+escenario de calidad. Incorporar la segunda pila no modificó componentes existentes (QA-09) \\
 \end{longtable}
 
 %==============================================================================
@@ -2603,6 +2614,8 @@ CON-7 & Decisiones justificadas por atributos de calidad & \Cref{sec:calidad} y 
 justificación del \cref{tab:comparativa} \\
 CON-8 & Diseño independiente de la tecnología (entrega 1) & \Cref{sec:agnostico}. En la entrega 2
 la sustituyen las decisiones AD-50 a AD-65 del SAD 1.2 \cite{sad} \\
+CON-9 & Jakarta EE y .NET en la solución final & QA-09 (0 componentes modificados al incorporar SE-8)
+y AD-66 del SAD 1.3 \cite{sad} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -2706,10 +2719,13 @@ computador (L-04). La antigüedad se midió con 30 muestras \\
 QA-07 & p95 $<$ 3\,s y p99 $<$ 6\,s; 0 confirmaciones sin persistencia & p95 1\,334\,ms y p99
 1\,353\,ms; 100 de 100 registros confirmados & Sí, en el perfil local & La ficha fija 50 registros
 por minuto. La prueba envió los 100 registros en ráfaga, con 20 clientes \\
-QA-08 & p95 $<$ 5\,s y p99 $<$ 10\,s hasta el acuse del canal externo & No medida & No verificado &
-Notificación y SE-8 fuera de la implementación (L-06) \\
-QA-09 & 0 componentes existentes modificados & No medida & No verificado & No se incorporó un sistema
-externo nuevo durante la entrega (L-06) \\
+QA-08 & p95 $<$ 5\,s y p99 $<$ 10\,s hasta el acuse del canal externo & Del registro a ENTREGADA
+con acuse: 1,8\,s en una muestra. Sin acuse, la alerta sigue enviada y se reenvía a los 5\,s; nunca
+queda entregada sin acuse & Parcial & Medido en el adaptador de SE-8 contra el simulador. No hay
+percentiles. Notificación no está implementada (L-06, L-11) \\
+QA-09 & 0 componentes existentes modificados & Se incorporó SE-8 con un adaptador en Jakarta EE:
+0 microservicios, 0 proyectos comunes, 0 adaptadores y el gateway sin cambios (\texttt{git diff
+--stat}) & Sí & Solo se agregaron archivos, dos enlaces de bus y la configuración de despliegue \\
 QA-10 & 0 componentes modificados o redesplegados para un tipo nuevo & Pasan las pruebas de
 integración: el tipo de desastre y el tipo de activo nuevos se crean por la interfaz y se usan en
 el registro siguiente & Sí & Verificado en Gestión de desastres y en Evaluación de daños \\
@@ -2790,7 +2806,7 @@ Prentice Hall, 2017.
 
 \bibitem{sad}
 S. Gantiva, D. Guiza y J. Rubiano. \textit{Documento de Arquitectura de Software (SAD). Plataforma
-para la Gestión de Desastres y Reconstrucción}. Versión 1.2, 18 de noviembre de 2026.
+para la Gestión de Desastres y Reconstrucción}. Versión 1.3, 19 de noviembre de 2026.
 
 \bibitem{atam}
 S. Gantiva, D. Guiza y J. Rubiano. \textit{Evaluación de la arquitectura mediante ATAM. Plataforma para

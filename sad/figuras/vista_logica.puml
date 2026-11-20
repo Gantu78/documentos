@@ -1,5 +1,5 @@
 @startuml vista_logica
-' SAD v1.2 - Vista lógica: diagrama de componentes UML del diseño completo (AD-01, AD-02, AD-04, AD-08, AD-09, AD-15, AD-21, AD-45, AD-46, AD-49)
+' SAD v1.3 - Vista lógica: diagrama de componentes UML del diseño completo (AD-01, AD-02, AD-04, AD-08, AD-09, AD-15, AD-21, AD-45, AD-46, AD-49)
 skinparam shadowing false
 skinparam defaultFontName "DejaVu Sans"
 skinparam defaultFontSize 12
@@ -120,9 +120,11 @@ package "Integración" as ADS {
   component "Adaptador SE-2 [adaptador-se2]" <<implementado>> as A2
   component "Adaptador SE-6 [adaptador-se6]" <<implementado>> as A6
   component "Adaptador SE-7\n[adaptador-se7-salida, adaptador-se7-entrada]" <<implementado>> as A7
-  component "Adaptadores SE-1, SE-3, SE-4, SE-5, SE-8" <<diseño>> as AX
+  component "Adaptador SE-8 [adaptador-se8]\nJakarta EE en WildFly (AD-66)" <<implementado>> as A8
+  component "Adaptadores SE-1, SE-3, SE-4, SE-5" <<diseño>> as AX
   interface "ContratoAdaptador" as ICA
   database "adaptador_se2, adaptadores\nmarca de avance y bandeja" as dAD
+  database "adaptador_se8\nestado de entrega, marca\nde avance y bandeja" as dA8
 }
 
 rectangle "Sistemas externos\nSE-1 a SE-8" <<sistema externo>> as SE
@@ -164,9 +166,11 @@ ADS .[norank].> BUS : publica y consume
 A2 --> dAD
 A6 --> dAD
 A7 --> dAD
+A8 --> dA8
 A2 ..|> ICA
 A6 ..|> ICA
 A7 ..|> ICA
+A8 ..|> ICA
 AX ..|> ICA
 ADS --> SE : protocolo de\ncada sistema
 
@@ -179,6 +183,6 @@ end note
 legend bottom left
   **Notación** (diagrama de componentes UML). «implementado»: elemento con código y contenedor en proyectoparte2 o danos. «diseño»: elemento del diseño sin implementar. Almacén o cola con fondo gris y borde discontinuo: «diseño»; sin fondo: «implementado».
   [nombre]: servicio de docker-compose o artefacto que realiza el componente. Base de datos: nombre de la base en el contenedor db. Flecha continua sin rótulo: «usa» un almacén propio; ningún microservicio usa el almacén de otro (AD-01).
-  Flecha continua REST: llamada síncrona. Flecha discontinua: evento por el bus (AD-02) o validación del token (AD-49). Círculo: interfaz provista. Realización: los adaptadores implementan ContratoAdaptador (AD-09).
+  Flecha continua REST: llamada síncrona. Flecha discontinua: evento por el bus (AD-02) o validación del token (AD-49). Círculo: interfaz provista. Realización: los adaptadores implementan ContratoAdaptador (AD-09); el de SE-8 lo implementa en Java (CON-9, AD-66).
 endlegend
 @enduml
