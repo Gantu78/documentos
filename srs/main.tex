@@ -327,7 +327,7 @@ de la revisión de arquitectura del proyecto \cite{informe-medidas}.
 \texttt{D-n} & Dependencia del SRS (D-1 a D-3). \\
 \texttt{SE-n} & Familia de sistemas externos (SE-1 a SE-8). \\
 \texttt{AD-nn} & Decisión del SAD: AD-01 a AD-49 son estructurales y AD-50 a AD-65 son de tecnología. \\
-\texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-43). \\
+\texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-44). \\
 \texttt{EV-nn} & Evento del catálogo del SAD (EV-01 a EV-29). \\
 \texttt{L-nn} & Límite declarado de la implementación (L-01 a L-11). \\
 \texttt{R-nn} & Riesgo del ATAM (R-01 a R-14). \\
@@ -356,6 +356,7 @@ E-14 & Definición de fusionar evaluaciones duplicadas (RF-ED-09). \\
 E-30 & Campos adicionales de EV-03, EV-06, EV-10, EV-18, EV-19 y EV-20, entre ellos el nombre del desastre. \\
 E-35 & Rutas de configuración del ciclo de vida y perfil mínimo por nivel de severidad. \\
 E-42 & Registro del desastre en campo desde el cliente móvil, con identificador del cliente (RF-GD-02, AD-48). \\
+E-44 & CON-9: la solución final incluye Jakarta EE y .NET. El adaptador de SE-8 se implementa en Jakarta EE (AD-66), con el sustituto temporal de Notificación (L-11). \\
 \end{longtable}
 
 \subsection{Fuentes del documento}
@@ -2624,7 +2625,7 @@ y AD-66 del SAD 1.2 \cite{sad} \\
 Esta matriz informa qué parte de la especificación realiza la implementación de la entrega 2 y qué
 medida obtuvo cada escenario de calidad. La fuente es el informe de medidas del repositorio de la
 plataforma \cite{informe-medidas}. El estado de cada requisito se verificó contra el catálogo de
-rutas del punto de entrada y contra el código de cada servicio. Los límites L-01 a L-10 son los que
+rutas del punto de entrada y contra el código de cada servicio. Los límites L-01 a L-11 son los que
 declara ese informe (\cref{tab:limites}).
 
 La implementación cubre los cuatro mínimos de la entrega, que el \cref{tab:minimos} relaciona con sus
@@ -2813,7 +2814,7 @@ la Gestión de Desastres y Reconstrucción}. Versión 1.2, 18 de noviembre de 20
 \bibitem{informe-medidas}
 S. Gantiva, D. Guiza y J. Rubiano. \textit{Revisión de arquitectura y plan de integración},
 sección \enquote{Estado de la implementación} [medidas por escenario de calidad y límites L-01 a
-L-10]. Repositorio de la plataforma, archivo
+L-11]. Repositorio de la plataforma, archivo
 \texttt{docs/decisiones/REVISION\_ARQUITECTURA.md}, rama \texttt{cierre-implementacion}, 18 de
 noviembre de 2026.
 

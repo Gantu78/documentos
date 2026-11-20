@@ -212,9 +212,9 @@ este documento cita. Ambos provienen de la revisión de arquitectura del proyect
 \texttt{CON-n} & Restricción del SRS (CON-1 a CON-8). \\
 \texttt{SE-n} & Familia de sistemas externos (SE-1 a SE-8). \\
 \texttt{AD-nn} & Decisión del SAD: AD-01 a AD-49 son estructurales y AD-50 a AD-65 son de tecnología. \\
-\texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-43). \\
+\texttt{E-nn} & Enmienda a los documentos, surgida de la revisión y de la implementación (E-01 a E-44). \\
 \texttt{EV-nn} & Evento del catálogo del SAD (EV-01 a EV-29). \\
-\texttt{L-nn} & Límite declarado de la implementación (L-01 a L-10). \\
+\texttt{L-nn} & Límite declarado de la implementación (L-01 a L-11). \\
 \texttt{EA-nn} & Enfoque arquitectónico identificado en el ATAM (EA-01 a EA-26). \\
 \texttt{ES-nn} & Escenario de la lluvia de ideas del paso 7 del ATAM (ES-01 a ES-06). \\
 \texttt{PS-nn} & Punto de sensibilidad del ATAM (PS-01 a PS-17). \\
@@ -230,11 +230,12 @@ L-02 & Los rechazos del punto de entrada y la alarma de la bandeja de revisión 
 L-03 & No hay pruebas de carga en un clúster ni de caos (QA-05, QA-06 y la consulta de 10\,000 entradas de QA-13). \\
 L-04 & Las latencias se midieron con 20 clientes en un computador, no con 10\,000 usuarios. \\
 L-05 & El despliegue en el clúster local no se verificó de punta a punta, y el inicio de sesión exige reenviar puertos. \\
-L-06 & Fuera de la implementación: Consolidación, Notificación (SE-8, QA-08), Gestión de Recursos, Personas Afectadas (QA-12), Coordinación de Organismos, Portal público y adaptadores de SE-1, SE-3, SE-4, SE-5 y SE-8. \\
+L-06 & Fuera de la implementación: Consolidación, Notificación (QA-08), Gestión de Recursos, Personas Afectadas (QA-12), Coordinación de Organismos, Portal público y adaptadores de SE-1, SE-3, SE-4 y SE-5. El adaptador de SE-8 sí está implementado (AD-66). \\
 L-07 & La aplicación móvil entregada es la variante de depuración, que admite conexiones sin cifrar, y el proveedor de identidad corre sin TLS. \\
 L-08 & El emisor de los tokens es una dirección local: el emulador necesita reenviar ese puerto y un teléfono físico exige cambiar la dirección en el proveedor y en quienes validan el token. \\
 L-09 & Pendientes menores: filtro de Auditoría por jurisdicción, validación condicional en la descarga, aviso de activo fusionado al cliente incremental, base única del adaptador de SE-2, índice del historial por municipio, recarga de las llaves del token y evaluaciones rechazadas en la consola. \\
 L-10 & La aplicación móvil adjunta solo fotografías como evidencia, y la evidencia no guarda un autor propio (RF-ED-03 parcial). \\
+L-11 & Sin Notificación, el adaptador de SE-8 recibe EV-03 y EV-04 por dos enlaces temporales de \texttt{q.salida.se8} y alerta a un único destino de difusión, sin suscripciones ni resolución por ámbito. \\
 \end{longtable}
 
 \begin{longtable}{L{1.4cm} L{14.4cm}}
@@ -256,6 +257,7 @@ E-38 & El marcador de la descarga incremental es el instante del servidor. \\
 E-39 & La autoridad solo ve y usa los proyectos y las evaluaciones de su jurisdicción. \\
 E-42 & Registro del desastre en campo desde el cliente móvil, con identificador del cliente (RF-GD-02, AD-48). \\
 E-43 & El Proveedor de identidad aparece en las vistas lógica y física (AD-49). \\
+E-44 & CON-9: la solución final incluye Jakarta EE y .NET. El adaptador de SE-8 se implementa en Jakarta EE (AD-66), con el sustituto temporal de Notificación (L-11). \\
 \end{longtable}
 
 \subsection{Alcance y limitaciones de la evaluación}
@@ -286,8 +288,8 @@ escenarios que el diseño no previó.
         catálogo de APIs y de eventos, decisiones estructurales AD-01 a AD-49 y decisiones de
         tecnología AD-50 a AD-65.
   \item Iteraciones de ADD \cite{iteraciones}: alternativas consideradas en cada iteración.
-  \item Revisión de la arquitectura y enmiendas E-01 a E-43 \cite{revision}: medidas obtenidas en la
-        implementación y límites declarados L-01 a L-10.
+  \item Revisión de la arquitectura y enmiendas E-01 a E-44 \cite{revision}: medidas obtenidas en la
+        implementación y límites declarados L-01 a L-11.
 \end{itemize}
 
 La versión 1.2 no cambia el método ni las calificaciones del árbol de utilidad. Agrega la evidencia
@@ -349,8 +351,9 @@ El diseño tiene doce microservicios, cada uno con su almacén, y ningún micros
 de otro. La implementación de la entrega 2
 despliega siete de ellos: Gestión de Desastres, Evaluación de Daños, Reconstrucción, Consulta,
 Consulta de Daños, Consulta del Programa y Auditoría. También despliega los adaptadores de SE-2, SE-6
-y SE-7. Consolidación, Notificación, Gestión de Recursos, Personas Afectadas, Coordinación de
-Organismos y los adaptadores de SE-1, SE-3, SE-4, SE-5 y SE-8 quedan como diseño (L-06)
+y SE-7 en .NET y el de SE-8 en Jakarta EE (AD-66). Consolidación, Notificación, Gestión de Recursos,
+Personas Afectadas, Coordinación de Organismos y los adaptadores de SE-1, SE-3, SE-4 y SE-5 quedan
+como diseño (L-06)
 \cite{revision}. Los elementos se organizan en
 cuatro capas: presentación, acceso, dominio e infraestructura (AD-08). Todas las peticiones entran
 por el API Gateway, que autentica, valida el rol y limita la tasa (AD-04). Los microservicios se
@@ -987,10 +990,13 @@ Sensibilidad & PS-09, tiempo de arranque de un adaptador efímero \\
 Compromiso & Ninguno adicional \\
 Riesgos & R-01. El arranque de un adaptador efímero que no se ha invocado recientemente puede
 exceder \qty{5}{\second}. La mitigación está decidida en AD-25: mantener una instancia encendida del
-adaptador de SE-8. Notificación y el adaptador de SE-8 quedan fuera de la implementación (L-06), por
-lo que la mitigación sigue sin verificar \\
-No riesgos & Una alerta no se da por entregada sin acuse, porque Notificación conserva el estado de
-entrega (AD-13) \\
+adaptador de SE-8. El adaptador de SE-8 está implementado (AD-66) con una instancia siempre
+encendida: en el compose, del registro del desastre a la alerta entregada con acuse pasan
+\qty{1.8}{\second}. El mínimo de una réplica con KEDA no se verificó en el clúster (L-05), y
+Notificación no está implementada (L-06, L-11) \\
+No riesgos & Una alerta no se da por entregada sin acuse. El adaptador de SE-8 conserva el estado de
+cada alerta y solo el acuse la lleva a entregada; la base lo exige con una restricción. Cuando exista,
+Notificación conservará el estado por destinatario (AD-13) \\
 \end{longtable}
 
 \subsubsection{QA-11: Autorización por organización}
@@ -1348,9 +1354,10 @@ amenaza. El estado de R-01, R-02, R-07, R-08 y R-10 cambia en la versión 1.2 se
 \cabecera{5}{tab:riesgos}{Riesgos identificados}{\textbf{ID} & \textbf{Riesgo} & \textbf{Escenario} &
 \textbf{Estado} & \textbf{Mitigación}}
 R-01 & El arranque de un adaptador efímero puede exceder el objetivo de \qty{5}{\second} de una
-alerta crítica & QA-08 & Mitigación decidida sin verificar & AD-25 decide mantener una instancia
-encendida del adaptador. Notificación y el adaptador de SE-8 no se implementaron (L-06), por lo que
-la prueba no se hizo \\
+alerta crítica & QA-08 & Mitigado en parte & AD-25 decide mantener una instancia encendida del
+adaptador. El adaptador de SE-8 está implementado con una instancia siempre encendida (AD-66): la
+alerta llega con acuse en \qty{1.8}{\second} en el compose. Falta verificar el mínimo de una
+réplica con KEDA en el clúster (L-05) y medir con Notificación (L-06) \\
 R-02 & El microservicio de Auditoría concentra la trazabilidad. Si el bus pierde un evento, el
 rastro queda incompleto sin señal & QA-13, QA-15 & Mitigado & Cada productor numera sus eventos con
 \texttt{secuenciaProductor}, que asigna el publicador de la bandeja de salida sin huecos (E-18,
@@ -1490,10 +1497,12 @@ QA-07 & La escritura no espera la replicación & La replicación entre regiones 
 QA-07 & Un desastre registrado desde la app no se duplica al reenviarse & El cliente genera el
 identificador y \texttt{POST /v1/desastres} es idempotente por ese identificador (AD-48, EA-22) &
 Prueba de contrato de la app \\
-QA-08 & Una alerta no se da por entregada sin acuse & Notificación conserva el estado de entrega
-(AD-13) & No medido (L-06) \\
+QA-08 & Una alerta no se da por entregada sin acuse & El adaptador de SE-8 conserva el estado de
+cada alerta y solo el acuse la lleva a entregada (AD-66; Notificación, AD-13, sigue en diseño) &
+Verificado con \texttt{prueba-se8.sh} \\
 QA-09 & Agregar un sistema externo no modifica ningún microservicio de dominio & El sistema nuevo se
-expresa por completo con el evento canónico vigente & No medido \\
+expresa por completo con el evento canónico vigente & Verificado: SE-8 con 0 componentes existentes
+modificados \\
 QA-10 & Incorporar un tipo de desastre no modifica componentes & La variabilidad del dominio es de
 datos y no de comportamiento. Un tipo que requiera una regla de negocio propia queda fuera del
 alcance del catálogo & Prueba de integración del tipo nuevo \\
@@ -1614,9 +1623,10 @@ las pruebas de QA-15 de \texttt{Auditoria.\br Integracion} y las de \texttt{Reco
 & Sí & Perfil local \\
 \end{longtable}
 
-QA-02, QA-03, QA-05, QA-08, QA-09 y QA-12 no se midieron con su límite. La disponibilidad mensual,
-las dos regiones, los \num{10000} usuarios, la alerta por SE-8, el sistema externo nuevo y los datos
-personales quedan fuera del alcance implementado (L-01, L-04, L-06). Sus fichas del paso 6 siguen
+QA-02, QA-03, QA-05 y QA-12 no se midieron con su límite. La disponibilidad mensual, las dos
+regiones, los \num{10000} usuarios y los datos personales quedan fuera del alcance implementado
+(L-01, L-04, L-06). QA-08 queda parcial (sin percentiles y sin Notificación, L-11) y QA-09 se
+cumple con el adaptador de SE-8. Sus fichas del paso 6 siguen
 siendo análisis del diseño, sin evidencia medida.
 
 \subsection{Conclusión}
@@ -1697,7 +1707,7 @@ S. Gantiva, D. Guiza y J. Rubiano. \textit{Revisión de arquitectura y plan de i
 \textit{Enmiendas propuestas a los documentos}. Repositorio \texttt{proyectoparte2}, rama
 \texttt{cierre-implementacion}, archivos \texttt{docs/decisiones/REVISION\_ARQUITECTURA.md} y
 \texttt{docs/decisiones/ENMIENDAS\_DOCUMENTOS.md}, 18 de noviembre de 2026. Medidas, límites L-01 a
-L-10 y enmiendas E-01 a E-43.
+L-11 y enmiendas E-01 a E-44.
 
 \bibitem{kazman}
 R. Kazman, M. Klein y P. Clements. \textit{ATAM: Method for Architecture Evaluation}. Technical
