@@ -77,6 +77,7 @@ package "Procesos productores" as PROD <<implementado>> {
   component "adaptador-se7-entrada  [1]\nsondeo de SE-7 cada 30 s | hilo relevo" <<process>> as A7E
   component "adaptador-se6  [2]\nconsumidor | hilo relevo" <<process>> as A6
   component "adaptador-se7-salida  [2]\nconsumidor | hilo relevo" <<process>> as A7S
+  component "adaptador-se8  [1] siempre encendido (AD-25, QA-08)\nWildFly: consumidor JMS | relevo @Schedule\n| reenvío sin acuse | HTTP acuse" <<process>> as A8
 }
 
 package "Procesos de diseño" as DIS <<diseño>> {
@@ -84,7 +85,6 @@ package "Procesos de diseño" as DIS <<diseño>> {
   component "Notificación  [2..*]" <<process>> as NO #E8E8E8;line.dashed
   component "Gestión de Recursos  [2..*]" <<process>> as GR #E8E8E8;line.dashed
   component "Personas Afectadas, Coordinación\nde Organismos  [2..*]" <<process>> as PA #E8E8E8;line.dashed
-  component "Adaptador SE-8  [1..*]" <<process>> as A8 #E8E8E8;line.dashed
   component "Adaptadores SE-1, SE-3,\nSE-4, SE-5  [0..*]" <<process>> as AX #E8E8E8;line.dashed
 }
 
@@ -100,7 +100,7 @@ package "Bus de eventos [bus1, bus2, bus3]  colas quorum acotadas (AD-54)" as BU
   queue "q.salida.se6\nev18, ev19, ev20" as qS6
   queue "q.salida.se7\nev18, ev20" as qS7
   queue "q.notificacion\nev03, ev04, ev29" as qNO
-  queue "q.salida.se8\nev28" as qS8
+  queue "q.salida.se8\nev28; ev03, ev04 (sustituto, L-11)" as qS8
   queue "plataforma.sin-ruta (fanout)\n→ q.sin-ruta" as SR
   queue "plataforma.dlx (direct)\n→ dlq.<cola>, una por cada q.*" as DLX
 }
@@ -130,7 +130,7 @@ A7S ..> EX : EV-23
 CO ..> EX : EV-02
 NO ..> EX : EV-07, EV-28
 GR ..> EX : EV-12, EV-13,\nEV-16, EV-17
-A8 ..> EX : EV-29
+A8 ..> EX : EV-23, EV-29
 AX ..> EX : EV-01, EV-11,\nEV-14, EV-15
 PA ..> EX
 
@@ -176,5 +176,6 @@ legend bottom left
   **Notación**. Componente «process»: proceso en ejecución, con sus hilos separados por |. [n]: réplicas en docker-compose. Paquete «implementado»: todos sus procesos están en docker-compose. «diseño» (fondo gris, borde discontinuo): sin implementar.
   Flecha continua: llamada síncrona HTTP/JSON. Flecha discontinua: mensaje AMQP. Cola: rótulo con las claves de enlace (evNN.#) tomadas de definiciones.json.
   El adaptador de SE-7 corre en dos procesos de la misma imagen: adaptador-se7-salida y adaptador-se7-entrada. consulta-programa es el segundo proceso de la imagen de Reconstrucción.
+  adaptador-se8 es el único proceso Java (Jakarta EE 11 en WildFly 42, AD-66). SE-8 le envía el acuse por HTTP, por una ruta solo de la red interna.
 endlegend
 @enduml

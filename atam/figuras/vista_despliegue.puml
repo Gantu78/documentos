@@ -136,7 +136,7 @@ frame "Región primaria (activa)" as R1 {
       «artifact» adaptador-se7-salida  [0..N]
       «artifact» adaptador-se7-entrada  [0..1]
       «artifact» adaptador-se1, -se3, -se4, -se5  «diseño»
-      «artifact» adaptador-se8  [1..*] «diseño»
+      «artifact» adaptador-se8  [1..*], WildFly 42 (Jakarta EE, AD-66)
     ]
   }
   node "Nodo de mensajería  [3]" <<device>> as N1M {

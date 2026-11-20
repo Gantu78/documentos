@@ -60,7 +60,7 @@ queue "Bus de eventos\nplataforma.eventos" as BUS
 participant "Consolidación" as CO <<diseño>>
 participant "Gestión de Desastres\n[gestion-desastres]" as GD
 participant "Notificación" as NO <<diseño>>
-participant "Adaptador\nSE-8" as AD8 <<diseño>>
+participant "Adaptador SE-8\n[adaptador-se8]\nJakarta EE" as AD8
 participant "SE-8\nNotificación" as SE8 <<sistema externo>>
 participant "Consulta\n[consulta]" as CQ
 participant "Auditoría\n[auditoria]" as AU
@@ -82,8 +82,8 @@ par difusión del evento
   NO -> NO : resuelve suscripciones (AD-13)
   NO ->> BUS : EV-28 Envío de notificación solicitado
   BUS ->> AD8 : EV-28 (q.salida.se8)
-  AD8 -> SE8 : envía la alerta
-  SE8 --> AD8 : acuse de entrega
+  AD8 -> SE8 : envía la alerta (PUT /v1/alertas)
+  SE8 --> AD8 : acuse de entrega (POST /v1/acuses,\nred interna); la alerta pasa a entregada
   AD8 ->> BUS : EV-29 Acuse de notificación
   BUS ->> NO : EV-29 (q.notificacion)
   NO ->> BUS : EV-07 Notificación despachada\n(estado: entregada)
@@ -107,5 +107,6 @@ GD ->> BUS : el relevo publica EV-06\nEstado de desastre cambiado
 legend bottom left
   Flecha con punta llena: llamada síncrona.  Flecha con punta abierta: mensaje asíncrono por el bus (entre paréntesis, la cola que lo entrega).  Flecha discontinua: respuesta.
   Participante con fondo gris «diseño»: elemento sin implementar. Los demás llevan entre corchetes el servicio de docker-compose que los implementa.
+  Mientras Notificación no exista, el adaptador de SE-8 recibe EV-03 directamente en q.salida.se8 y alerta a un destino de difusión (L-11).
 endlegend
 @enduml

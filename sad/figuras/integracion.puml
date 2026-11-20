@@ -63,7 +63,8 @@ package "Sistemas externos" as EXT {
   rectangle "SE-2 GIS\n(capa de municipios, archivo)" <<sistema externo>> as SE2
   rectangle "SE-6 Finanzas\n[sim-se6]" <<sistema externo>> as SE6
   rectangle "SE-7 Proyectos\n[sim-se7]" <<sistema externo>> as SE7
-  rectangle "SE-1, SE-3, SE-4,\nSE-5, SE-8" <<sistema externo>> as SEX
+  rectangle "SE-8 Notificación\n[sim-se8]" <<sistema externo>> as SE8
+  rectangle "SE-1, SE-3,\nSE-4, SE-5" <<sistema externo>> as SEX
 }
 
 package "Adaptadores (uno por sistema externo, realizan ContratoAdaptador)" as ADP {
@@ -71,7 +72,8 @@ package "Adaptadores (uno por sistema externo, realizan ContratoAdaptador)" as A
   component "adaptador-se6 (salida)\nLotes de EV-18, EV-19, EV-20\nClienteSe6, Traduccion" <<implementado>> as A6
   component "adaptador-se7-salida\nClienteSe7, Traduccion de EV-18, EV-20" <<implementado>> as A7S
   component "adaptador-se7-entrada\nsondeo cada 30 s desde la marca de avance" <<implementado>> as A7E
-  component "Adaptadores SE-1, SE-3,\nSE-4, SE-5, SE-8" <<diseño>> as AX
+  component "adaptador-se8 (Jakarta EE, AD-66)\nAdaptadorSe8 @Stateless, Cortacircuitos,\nbandeja JPA; acuse por POST /v1/acuses" <<implementado>> as A8
+  component "Adaptadores SE-1, SE-3,\nSE-4, SE-5" <<diseño>> as AX
 }
 
 package "Plataforma.Comun.Adaptadores (código común de los adaptadores)" as COM {
@@ -86,8 +88,8 @@ package "Bus de eventos [bus1, bus2, bus3]" as BUS {
   queue "plataforma.eventos" as EX
   queue "q.salida.se6\nev18, ev19, ev20" as QS6
   queue "q.salida.se7\nev18, ev20" as QS7
-  queue "q.salida.se8\nev28" as QS8 #E8E8E8;line.dashed
-  queue "dlq.salida.se6, dlq.salida.se7\n(plataforma.dlx)" as DLQ
+  queue "q.salida.se8\nev28; ev03, ev04 (sustituto, L-11)" as QS8
+  queue "dlq.salida.se6, se7, se8\n(plataforma.dlx)" as DLQ
 }
 
 package "Microservicios" as MS {
@@ -99,12 +101,15 @@ A2 --> SE2 : lee el archivo
 A6 --> SE6 : HTTP JSON
 A7S --> SE7 : HTTP JSON
 A7E --> SE7 : HTTP JSON\nGET cambios
+A8 --> SE8 : HTTP JSON\nPUT alertas
+SE8 --> A8 : acuse (red interna)
 AX --> SEX : protocolo de cada sistema
 
 A2 ..|> ICA
 A6 ..|> ICA
 A7S ..|> ICA
 A7E ..|> ICA
+A8 ..|> ICA : equivalente Java
 AX ..|> ICA
 A6 ..> RES : cada llamada
 A7S ..> RES : cada llamada
@@ -121,14 +126,15 @@ EX ..> QS7
 EX ..> QS8
 QS6 ..> A6 : consume
 QS7 ..> A7S : consume
-QS8 ..> AX : consume «diseño»
+QS8 ..> A8 : consume (JMS)
+A8 ..> EX : publica EV-23, EV-29
 QS6 ..> DLQ : rechazo
 BAN ..> EX : publica EV-21, EV-23, EV-24
 EX ..> CQ : q.consulta, q.consulta-danos,\nq.consulta-programa
 
 note bottom of COM
   **SE-n no disponible:** el cortacircuitos se abre y no se invoca a SE-n;
-  la salida se acumula en q.salida.se6 o q.salida.se7; EV-23 informa el
+  la salida se acumula en q.salida.se6, q.salida.se7 o q.salida.se8; EV-23 informa el
   estado y la consulta muestra el último dato con su marca de tiempo.
   **SE-n restablecido:** el circuito se cierra de forma progresiva, se
   entrega la cola de salida y la entrada pide el rango pendiente desde
