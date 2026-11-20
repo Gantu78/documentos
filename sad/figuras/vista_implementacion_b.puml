@@ -1,0 +1,134 @@
+@startuml vista_implementacion_b
+' SAD v1.2 - Vista de implementación: diagrama de paquetes UML del monorepo proyectoparte2 (AD-08, AD-45, AD-50, AD-51, AD-53, AD-64)
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam ArrowFontSize 10
+skinparam ArrowColor #333333
+skinparam componentStyle uml2
+skinparam BackgroundColor #FFFFFF
+skinparam ComponentBorderColor #333333
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBackgroundColor<<diseño>> #E8E8E8
+skinparam ComponentBorderStyle<<diseño>> dashed
+skinparam DatabaseBorderColor #333333
+skinparam DatabaseBackgroundColor #FFFFFF
+skinparam DatabaseBackgroundColor<<diseño>> #E8E8E8
+skinparam QueueBorderColor #333333
+skinparam QueueBackgroundColor #FFFFFF
+skinparam QueueBackgroundColor<<diseño>> #E8E8E8
+skinparam NodeBorderColor #333333
+skinparam NodeBackgroundColor #FFFFFF
+skinparam NodeBackgroundColor<<diseño>> #E8E8E8
+skinparam ArtifactBorderColor #333333
+skinparam ArtifactBackgroundColor #FFFFFF
+skinparam PackageBorderColor #555555
+skinparam PackageBackgroundColor #FFFFFF
+skinparam PackageBackgroundColor<<diseño>> #EFEFEF
+skinparam FrameBorderColor #555555
+skinparam InterfaceBorderColor #333333
+skinparam InterfaceBackgroundColor #FFFFFF
+skinparam ActorBorderColor #333333
+skinparam ActorBackgroundColor #FFFFFF
+skinparam UsecaseBorderColor #333333
+skinparam UsecaseBackgroundColor #FFFFFF
+skinparam UsecaseBackgroundColor<<diseño>> #E8E8E8
+skinparam RectangleBorderColor #333333
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam NoteBorderColor #777777
+skinparam NoteBackgroundColor #FFFFFF
+skinparam NoteFontSize 10
+skinparam LegendBorderColor #777777
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendFontSize 10
+skinparam StereotypeFontSize 10
+skinparam ParticipantBorderColor #333333
+skinparam ParticipantBackgroundColor #FFFFFF
+skinparam ParticipantBackgroundColor<<diseño>> #E8E8E8
+skinparam SequenceLifeLineBorderColor #555555
+skinparam SequenceGroupBorderColor #555555
+skinparam SequenceGroupBackgroundColor #F2F2F2
+skinparam SequenceBoxBorderColor #777777
+skinparam SequenceBoxBackgroundColor #FFFFFF
+skinparam SequenceDividerBackgroundColor #F2F2F2
+skinparam defaultFontSize 15
+skinparam StereotypeFontSize 12
+skinparam LegendFontSize 13
+skinparam ClassBorderColor #333333
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassFontSize 14
+skinparam nodesep 18
+skinparam ranksep 40
+hide empty members
+hide circle
+set separator none
+left to right direction
+
+package "adaptadores" as ADP {
+  package "adaptador-se2\nAdaptadorSe2" as PA2 {
+}
+  package "adaptador-se6\nAdaptadorSe6" as PA6 {
+}
+  package "adaptador-se7\nAdaptadorSe7\n(modos salida y entrada)" as PA7 {
+}
+  package "adaptador-se8-jee  (Maven, Java 21, WAR para WildFly 42; AD-66)" as PA8 {
+    package "plataforma.adaptador.se8.contrato" as J8C {
+      interface "ContratoAdaptador<E>\n(equivale a IContratoAdaptador)" as J8I
+      class "Sobre" as J8S
+      class "ValidadorContrato" as J8V
+    }
+    package "plataforma.adaptador.se8.jee  (EJB y CDI)" as J8E {
+      class "AdaptadorSe8\n@Stateless" as J8A
+      class "ManejadorSe8\n@Stateless, REQUIRES_NEW" as J8M
+      class "ConsumidorSe8\n@Singleton @Startup" as J8K
+      class "Temporizadores\n@Schedule" as J8T
+    }
+    package "consumo  (Jakarta Messaging)" as J8Q {
+      class "BucleConsumo" as J8B
+      class "PublicadorJms" as J8P
+    }
+    package "traduccion, resiliencia, cliente\n(TraduccionSe8, Cortacircuitos,\nEjecutorResiliente, TransporteJaxRs)" as J8R {
+    }
+    package "persistencia  (Jakarta Persistence)\nEntrega, FilaBandeja, AlmacenJpa" as J8D {
+    }
+    package "api  (Jakarta REST)\nRecursoAcuses, RecursoSalud,\nRecursoEntregas" as J8W {
+    }
+    package "migrador\nMigrador (Flyway)" as J8G {
+    }
+  }
+}
+
+package "comun (detalle en la Figura 5, parte 1)" as COM {
+  package "Plataforma.Comun.Eventos\n(sobre canónico y esquemas JSON EV-nn.v1.json)" as CEv {
+  }
+  package "Plataforma.Comun.Mensajeria\n(bandeja, relevo, consumidor idempotente)" as CMs {
+  }
+  package "Plataforma.Comun.Adaptadores\n(IContratoAdaptador, Resiliencia, MarcaAvance)" as CAd {
+  }
+  package "Plataforma.Comun.Migraciones" as CMi {
+  }
+}
+
+CMs ..> CEv
+CAd ..> CMs
+ADP ..> CEv
+ADP ..> CMs
+ADP ..> CMi
+PA6 ..> CAd
+PA7 ..> CAd
+J8A ..|> J8I
+J8K ..> J8B
+J8B ..> J8M
+J8M ..> J8A
+J8M ..> J8D
+J8T ..> J8P
+J8A ..> J8R
+J8W ..> J8M
+J8V ..> CEv : <<use>> esquemas JSON\ncopiados al compilar
+PA2 -[hidden]-> PA6
+legend bottom left
+  **Figura 5, parte 2 de 2.** Adaptadores. Los tres de .NET implementan IContratoAdaptador de Plataforma.Comun.Adaptadores.
+  adaptador-se8-jee es Java (Jakarta EE 11, AD-66): no referencia proyectos .NET y comparte el contrato por los esquemas JSON de Plataforma.Comun.Eventos.
+  Paquete: carpeta o proyecto. Rectángulo: clase. Interfaz: realización con línea discontinua y triángulo. Flecha discontinua: dependencia «use».
+endlegend
+@enduml

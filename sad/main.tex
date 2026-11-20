@@ -559,6 +559,43 @@ Réplica local con sincronización diferida & Cliente móvil del evaluador de ca
 AD-44 & QA-14 & Táctica de disponibilidad, rama recuperarse de fallos: resincronización de estado \\
 \end{longtable}
 
+Ningún patrón es gratuito: cada uno favorece unos atributos y entra en conflicto con otros
+\cite{bass,cervantes}. El \cref{tab:patrones-atributos} registra, para cada patrón del
+\cref{tab:estilos}, los atributos que favorece, los que perjudica y la decisión que atiende el
+conflicto. Es la justificación de la combinación: cada conflicto queda cubierto por otro patrón o por
+una táctica.
+
+\begin{longtable}{L{2.6cm} L{4.0cm} L{4.0cm} L{5.2cm}}
+\cabecera{4}{tab:patrones-atributos}{Atributos que favorece y atributos en conflicto de cada
+patrón}{\textbf{Patrón} & \textbf{Favorece} & \textbf{En conflicto} & \textbf{Cómo se atiende el conflicto}}
+Microservicios & Disponibilidad: el fallo queda aislado en un servicio (QA-02, QA-04).
+Escalabilidad por componente (QA-05). Modificabilidad (QA-10) & Rendimiento: más llamadas por red.
+Consistencia de los datos entre servicios. Complejidad de despliegue & La consulta lee proyecciones
+locales y no encadena llamadas (AD-15). Consistencia eventual con bandeja de salida (AD-45).
+Contenedores y orquestador (AD-65) \\
+Publicación y suscripción con intermediario & Disponibilidad: el productor no espera al consumidor
+(QA-04). Modificabilidad: un consumidor nuevo no cambia al productor (QA-10) & Consistencia:
+inmediata solo en el productor. Trazabilidad del flujo. Latencia de propagación & Consumo idempotente
+y secuencia del productor sin huecos (AD-02, AD-45). Auditoría de todos los eventos (AD-21). Colas
+acotadas con mensajes muertos \\
+Capas y arquitectura limpia & Modificabilidad y facilidad de prueba: el dominio no depende de la base
+ni del bus (QA-10) & Rendimiento: una indirección por capa. Más código por servicio & Solo el camino
+de lectura se optimiza con proyecciones y caché (AD-15, AD-17) \\
+API Gateway & Seguridad: un punto único de autenticación y de límite de tasa (QA-11). Control del
+tráfico por clase (AD-19) & Disponibilidad: punto único de falla. Latencia: un salto más & Dos
+réplicas con sondeo de salud (AD-24). El microservicio valida otra vez el token (AD-22) \\
+Adaptador con modelo canónico & Interoperabilidad: incorporar un sistema es agregar un adaptador
+(QA-09). Aísla la tecnología de cada sistema (CON-2) & Rendimiento: una traducción por mensaje.
+Expresividad: el contrato común limita lo que se puede decir (R-03 del ATAM) & Un adaptador por
+sistema, con su propia resiliencia (AD-03, AD-05). El contrato solo admite cambios aditivos (AD-09) \\
+Separación de lectura y escritura & Rendimiento y escalabilidad de la consulta (QA-05, QA-06) &
+Consistencia: el dato leído puede tener segundos de antigüedad. Complejidad de las proyecciones &
+Cada respuesta lleva la marca de tiempo del dato (AD-16) y la antigüedad se mide (QA-06) \\
+Bandeja de salida & Fiabilidad: el cambio y su evento se confirman juntos o ninguno (QA-04, QA-15)
+& Latencia de publicación. Espacio en la base del productor & Relevo cada segundo y publicación con
+confirmación del intermediario (AD-45) \\
+\end{longtable}
+
 \subsection{Vista lógica}
 \label{sec:vista-logica}
 
@@ -864,10 +901,20 @@ artefactos.
 \begin{landscape}
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth,height=0.95\textheight,keepaspectratio]{figuras/vista_despliegue_implementacion}
-\caption{Vista física de la implementación. Diagrama de despliegue UML del compose y del teléfono
-Android.}
+\includegraphics[width=\linewidth,height=0.95\textheight,keepaspectratio]{figuras/vista_despliegue_implementacion_a}
+\caption{Vista física de la implementación (parte 1 de 2). Diagrama de despliegue UML del teléfono
+Android y del compose: entrada e identidad, microservicios, datos y mensajería.}
 \label{fig:vista-despliegue-impl}
+\end{figure}
+\end{landscape}
+
+\begin{landscape}
+\begin{figure}[p]
+\ContinuedFloat
+\centering
+\includegraphics[width=\linewidth,height=0.95\textheight,keepaspectratio]{figuras/vista_despliegue_implementacion_b}
+\caption{Vista física de la implementación (parte 2 de 2). Adaptadores, simuladores y migradores del
+compose. El adaptador de SE-8 anida el servidor WildFly.}
 \end{figure}
 \end{landscape}
 
@@ -982,11 +1029,21 @@ materializan las decisiones siguientes:
 
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth,height=0.92\textheight,keepaspectratio]{figuras/vista_implementacion}
-\caption{Vista de implementación. Diagrama de paquetes UML del microservicio tipo, el módulo común,
-los adaptadores y los demás microservicios.}
+\includegraphics[width=\linewidth,height=0.92\textheight,keepaspectratio]{figuras/vista_implementacion_a}
+\caption{Vista de implementación (parte 1 de 2). Diagrama de paquetes UML del microservicio tipo, el
+módulo común, los demás microservicios, el gateway y la consola.}
 \label{fig:vista-implementacion}
 \end{figure}
+
+\begin{landscape}
+\begin{figure}[p]
+\ContinuedFloat
+\centering
+\includegraphics[width=\linewidth,height=0.92\textheight,keepaspectratio]{figuras/vista_implementacion_b}
+\caption{Vista de implementación (parte 2 de 2). Paquetes de los adaptadores: los tres de .NET y el
+proyecto Java \texttt{adaptador-\br{}se8-\br{}jee} con sus clases principales.}
+\end{figure}
+\end{landscape}
 
 \begin{figure}[H]
 \centering
@@ -1763,9 +1820,9 @@ SE-7 Proyectos & Consulta periódica. Recepción por notificación de los avance
 contratistas, en formato canónico & Bidireccional, asíncrono. Salida de proyectos creados. Entrada
 de avance y contratista & Cortacircuitos, cola de salida y marca de avance. Un proyecto creado en
 la plataforma queda registrado aunque SE-7 no esté disponible \\
-SE-8 Notificación «implementado» & Envío por API: \texttt{PUT /v1/alertas/\{referencia\}}, idempotente
+SE-8 Notificación «implementado» & Envío por API: \texttt{PUT /v1/\br{}alertas/\br{}\{referencia\}}, idempotente
 por referencia. Recepción por notificación de los acuses: \texttt{POST /v1/acuses}, una ruta solo de la
-red interna que el gateway no enruta. Conciliación periódica con \texttt{GET /v1/acuses?desde=} desde
+red interna que el gateway no enruta. Conciliación periódica con \texttt{GET /v1/\br{}acuses?desde=} desde
 la marca de avance & Alerta de SE-8 (referencia, medio, destinatario, prioridad). Se traduce desde
 EV-28 y, como sustituto temporal de Notificación, desde EV-03 y EV-04 (L-11) & Bidireccional,
 asíncrono. Salida desde \texttt{q.salida.se8}. Entrada de acuses, que producen EV-29 solo para EV-28 &
@@ -1808,7 +1865,8 @@ agrupadas por microservicio. Todas están implementadas. La columna Roles reprod
 indica una ruta sin token. Cuando la ruta tiene una regla de dominio de nivel 2
 (\texttt{reglaDominio}), la descripción la nombra. El catálogo no admite rutas públicas de
 modificación (R-07). El \cref{tab:apis-diseno} lista las rutas de los microservicios que quedan
-como diseño (L-06).
+como diseño (L-06). El contrato formal de las rutas y de los eventos, con ejemplos en OpenAPI 3.1 y
+JSON Schema, está en el Anexo~\ref{sec:anexo-b}.
 
 Respecto de la versión 1.1 cambian cuatro puntos. El avance del proyecto se registra con
 \texttt{POST /v1/proyectos/\{id\}/avance}, porque cada avance es un registro nuevo y no una
@@ -2588,6 +2646,46 @@ dominio que exige cada ruta está declarada en \texttt{rutas.json} (\texttt{regl
 ejemplo \texttt{organismo-\br{}responsable} o \texttt{jurisdiccion-\br{}territorial}. Las operaciones
 autorizadas quedan en el registro de auditoría por sus eventos. El registro de los intentos
 rechazados, que pide la respuesta de QA-11, no está implementado (L-02).
+\subsubsection*{Emisión y custodia de las credenciales}
+
+Cada credencial tiene un responsable que la emite, un lugar donde se guarda y una regla de rotación.
+El \cref{tab:credenciales} responde, para cada una, quién la asigna, cómo y cuándo. Dos reglas son
+comunes: ninguna clave se escribe en el código ni en una imagen, solo en variables de entorno que
+toman su valor de un secreto (AD-65), y cada componente recibe solo la credencial que necesita (mínimo
+privilegio). Rotar una credencial es cambiar el secreto y reiniciar el componente, sin cambiar código.
+
+\begin{longtable}{L{2.5cm} L{2.5cm} L{4.1cm} L{3.1cm} L{3.0cm}}
+\cabecera{5}{tab:credenciales}{Quién emite cada credencial, cómo, dónde se guarda y cuándo se
+rota}{\textbf{Credencial} & \textbf{Quién la emite} & \textbf{Cómo y cuándo} & \textbf{Dónde se guarda}
+& \textbf{Rotación}}
+Cuenta de una persona (consola, cliente móvil, tablero) & El administrador de la plataforma (rol de
+administrador) & Al incorporar un organismo o una persona, crea la cuenta en el Proveedor de
+identidad con su organización, su rol y su ámbito territorial, que viajan en el token (AD-22, AD-49).
+La baja desactiva la cuenta & Proveedor de identidad (\texttt{keycloak}, realm \texttt{plataforma}).
+La plataforma no guarda claves de personas & La clave la cambia la persona. El token vence a los
+minutos y se renueva con la sesión \\
+Llaves de firma de los tokens & El Proveedor de identidad & Las genera al crear el realm & Proveedor
+de identidad. El gateway y los microservicios solo leen la llave pública (JWKS) & La rota el
+proveedor. La recarga automática ante una llave nueva está pendiente (L-09) \\
+Secreto del cliente confidencial del tablero de daños & El administrador del Proveedor de identidad
+& Al registrar el cliente \texttt{consulta-\br{}danos-\br{}tablero} (E-41) & Secreto del despliegue,
+variable \texttt{Tablero\_\_\br{}ClaveCliente} & Se regenera en el proveedor y se actualiza el secreto \\
+Usuario del bus por componente & El equipo de operación de la plataforma & Al desplegar, un usuario
+por microservicio o adaptador, con permiso solo sobre su cola y el exchange
+(\texttt{generar\_\br{}definiciones.py}, AD-54) & Secreto del despliegue, variables
+\texttt{BUS\_CLAVE\_\br{}<USUARIO>} y \texttt{Bus\_\_Clave} & Se regenera la topología con la clave nueva
+y se reinicia el componente \\
+Rol de base de datos por servicio & El migrador de cada servicio, con la clave que le entrega el
+equipo de operación & En cada despliegue crea o actualiza el rol de la aplicación con solo los
+permisos que usa (AD-01, AD-41) & Secreto del despliegue (\texttt{credenciales},
+\texttt{credenciales-\br{}se8}) & Se cambia el secreto y se vuelve a correr el migrador \\
+Credencial de un adaptador ante su sistema externo & El dueño del sistema externo (CON-1: la
+plataforma no lo administra) & Al acordar la integración, el organismo dueño entrega la credencial al
+equipo de operación, que la registra solo para ese adaptador (AD-03) & Secreto del adaptador. Ningún
+microservicio la conoce & Según la política del sistema externo. En la implementación los
+simuladores no exigen credencial (L-07) \\
+\end{longtable}
+
 \subsubsection*{Cifrado por columna}
 
 Se cifran los datos de contacto del responsable y de los organismos,
@@ -2962,5 +3060,129 @@ Cliente real & \texttt{ContratoServidorTest} en el emulador contra el \texttt{ga
 \texttt{keycloak}: 7 de 7 pruebas en verde, incluidos el registro de desastre idempotente y el
 rechazo por rol \\
 \end{longtable}
+
+\section{Contratos formales de las interfaces}
+\label{sec:anexo-b}
+
+El \cref{tab:apis} y el \cref{tab:eventos} listan las interfaces. Este anexo da su contrato formal con
+tres ejemplos que siguen el mismo formato que el resto: una ruta de la API en OpenAPI 3.1, la
+interfaz interna con la que SE-8 avisa un acuse y el esquema JSON de un evento. Los contratos de todos
+los eventos son los esquemas \texttt{EV-nn.v1.json} y \texttt{sobre.v1.json} de
+\texttt{comun/\br{}Plataforma.\br{}Comun.\br{}Eventos/\br{}Esquemas} (JSON Schema 2020-12). Productores y
+consumidores, en .NET y en Java, validan cada mensaje contra ellos (AD-09, AD-66). Todas las rutas
+responden los errores con el mismo cuerpo \texttt{\{codigo, mensaje\}}.
+
+\subsection{Ruta de la API: registrar un desastre}
+
+\begingroup\footnotesize
+\begin{verbatim}
+openapi: 3.1.0
+paths:
+  /v1/desastres:
+    post:
+      summary: Registrar un desastre (RF-GD-02, AD-48). Publica EV-03, EV-05 y EV-27.
+      security: [{ bearerJwt: [autoridad, organismo] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tipo, nombre, descripcion, instanteInicio, lat, lon,
+                         severidad, responsable, zona]
+              properties:
+                id:             { type: string, format: uuid }  # opcional: lo genera la app
+                tipo:           { type: string }   # codigo del catalogo de tipos (RN-1)
+                nombre:         { type: string, minLength: 1 }
+                descripcion:    { type: string }
+                instanteInicio: { type: string, format: date-time }
+                lat:            { type: number, minimum: -90,  maximum: 90 }
+                lon:            { type: number, minimum: -180, maximum: 180 }
+                severidad:      { enum: [NIVEL_1, NIVEL_2, NIVEL_3, NIVEL_4] }
+                responsable:    { type: string }   # organizacion responsable
+                participantes:
+                  type: array
+                  items: { type: object, required: [organismo, responsabilidad],
+                           properties: { organismo: { type: string },
+                                         responsabilidad: { type: string } } }
+                zona:
+                  type: object
+                  required: [fuente]
+                  properties:
+                    geometria:        { type: object }  # GeoJSON Polygon
+                    codigosMunicipio: { type: array, items: { pattern: "^[0-9]{5}$" } }
+                    fuente: { enum: [SISTEMA_GIS, EVALUACION_CAMPO, DECISION_AUTORIDAD] }
+      responses:
+        "201": { description: Desastre registrado, con id, version y datoAl }
+        "401": { description: "Sin token valido (SIN_IDENTIDAD)" }
+        "403": { description: "Rol u organizacion sin permiso (NO_AUTORIZADO)" }
+        "409": { description: "El id del cliente pertenece a otro autor (ID_EXISTE)" }
+        "422": { description: "Dato que incumple una regla (DATO_INVALIDO, TIPO_DESCONOCIDO)" }
+\end{verbatim}
+\endgroup
+
+\subsection{Interfaz interna: acuse de SE-8}
+
+La usa SE-8 para avisar el acuse de una alerta. Solo existe en la red interna del compose y del
+clúster: el API Gateway no tiene ruta hacia ella (AD-66). Es idempotente.
+
+\begingroup\footnotesize
+\begin{verbatim}
+openapi: 3.1.0
+paths:
+  /v1/acuses:
+    post:
+      summary: Acuse de entrega de una alerta, enviado por SE-8 al adaptador de SE-8
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [referenciaExterna, resultado]
+              properties:
+                referenciaExterna: { type: string }   # clave de envio de la alerta
+                secuencia:         { type: integer, minimum: 0 }  # marca de avance
+                resultado:         { enum: [ENTREGADA, RECHAZADA] }
+                motivo:            { type: [string, "null"] }
+                instante:          { type: string, format: date-time }
+      responses:
+        "200": { description: "Acuse aplicado o repetido ({resultado: APLICADO | REPETIDO})" }
+        "400": { description: El cuerpo no es un acuse }
+        "404": { description: "Alerta aun desconocida; SE-8 reintenta y la conciliacion la recoge" }
+\end{verbatim}
+\endgroup
+
+\subsection{Evento: EV-28 Envío de notificación solicitado}
+
+Esquema de los datos del evento, tal como está en \texttt{EV-28.v1.json}. El sobre canónico que lo
+envuelve (\texttt{sobre.v1.json}) agrega \texttt{idEvento}, \texttt{tipo}, \texttt{nombre},
+\texttt{version}, \texttt{instanteEmision}, \texttt{productor}, \texttt{secuenciaProductor},
+\texttt{idCorrelacion}, \texttt{claveIdempotencia} y \texttt{procedencia}. La clave de ruteo es
+\texttt{ev28.notificacion.envio-solicitado}.
+
+\begingroup\footnotesize
+\begin{verbatim}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://plataforma.local/esquemas/EV-28.v1.json",
+  "type": "object",
+  "required": ["idNotificacion", "intento", "idEventoOrigen", "idDesastre", "organismo",
+               "canal", "destino", "asunto", "mensaje", "severidad"],
+  "properties": {
+    "idNotificacion": {"$ref": "comun.v1.json#/$defs/uuid"},
+    "intento":        {"type": "integer", "minimum": 1},
+    "idEventoOrigen": {"$ref": "comun.v1.json#/$defs/uuid"},
+    "idDesastre":     {"$ref": "comun.v1.json#/$defs/uuid"},
+    "organismo":      {"$ref": "comun.v1.json#/$defs/textoNoVacio"},
+    "canal":          {"$ref": "comun.v1.json#/$defs/canalNotificacion"},
+    "destino":        {"$ref": "comun.v1.json#/$defs/textoNoVacio"},
+    "asunto":         {"$ref": "comun.v1.json#/$defs/textoNoVacio"},
+    "mensaje":        {"$ref": "comun.v1.json#/$defs/textoNoVacio"},
+    "severidad":      {"$ref": "comun.v1.json#/$defs/severidad"}
+  }
+}
+\end{verbatim}
+\endgroup
 
 \end{document}

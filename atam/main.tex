@@ -433,10 +433,20 @@ resiliencia.}
 \begin{landscape}
 \begin{figure}[p]
 \centering
-\includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{figuras/vista_despliegue_implementacion}
-\caption{Vista física de la implementación (SAD 1.2). Diagrama de despliegue UML de Docker Compose
-y del teléfono Android.}
+\includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{figuras/vista_despliegue_implementacion_a}
+\caption{Vista física de la implementación (SAD 1.2, parte 1 de 2). Diagrama de despliegue UML del
+teléfono Android y de Docker Compose: entrada e identidad, microservicios, datos y mensajería.}
 \label{fig:vista-despliegue-impl}
+\end{figure}
+\end{landscape}
+
+\begin{landscape}
+\begin{figure}[p]
+\ContinuedFloat
+\centering
+\includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{figuras/vista_despliegue_implementacion_b}
+\caption{Vista física de la implementación (SAD 1.2, parte 2 de 2). Adaptadores, simuladores y
+migradores.}
 \end{figure}
 \end{landscape}
 
@@ -1579,8 +1589,7 @@ QA-04 & 0 funciones críticas ajenas al componente indisponibles & Pasan las 71 
 de \texttt{Plataforma.\br Comun.\br Pruebas} con PostgreSQL y RabbitMQ reales: consumidor detenido sin
 pérdida, mensaje envenenado apartado y cola llena sin descarte & Sí, en pruebas de integración &
 Perfil local. La tasa de errores y el plazo de \qty{60}{\second} de la respuesta no se midieron (L-03) \\
-QA-06 & p95 $<$ \qty{2}{\second} y p99 $<$ \qty{4}{\second}. Antigüedad del dato $\le$
-\qty{2}{\second} en el p95. Marca de tiempo en el \qty{100}{\percent} & Consolidado: p95 de
+QA-06 & p95 $<$ \qty{2}{\second} y p99 $<$ \qty{4}{\second} del tiempo de respuesta & Consolidado: p95 de
 \qty{34}{\milli\second} y p99 de \qty{47}{\milli\second}. Mapa de desastres: p95 de
 \qty{142}{\milli\second} y p99 de \qty{159}{\milli\second}. Mapa de daños: p95 de
 \qty{1628}{\milli\second} y p99 de \qty{1935}{\milli\second}. \texttt{datoAl} en el

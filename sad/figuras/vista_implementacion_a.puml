@@ -1,4 +1,4 @@
-@startuml vista_implementacion
+@startuml vista_implementacion_a
 ' SAD v1.2 - Vista de implementación: diagrama de paquetes UML del monorepo proyectoparte2 (AD-08, AD-45, AD-50, AD-51, AD-53, AD-64)
 skinparam shadowing false
 skinparam defaultFontName "DejaVu Sans"
@@ -149,38 +149,9 @@ package "Otros microservicios (misma estructura Api, Aplicacion, Dominio, Infrae
 }
 }
 
-package "adaptadores" as ADP {
-  package "adaptador-se2\nAdaptadorSe2" as PA2 {
+package "adaptadores (detalle en la Figura 5, parte 2)" as ADP {
+  package "AdaptadorSe2, AdaptadorSe6, AdaptadorSe7 (.NET)\nadaptador-se8-jee (Java, Jakarta EE)" as PAX {
 }
-  package "adaptador-se6\nAdaptadorSe6" as PA6 {
-}
-  package "adaptador-se7\nAdaptadorSe7\n(modos salida y entrada)" as PA7 {
-}
-  package "adaptador-se8-jee  (Maven, Java 21, WAR para WildFly 42; AD-66)" as PA8 {
-    package "plataforma.adaptador.se8.contrato" as J8C {
-      interface "ContratoAdaptador<E>\n(equivale a IContratoAdaptador)" as J8I
-      class "Sobre" as J8S
-      class "ValidadorContrato" as J8V
-    }
-    package "plataforma.adaptador.se8.jee  (EJB y CDI)" as J8E {
-      class "AdaptadorSe8\n@Stateless" as J8A
-      class "ManejadorSe8\n@Stateless, REQUIRES_NEW" as J8M
-      class "ConsumidorSe8\n@Singleton @Startup" as J8K
-      class "Temporizadores\n@Schedule" as J8T
-    }
-    package "consumo  (Jakarta Messaging)" as J8Q {
-      class "BucleConsumo" as J8B
-      class "PublicadorJms" as J8P
-    }
-    package "traduccion, resiliencia, cliente\n(TraduccionSe8, Cortacircuitos,\nEjecutorResiliente, TransporteJaxRs)" as J8R {
-    }
-    package "persistencia  (Jakarta Persistence)\nEntrega, FilaBandeja, AlmacenJpa" as J8D {
-    }
-    package "api  (Jakarta REST)\nRecursoAcuses, RecursoSalud,\nRecursoEntregas" as J8W {
-    }
-    package "migrador\nMigrador (Flyway)" as J8G {
-    }
-  }
 }
 
 package "gateway\nPlataforma.Gateway\n(rutas.json, AutorizacionNivel1)" as PGW {
@@ -212,27 +183,20 @@ OTR ..> COM
 ADP ..> CEv
 ADP ..> CMs
 ADP ..> CMi
-PA6 ..> CAd
-PA7 ..> CAd
-J8A ..|> J8I
-J8K ..> J8B
-J8B ..> J8M
-J8M ..> J8A
-J8M ..> J8D
-J8T ..> J8P
-J8A ..> J8R
-J8W ..> J8M
-J8V ..> CEv : <<use>> esquemas JSON\ncopiados al compilar
 PGW ..> CSe
 PGW ..> CSa
 PCO ..> PGW : HTTP JSON
 PGD -[hidden]-> PRC
 PCQ -[hidden]-> PCD
-PA2 -[hidden]-> PA6
 
 legend bottom left
-  **Notación** (diagrama de paquetes UML). Paquete: carpeta del monorepo o proyecto .NET (*.csproj). Rectángulo: clase o archivo clave real. Interfaz: puerto que implementa la infraestructura (realización con línea discontinua y triángulo).
-  Flecha discontinua: dependencia «use» (referencia de proyecto ProjectReference o uso de código). Regla de capas (AD-08): Dominio no depende de nadie; Aplicacion depende de Dominio; Infraestructura implementa los Puertos de Aplicacion; Api compone todo.
-  Ningún microservicio referencia a otro ni a un adaptador; todos dependen solo de comun. adaptador-se8-jee es Java: no referencia proyectos .NET; comparte el contrato por los esquemas JSON de Plataforma.Comun.Eventos (CON-9, AD-66). El esquema de los eventos está en Plataforma.Comun.Eventos (Esquemas) y no es un componente ejecutable.
+  **Figura 5, parte 1 de 2.** Microservicio tipo, módulo común, demás microservicios, gateway y consola. Los adaptadores se detallan en la parte 2.
+  **Notación** (diagrama de paquetes UML). Paquete: carpeta del monorepo o proyecto .NET (*.csproj). Rectángulo: clase o archivo
+  clave real. Interfaz: puerto que implementa la infraestructura (realización con línea discontinua y triángulo).
+  Flecha discontinua: dependencia «use» (referencia de proyecto ProjectReference o uso de código). Regla de capas (AD-08): Dominio
+  no depende de nadie; Aplicacion depende de Dominio; Infraestructura implementa los Puertos de Aplicacion; Api compone todo.
+  Ningún microservicio referencia a otro ni a un adaptador; todos dependen solo de comun. adaptador-se8-jee es Java: no referencia
+  proyectos .NET; comparte el contrato por los esquemas JSON de Plataforma.Comun.Eventos (CON-9, AD-66). El esquema de los eventos
+  está en Plataforma.Comun.Eventos (Esquemas) y no es un componente ejecutable.
 endlegend
 @enduml

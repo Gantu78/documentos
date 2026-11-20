@@ -169,7 +169,9 @@ identificadores, de límites, de enmiendas y de los cuatro mínimos.
 Se agrega CON-9: la solución final debe incluir Jakarta EE y .NET (E-44). La cumple el adaptador de
 SE-8 en Jakarta EE (AD-66 del SAD 1.2).
 En la Matriz 5, QA-09 queda verificado con el adaptador de SE-8 y QA-08 queda parcial.
-Se agrega el límite L-11 (sustituto temporal de Notificación) y se ajusta L-06. \\
+Se agrega el límite L-11 (sustituto temporal de Notificación) y se ajusta L-06.
+QA-06, QA-07 y QA-08 quedan con una sola medida de respuesta; las demás condiciones pasan a la respuesta
+observable, sin mecanismos de diseño. \\
 \bottomrule
 \end{tabular}
 
@@ -1690,13 +1692,12 @@ afectadas (RF-GD-16) \\
 \textbf{Entorno} & Emergencia activa con \num{10000} usuarios concurrentes, que es la carga máxima
 prevista \\
 \textbf{Respuesta} & La plataforma devuelve el estado consolidado (nivel, estado del ciclo de vida,
-delimitación vigente, organismos participantes y resumen de daños) con la marca de tiempo del dato \\
+delimitación vigente, organismos participantes y resumen de daños). Cada respuesta muestra la marca de
+tiempo del dato, y el dato refleja los cambios confirmados en el camino de escritura hasta
+\qty{2}{\second} antes \\
 \textbf{Medida de respuesta} &
-p95 $<$ \qty{2}{\second} y p99 $<$ \qty{4}{\second}, medidos en el punto de entrada de la plataforma
-sobre ventanas deslizantes de \qty{15}{\minute}.\newline
-Antigüedad del dato presentado: $\le$ \qty{2}{\second} en el p95 respecto del instante en que el
-cambio quedó confirmado en el camino de escritura.\newline
-La marca de tiempo del dato es visible en el \qty{100}{\percent} de las respuestas \\
+p95 $<$ \qty{2}{\second} y p99 $<$ \qty{4}{\second} del tiempo de respuesta, medidos en el punto de
+entrada de la plataforma sobre ventanas deslizantes de \qty{15}{\minute} \\
 \end{longtable}
 
 \subsubsection{QA-07: Rendimiento del registro de un evento}
@@ -1713,14 +1714,11 @@ del \cref{tab:campos-desastre} \\
 hasta 50 registros por minuto \\
 \textbf{Respuesta} & La plataforma valida el tipo contra el catálogo (RN-1), valida los atributos
 obligatorios, persiste el evento, le asigna un identificador único y confirma el registro al
-solicitante \\
+solicitante. Solo confirma un registro que ya quedó persistido y es consultable \\
 \textbf{Medida de respuesta} &
 p95 $<$ \qty{3}{\second} y p99 $<$ \qty{6}{\second} desde la recepción de la petición hasta la
 confirmación con identificador, medidos en el punto de entrada sobre ventanas de
-\qty{15}{\minute}.\newline
-El \qty{100}{\percent} de los registros confirmados queda persistido y es consultable: 0
-confirmaciones sin persistencia, verificado por conciliación entre las confirmaciones emitidas y los
-eventos almacenados \\
+\qty{15}{\minute} \\
 \end{longtable}
 
 Los tiempos de QA-07 y de QA-08 son mayores que el de QA-06 porque corresponden a operaciones
@@ -1746,14 +1744,11 @@ suscritos al evento. La cifra de 200 destinatarios es un valor de dimensionamien
 equipo \\
 \textbf{Respuesta} & La plataforma determina los organismos suscritos al nuevo ámbito de
 coordinación (RN-3), compone la alerta y la entrega a los canales externos correspondientes. Registra
-el estado de entrega de cada envío \\
+el estado de entrega de cada envío, consultable por destinatario: el envío queda pendiente hasta que
+el canal acusa recibo y solo con ese acuse queda como entregado \\
 \textbf{Medida de respuesta} &
 p95 $<$ \qty{5}{\second} y p99 $<$ \qty{10}{\second} desde que el cambio queda confirmado hasta que
-la alerta se entrega al canal externo y este acusa recibo.\newline
-Si un canal no acusa en \qty{5}{\second}, el envío se reintenta y su estado permanece como
-pendiente. El estado solo pasa a entregada cuando existe acuse.\newline
-El \qty{100}{\percent} de las alertas críticas tiene un estado de entrega consultable por
-destinatario \\
+la alerta se entrega al canal externo y este acusa recibo \\
 \end{longtable}
 
 \subsubsection{QA-09: Interoperabilidad al incorporar un sistema externo nuevo}
@@ -2710,12 +2705,11 @@ y cola llena sin descarte & Sí, en pruebas de integración & Sin prueba de caos
 errores y el plazo de \qty{60}{\second} de la respuesta no se midieron \\
 QA-05 & p95 $<$ 2\,s con \num{10000} usuarios & No medida & No verificado & Sin prueba de carga en un
 clúster (L-03, L-04) \\
-QA-06 & p95 $<$ 2\,s y p99 $<$ 4\,s; antigüedad del dato $\le$ 2\,s en el p95; marca de tiempo en
-el 100\,\% & Consolidado: p95 34\,ms, p99 47\,ms. Mapa de desastres: p95 142\,ms, p99 159\,ms.
+QA-06 & p95 $<$ 2\,s y p99 $<$ 4\,s del tiempo de respuesta & Consolidado: p95 34\,ms, p99 47\,ms. Mapa de desastres: p95 142\,ms, p99 159\,ms.
 Mapa de daños: p95 1\,628\,ms, p99 1\,935\,ms. Marca de tiempo en el 100\,\%. Antigüedad: p95
 1\,485\,ms (máximo 11,8\,s) & Sí, en el perfil local & 20 clientes y 300 peticiones por ruta en un
 computador (L-04). La antigüedad se midió con 30 muestras \\
-QA-07 & p95 $<$ 3\,s y p99 $<$ 6\,s; 0 confirmaciones sin persistencia & p95 1\,334\,ms y p99
+QA-07 & p95 $<$ 3\,s y p99 $<$ 6\,s hasta la confirmación & p95 1\,334\,ms y p99
 1\,353\,ms; 100 de 100 registros confirmados & Sí, en el perfil local & La ficha fija 50 registros
 por minuto. La prueba envió los 100 registros en ráfaga, con 20 clientes \\
 QA-08 & p95 $<$ 5\,s y p99 $<$ 10\,s hasta el acuse del canal externo & Del registro a ENTREGADA

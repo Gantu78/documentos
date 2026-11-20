@@ -173,9 +173,13 @@ note bottom of CONS
 end note
 
 legend bottom left
-  **Notación**. Componente «process»: proceso en ejecución, con sus hilos separados por |. [n]: réplicas en docker-compose. Paquete «implementado»: todos sus procesos están en docker-compose. «diseño» (fondo gris, borde discontinuo): sin implementar.
-  Flecha continua: llamada síncrona HTTP/JSON. Flecha discontinua: mensaje AMQP. Cola: rótulo con las claves de enlace (evNN.#) tomadas de definiciones.json.
-  El adaptador de SE-7 corre en dos procesos de la misma imagen: adaptador-se7-salida y adaptador-se7-entrada. consulta-programa es el segundo proceso de la imagen de Reconstrucción.
-  adaptador-se8 es el único proceso Java (Jakarta EE 11 en WildFly 42, AD-66). SE-8 le envía el acuse por HTTP, por una ruta solo de la red interna.
+  **Notación**. Componente «process»: proceso en ejecución, con sus hilos separados por |. [n]: réplicas en docker-compose. Paquete
+  «implementado»: todos sus procesos están en docker-compose. «diseño» (fondo gris, borde discontinuo): sin implementar.
+  Flecha continua: llamada síncrona HTTP/JSON. Flecha discontinua: mensaje AMQP. Cola: rótulo con las claves de enlace (evNN.#)
+  tomadas de definiciones.json.
+  El adaptador de SE-7 corre en dos procesos de la misma imagen: adaptador-se7-salida y adaptador-se7-entrada. consulta-programa es
+  el segundo proceso de la imagen de Reconstrucción.
+  adaptador-se8 es el único proceso Java (Jakarta EE 11 en WildFly 42, AD-66). SE-8 le envía el acuse por HTTP, por una ruta solo de
+  la red interna.
 endlegend
 @enduml

@@ -1,4 +1,4 @@
-@startuml vista_despliegue_implementacion
+@startuml vista_despliegue_implementacion_b
 ' SAD v1.2 - Vista física de la implementación: despliegue UML del docker-compose real y del teléfono (AD-50 a AD-65, L-01)
 skinparam shadowing false
 skinparam defaultFontName "DejaVu Sans"
@@ -60,84 +60,8 @@ skinparam PackageFontSize 17
 skinparam nodesep 12
 skinparam ranksep 30
 
-node "Teléfono Android 8+  [*]" <<device>> as TEL {
-  node "Android Runtime" <<executionEnvironment>> as ART {
-    artifact "DanosCampo.apk\nco.plataforma.danos 2.1.0" <<artifact>> as APK
-    artifact "danos.db\nRoom, esquema 3" <<artifact>> as DDB
-  }
-}
-
 node "Computador (Windows 11)" <<device>> as PC {
-  node "Navegador web" <<executionEnvironment>> as NAV {
-    artifact "consola Angular\n(servida por web)" <<artifact>> as NAV_a
-  }
   node "Docker Engine 29 / Docker Compose  (proyecto plataforma)" <<executionEnvironment>> as DK {
-  package "Entrada e identidad" as PE {
-    node GW <<executionEnvironment>> [
-    **gateway**  [2]
-    ----
-    «artifact» plataforma/gateway:local
-    ]
-
-    node WEB <<executionEnvironment>> [
-    **web**  [1]
-    ----
-    «artifact» plataforma-web
-    (consola en nginx 1.29)
-    ]
-
-    node KC <<executionEnvironment>> [
-    **keycloak**  [1]
-    ----
-    «artifact» quay.io/keycloak/keycloak:26.5.2
-    ]
-
-  }
-  package "Microservicios" as PM {
-    node GD <<executionEnvironment>> [
-    **gestion-desastres**  [2]
-    ----
-    «artifact» plataforma/gestion-desastres:local
-    ]
-
-    node ED <<executionEnvironment>> [
-    **evaluacion-danos**  [2]
-    ----
-    «artifact» plataforma/evaluacion-danos:local
-    ]
-
-    node RC <<executionEnvironment>> [
-    **reconstruccion**  [2]
-    ----
-    «artifact» plataforma/reconstruccion:local
-    ]
-
-    node CP <<executionEnvironment>> [
-    **consulta-programa**  [2]
-    ----
-    «artifact» plataforma/reconstruccion:local
-    (Reconstruccion__Rol=consulta)
-    ]
-
-    node CQ <<executionEnvironment>> [
-    **consulta**  [2]
-    ----
-    «artifact» plataforma/consulta:local
-    ]
-
-    node CD <<executionEnvironment>> [
-    **consulta-danos**  [2]
-    ----
-    «artifact» plataforma/consulta-danos:local
-    ]
-
-    node AU <<executionEnvironment>> [
-    **auditoria**  [2]
-    ----
-    «artifact» plataforma/auditoria:local
-    ]
-
-  }
   package "Adaptadores y simuladores" as PA {
     node A2 <<executionEnvironment>> [
     **adaptador-se2**  [1]
@@ -189,52 +113,6 @@ node "Computador (Windows 11)" <<device>> as PC {
     **sim-se8**  [1]
     ----
     «artifact» plataforma/sim-se8:local
-    ]
-
-  }
-  package "Datos y mensajería" as PD {
-    node DB <<executionEnvironment>> [
-    **db**
-    ----
-    «artifact» postgis/postgis:18-3.6
-    (10 bases, una por servicio;
-    adaptador_se8 para SE-8)
-    ]
-
-    node DBR <<executionEnvironment>> [
-    **db-replica**
-    ----
-    «artifact» postgis/postgis:18-3.6
-    ]
-
-    node B1 <<executionEnvironment>> [
-    **bus1**
-    ----
-    «artifact» rabbitmq:4.4.0-management
-    ]
-
-    node B2 <<executionEnvironment>> [
-    **bus2**
-    ----
-    «artifact» rabbitmq:4.4.0-management
-    ]
-
-    node B3 <<executionEnvironment>> [
-    **bus3**
-    ----
-    «artifact» rabbitmq:4.4.0-management
-    ]
-
-    node CA <<executionEnvironment>> [
-    **cache**
-    ----
-    «artifact» redis:8.8.4-alpine
-    ]
-
-    node AR <<executionEnvironment>> [
-    **archivos**
-    ----
-    «artifact» pgsty/minio (MinIO, API S3)
     ]
 
   }
@@ -301,39 +179,28 @@ node "Computador (Windows 11)" <<device>> as PC {
     ]
 
   }
+  package "Datos y mensajería (detalle en la Figura 4a)" as PD {
+    node DSUM <<executionEnvironment>> [
+    **bus1, bus2, bus3**  ·  **db**
+    ----
+    «artifact» rabbitmq:4.4.0-management (clúster)
+    «artifact» postgis/postgis:18-3.6 (bases por servicio)
+    ]
+  }
   }
 }
 
-APK -- GW : <<HTTP JSON>> :8080\n(HTTPS en producción)
-APK -- KC : <<OIDC con PKCE>> :8180
-NAV_a -- GW : <<HTTP JSON>> :8080
-GW -- WEB : <<HTTP>>
-GW -- KC : <<HTTP>> JWKS
-GW -- PM : <<HTTP JSON>> :8080\nrutas.json
-PM -- PD : <<AMQP>> :5672 a bus1..3\n«SQL» :5432 a db
+
 PA -- PD : <<AMQP>>, «SQL»
-ED -- AR : <<S3>> :9000
-RC -- AR : <<S3>> :9000
-CQ -- CA : <<RESP>> :6379
-CD -- CA : <<RESP>> :6379
 A6 -- S6 : <<HTTP>>
 A7S -- S7 : <<HTTP>>
 A7E -- S7 : <<HTTP>>
 A8 -- S8 : <<HTTP>> PUT /v1/alertas\nPOST /v1/acuses (red interna)
-DB -right- DBR : <<replicación\nde streaming>>
-B1 -right- B2 : <<clúster>>
-B2 -right- B3 : <<clúster>>
-PMG -- DB : <<SQL>> migraciones
 
-GD -[hidden]down- AU
-ED -[hidden]down- CQ
-RC -[hidden]down- CD
-AU -[hidden]down- CP
 A2 -[hidden]down- A7S
 A6 -[hidden]down- A7E
 A7S -[hidden]down- S6
 A7E -[hidden]down- S7
-KC -[hidden]down- A6
 S6 -[hidden]down- MG2
 MG1 -[hidden]down- MG4
 MG2 -[hidden]down- MG5
@@ -344,13 +211,18 @@ MG6 -[hidden]down- MG9
 MG9 -[hidden]down- MG10
 S7 -[hidden]down- A8
 A8 -[hidden]down- S8
-B1 -[hidden]down- DB
-B3 -[hidden]down- AR
 
+
+PMG -- DSUM : <<SQL>> migraciones
+PA -[hidden]down- PMG
 
 legend bottom left
-  **Notación** (diagrama de despliegue UML). «device»: equipo físico. «executionEnvironment»: entorno de ejecución; dentro de Docker, un contenedor por servicio de docker-compose.yml con su nombre exacto.
-  «artifact»: imagen o archivo desplegado; en cada contenedor se lista la imagen en el compartimento del nodo. [n]: réplicas (deploy.replicas). Línea: ruta de comunicación con protocolo y puerto. Puertos publicados en el computador: 8080 y 8081 (gateway), 8180 (keycloak), 15672 (bus1), 9001 (archivos).
-  **Kubernetes** (despliegue/k8s, AD-65): los mismos artefactos se despliegan como Deployments; HPA escala consulta y consulta-danos (2 a 6) y consulta-programa (2 a 5) por CPU; KEDA escala adaptador-se6 y adaptador-se7-salida de 0 a 4 por el largo de q.salida.se6 y q.salida.se7, y enciende adaptador-se7-entrada con un disparador cron. KEDA mantiene adaptador-se8 entre 1 y 2 réplicas (mínimo 1 por QA-08, AD-25).
+  **Figura 4b de 2.** Adaptadores, simuladores y migradores del compose. La entrada, los microservicios y el detalle de datos y
+  mensajería están en la Figura 4a.
+  «device»: equipo físico. «executionEnvironment»: entorno de ejecución (un contenedor por servicio de docker-compose.yml;
+  adaptador-se8 anida el servidor WildFly). «artifact»: imagen o archivo desplegado. [n]: réplicas. Línea: ruta de comunicación con
+  protocolo.
+  **Kubernetes** (AD-65): KEDA escala adaptador-se6 y adaptador-se7-salida de 0 a 4 por el largo de su cola, enciende adaptador-
+  se7-entrada con un disparador cron y mantiene adaptador-se8 entre 1 y 2 réplicas (mínimo 1 por QA-08, AD-25).
 endlegend
 @enduml

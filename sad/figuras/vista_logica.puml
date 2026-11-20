@@ -181,8 +181,12 @@ note top of BUS
 end note
 
 legend bottom left
-  **Notación** (diagrama de componentes UML). «implementado»: elemento con código y contenedor en proyectoparte2 o danos. «diseño»: elemento del diseño sin implementar. Almacén o cola con fondo gris y borde discontinuo: «diseño»; sin fondo: «implementado».
-  [nombre]: servicio de docker-compose o artefacto que realiza el componente. Base de datos: nombre de la base en el contenedor db. Flecha continua sin rótulo: «usa» un almacén propio; ningún microservicio usa el almacén de otro (AD-01).
-  Flecha continua REST: llamada síncrona. Flecha discontinua: evento por el bus (AD-02) o validación del token (AD-49). Círculo: interfaz provista. Realización: los adaptadores implementan ContratoAdaptador (AD-09); el de SE-8 lo implementa en Java (CON-9, AD-66).
+  **Notación** (diagrama de componentes UML). «implementado»: elemento con código y contenedor en proyectoparte2 o danos. «diseño»:
+  elemento del diseño sin implementar. Almacén o cola con fondo gris y borde discontinuo: «diseño»; sin fondo: «implementado».
+  [nombre]: servicio de docker-compose o artefacto que realiza el componente. Base de datos: nombre de la base en el contenedor db.
+  Flecha continua sin rótulo: «usa» un almacén propio; ningún microservicio usa el almacén de otro (AD-01).
+  Flecha continua REST: llamada síncrona. Flecha discontinua: evento por el bus (AD-02) o validación del token (AD-49). Círculo:
+  interfaz provista. Realización: los adaptadores implementan ContratoAdaptador (AD-09); el de SE-8 lo implementa en Java (CON-9,
+  AD-66).
 endlegend
 @enduml
